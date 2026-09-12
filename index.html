@@ -235,11 +235,11 @@
   </div>
 </main>
 
-<footer>actualiza cada 15 segundos · fuente: DESCONECTADOSBI.txt</footer>
+<footer>actualiza cada 10 segundos · fuente: DESCONECTADOSBI.txt</footer>
 
 <script>
   const RAW_URL = "https://raw.githubusercontent.com/Sebastianandres-claud/Unidades-Desc/main/DESCONECTADOSBI.txt";
-  const REFRESH_MS = 15000;
+  const REFRESH_MS = 10000;
   const CODIGOS_EXCLUIDOS = ["TIP", "TQ", "OUT"];
   const DIAS = { LU:0, MA:1, MI:2, JU:3, VI:4, SA:5, DO:6 };
 
@@ -494,8 +494,16 @@
 
       statusDot.classList.remove('offline');
       statusText.textContent = 'en vivo';
-      const now = new Date();
-      opClock.textContent = 'OPERACIÓN ' + now.toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'2-digit'}) + ' ' + now.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+
+      const lastModifiedHeader = res.headers.get('last-modified');
+      const fileDate = lastModifiedHeader ? new Date(lastModifiedHeader) : null;
+
+      if(fileDate){
+        opClock.textContent = 'ARCHIVO ACTUALIZADO ' + fileDate.toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'2-digit'}) + ' ' + fileDate.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      } else {
+        const now = new Date();
+        opClock.textContent = 'VERIFICADO ' + now.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'}) + ' (sin fecha de archivo disponible)';
+      }
 
     }catch(err){
       statusDot.classList.add('offline');
