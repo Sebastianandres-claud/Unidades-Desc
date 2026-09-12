@@ -319,6 +319,16 @@
 
   // ---------- TSV parsing ----------
 
+  function extraerFechaReporte(text){
+    // Al final del archivo viene una línea tipo: "12-09-2026\t12:58:40"
+    const lines = text.replace(/\r/g,'').split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    if(lines.length === 0) return null;
+    const ultima = lines[lines.length-1];
+    const match = ultima.match(/^(\d{2})-(\d{2})-(\d{4})\t(\d{2}):(\d{2}):(\d{2})$/);
+    if(!match) return null;
+    return new Date(Number(match[3]), Number(match[2])-1, Number(match[1]), Number(match[4]), Number(match[5]), Number(match[6]));
+  }
+
   function parseTSV(text){
     const lines = text.replace(/\r/g,'').split('\n');
     if(lines.length === 0) return [];
@@ -495,14 +505,19 @@
       statusDot.classList.remove('offline');
       statusText.textContent = 'en vivo';
 
-      const lastModifiedHeader = res.headers.get('last-modified');
-      const fileDate = lastModifiedHeader ? new Date(lastModifiedHeader) : null;
+      const fechaReporte = extraerFechaReporte(text);
 
-      if(fileDate){
-        opClock.textContent = 'ARCHIVO ACTUALIZADO ' + fileDate.toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'2-digit'}) + ' ' + fileDate.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      if(fechaReporte){
+        opClock.textContent = 'DATOS AL ' + fechaReporte.toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'2-digit'}) + ' ' + fechaReporte.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
       } else {
-        const now = new Date();
-        opClock.textContent = 'VERIFICADO ' + now.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'}) + ' (sin fecha de archivo disponible)';
+        const lastModifiedHeader = res.headers.get('last-modified');
+        const fileDate = lastModifiedHeader ? new Date(lastModifiedHeader) : null;
+        if(fileDate){
+          opClock.textContent = 'ARCHIVO ACTUALIZADO ' + fileDate.toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'2-digit'}) + ' ' + fileDate.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+        } else {
+          const now = new Date();
+          opClock.textContent = 'VERIFICADO ' + now.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'}) + ' (sin fecha de archivo disponible)';
+        }
       }
 
     }catch(err){
