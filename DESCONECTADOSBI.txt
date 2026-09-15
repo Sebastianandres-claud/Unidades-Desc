@@ -1,5 +1,5 @@
 POW	Time	Move Stage	Outbound Carrier Name	Yard In	Complete	Kind	Planned Position	Yard Plan	Remarks	Power	Discon	Container No.	Current Position
-		Completed	MAERSK BOGOR	MA1442	MA1442	RECV				(0)		MMAU1299159	34-16031	
+		Completed	MAERSK BOGOR	MA1523	MA1523	RECV				(0)		MNBU3003666	41-01043	
 		Completed	TRUCK	SA1057	MA1328	YARD			DISCH C0 S/A	(0)	2609151305	BMOU9873682	21-01025	
 			TRUCK		OCT/20					 0 		MEDU9107899	20-0380*021072	
 			TRUCK		OCT/20					 0 		TCLU1022321	20-0380*020872	
@@ -8,4 +8,4 @@ POW	Time	Move Stage	Outbound Carrier Name	Yard In	Complete	Kind	Planned Position
 			VESSEL		JUN/19					 0 	2204260030	MSWU9033608	19-0227*460506	
 			VESSEL		DIC/21					 0 	2501031033	GESU9386711	21-0419*100582	
 
-15-09-2026	15:23:27
+15-09-2026	15:26:25
