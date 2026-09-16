@@ -5,23 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Operación — Unidades Desconectadas</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
 
   :root{
-    --bg: #f4f6f9;
+    --navy: #1c3a5c;
+    --navy-dark: #12283f;
+    --bg: #eef1f5;
     --panel: #ffffff;
-    --border: #e1e6ec;
-    --head-blue: #eaf2fb;
-    --head-blue-text: #3a6ea5;
-    --text: #23303f;
-    --muted: #7c8798;
-    --red: #e57373;
-    --red-bg: #fbe1e1;
-    --yellow: #d9a441;
-    --yellow-bg: #fbeecb;
-    --green: #4caf7d;
-    --green-bg: #dcf3e6;
-    --accent: #3a6ea5;
+    --border: #ccd2db;
+    --grid: #ccd2db;
+    --divider: #a6303a;
+    --text: #1b2430;
+    --muted: #5c6774;
+    --red: #a6303a;
+    --red-bg: #f7e2e3;
+    --yellow: #8a6212;
+    --yellow-bg: #f6ecc9;
+    --green: #1f6e46;
+    --green-bg: #dcecdf;
   }
 
   *{ box-sizing:border-box; }
@@ -38,25 +39,57 @@
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:20px 32px;
+    padding:18px 32px;
     background:var(--panel);
-    border-bottom:1px solid var(--border);
+    border-bottom:3px solid var(--navy);
     flex-wrap:wrap;
     gap:12px;
+  }
+
+  header .brand{
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+
+  header .brand-mark{
+    width:38px;
+    height:38px;
+    background:var(--navy);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:0.02em;
+  }
+
+  header .eyebrow{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:0.12em;
+    color:var(--muted);
+    text-transform:uppercase;
+    margin:0 0 2px;
   }
 
   header h1{
     margin:0;
     font-size:19px;
-    font-weight:700;
+    font-weight:800;
     letter-spacing:-0.01em;
+    color:var(--navy-dark);
+    text-transform:uppercase;
   }
 
   header .clock{
     font-family:'IBM Plex Mono', monospace;
-    font-size:13px;
+    font-size:12px;
     color:var(--muted);
-    margin-top:2px;
+    margin-top:3px;
+    letter-spacing:0.02em;
   }
 
   .status{
@@ -64,31 +97,33 @@
     align-items:center;
     gap:8px;
     font-family:'IBM Plex Mono', monospace;
-    font-size:12.5px;
+    font-size:11.5px;
+    font-weight:600;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
     color:var(--muted);
   }
 
   .dot{
-    width:8px;
-    height:8px;
-    border-radius:50%;
+    width:7px;
+    height:7px;
     background:var(--green);
-    box-shadow:0 0 0 0 rgba(76,175,125,.5);
+    box-shadow:0 0 0 0 rgba(31,110,70,.5);
     animation:pulse 2s infinite;
   }
   .dot.offline{ background:var(--red); animation:none; }
 
   @keyframes pulse{
-    0%{ box-shadow:0 0 0 0 rgba(76,175,125,.4); }
-    70%{ box-shadow:0 0 0 7px rgba(76,175,125,0); }
-    100%{ box-shadow:0 0 0 0 rgba(76,175,125,0); }
+    0%{ box-shadow:0 0 0 0 rgba(31,110,70,.4); }
+    70%{ box-shadow:0 0 0 6px rgba(31,110,70,0); }
+    100%{ box-shadow:0 0 0 0 rgba(31,110,70,0); }
   }
 
   main{
-    padding:24px 32px 60px;
+    padding:22px 32px 60px;
     display:grid;
     grid-template-columns:1.15fr 0.85fr;
-    gap:20px;
+    gap:18px;
     align-items:start;
   }
 
@@ -99,7 +134,6 @@
   .panel{
     background:var(--panel);
     border:1px solid var(--border);
-    border-radius:8px;
     overflow:hidden;
   }
 
@@ -107,101 +141,128 @@
     display:flex;
     align-items:baseline;
     justify-content:space-between;
-    padding:14px 18px 10px;
+    padding:11px 16px;
+    background:var(--navy);
+    border-left:4px solid var(--divider);
   }
 
   .panel-title h2{
     margin:0;
-    font-size:14.5px;
-    font-weight:600;
+    font-size:12.5px;
+    font-weight:700;
+    letter-spacing:0.07em;
+    text-transform:uppercase;
+    color:#fff;
   }
 
   .panel-title .count{
     font-family:'IBM Plex Mono', monospace;
     font-size:13px;
-    color:var(--accent);
-    font-weight:600;
+    color:#fff;
+    font-weight:700;
+    background:rgba(255,255,255,0.15);
+    padding:1px 8px;
   }
 
   table{
     width:100%;
     border-collapse:collapse;
-    font-size:13px;
+    font-size:12.5px;
   }
 
   thead th{
     text-align:left;
-    padding:9px 14px;
-    background:var(--head-blue);
-    color:var(--head-blue-text);
-    font-weight:600;
-    font-size:12px;
-    border-top:1px solid var(--border);
-    border-bottom:1px solid var(--border);
+    padding:8px 14px;
+    background:#dde4ec;
+    color:var(--navy-dark);
+    font-weight:700;
+    font-size:10.5px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    border:1px solid var(--grid);
+  }
+
+  thead th.col-tiempo{
+    border-left:2px solid var(--divider);
   }
 
   tbody td{
-    padding:8px 14px;
-    border-bottom:1px solid var(--border);
+    padding:7px 14px;
+    border:1px solid var(--grid);
     white-space:nowrap;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
   }
 
-  tbody tr:hover{ background:#f7f9fc; }
+  tbody td.col-tiempo{
+    border-left:2px solid var(--divider);
+  }
+
+  tbody tr:nth-child(even){ background:#f7f8fa; }
+  tbody tr:hover{ background:#eaf0f6; }
 
   .pill{
     display:inline-block;
-    padding:2px 9px;
-    border-radius:4px;
+    padding:1px 8px;
     font-family:'IBM Plex Mono', monospace;
     font-size:12px;
-    font-weight:600;
+    font-weight:700;
+    border:1px solid currentColor;
   }
 
-  .pill-red{ background:var(--red-bg); color:#b23b3b; }
-  .pill-yellow{ background:var(--yellow-bg); color:#8a6212; }
-  .pill-green{ background:var(--green-bg); color:#2f7a54; }
+  .pill-red{ background:var(--red-bg); color:var(--red); }
+  .pill-yellow{ background:var(--yellow-bg); color:var(--yellow); }
+  .pill-green{ background:var(--green-bg); color:var(--green); }
 
   .badge{
     display:inline-block;
-    padding:3px 8px;
-    border-radius:4px;
-    font-size:11.5px;
-    font-weight:600;
-    background:#eef1f5;
-    color:#54606e;
+    padding:2px 8px;
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:0.03em;
+    text-transform:uppercase;
+    background:#e7eaee;
+    color:var(--muted);
+    border:1px solid #c7ccd4;
   }
-  .badge-descarga{ background:#dcf3e6; color:#2f7a54; }
-  .badge-calle{ background:#eaf2fb; color:#3a6ea5; }
-  .badge-embarque{ background:#fdeecb; color:#93650e; }
-  .badge-movimiento{ background:#e7e2fb; color:#5b3fa0; }
-  .badge-revisar{ background:var(--red-bg); color:#b23b3b; }
+  .badge-descarga{ background:var(--green-bg); color:var(--green); border-color:var(--green); }
+  .badge-calle{ background:#e3ecf5; color:var(--navy); border-color:var(--navy); }
+  .badge-embarque{ background:var(--yellow-bg); color:var(--yellow); border-color:var(--yellow); }
+  .badge-movimiento{ background:#e9e4f5; color:#5b3fa0; border-color:#5b3fa0; }
+  .badge-revisar{ background:var(--red-bg); color:var(--red); border-color:var(--red); }
 
   .empty-state, .error-state{
-    padding:36px 20px;
+    padding:32px 20px;
     text-align:center;
     color:var(--muted);
     font-family:'IBM Plex Mono', monospace;
-    font-size:13px;
+    font-size:12.5px;
   }
-  .error-state{ color:#b23b3b; }
+  .error-state{ color:var(--red); }
 
   .full-width{ grid-column:1 / -1; }
 
   footer{
     text-align:center;
-    padding:16px;
+    padding:14px;
     color:var(--muted);
     font-family:'IBM Plex Mono', monospace;
-    font-size:11px;
+    font-size:10.5px;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
   }
 </style>
 </head>
 <body>
 
 <header>
-  <div>
-    <h1>Operación — Unidades Desconectadas</h1>
-    <div class="clock" id="opClock">—</div>
+  <div class="brand">
+    <div class="brand-mark">OPS</div>
+    <div>
+      <p class="eyebrow">Control Operacional</p>
+      <h1>Unidades Desconectadas</h1>
+      <div class="clock" id="opClock">—</div>
+    </div>
   </div>
   <div class="status">
     <span class="dot" id="statusDot"></span>
@@ -238,8 +299,8 @@
     <div class="panel-title">
       <h2>Planilla Excel</h2>
     </div>
-    <div style="padding:0 18px 18px; display:flex; justify-content:center;">
-      <iframe width="402" height="346" frameborder="0" scrolling="no" src="https://tpsv.sharepoint.com/sites/TPSVPlanificacionNaviera/_layouts/15/Doc.aspx?sourcedoc={621b809b-e4fd-4531-9d66-5df414ca4610}&action=embedview&wdAllowInteractivity=False&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True&wdInConfigurator=True" style="max-width:100%; border:1px solid var(--border); border-radius:6px;"></iframe>
+    <div style="padding:16px; display:flex; justify-content:center;">
+      <iframe width="900" height="520" frameborder="0" scrolling="no" src="https://tpsv.sharepoint.com/sites/TPSVPlanificacionNaviera/_layouts/15/Doc.aspx?sourcedoc={621b809b-e4fd-4531-9d66-5df414ca4610}&action=embedview&wdAllowInteractivity=False&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True&wdInConfigurator=True" style="width:100%; max-width:900px; border:1px solid var(--border);"></iframe>
     </div>
   </div>
 </main>
@@ -461,9 +522,9 @@
 
     if(data.length === 0){ container.innerHTML = '<div class="empty-state">sin registros</div>'; return; }
 
-    let html = '<table><thead><tr><th>Contenedor</th><th>Instancia</th><th>Posición</th><th>Nave</th><th>Tiempo</th></tr></thead><tbody>';
+    let html = '<table><thead><tr><th>Contenedor</th><th>Instancia</th><th>Posición</th><th>Nave</th><th class="col-tiempo">Tiempo</th></tr></thead><tbody>';
     data.sort((a,b)=> (b.TiempoMin??0) - (a.TiempoMin??0)).forEach(r => {
-      html += `<tr><td>${esc(r.Contenedor)}</td><td>${badgeInstancia(r.Instancia)}</td><td>${esc(r.Posicion)}</td><td>${esc(r.Nave)}</td><td>${pillTiempo(r.Tiempo, r.TiempoMin)}</td></tr>`;
+      html += `<tr><td>${esc(r.Contenedor)}</td><td>${badgeInstancia(r.Instancia)}</td><td>${esc(r.Posicion)}</td><td>${esc(r.Nave)}</td><td class="col-tiempo">${pillTiempo(r.Tiempo, r.TiempoMin)}</td></tr>`;
     });
     html += '</tbody></table>';
     container.innerHTML = html;
@@ -476,9 +537,9 @@
 
     if(data.length === 0){ container.innerHTML = '<div class="empty-state">sin unidades a bordo sin conexión</div>'; return; }
 
-    let html = '<table><thead><tr><th>Contenedor</th><th>Nave</th><th>Tiempo</th><th>Posición</th></tr></thead><tbody>';
+    let html = '<table><thead><tr><th>Contenedor</th><th>Nave</th><th class="col-tiempo">Tiempo</th><th>Posición</th></tr></thead><tbody>';
     data.sort((a,b)=> (b.TiempoMin??0) - (a.TiempoMin??0)).forEach(r => {
-      html += `<tr><td>${esc(r.Contenedor)}</td><td>${esc(r.Nave)}</td><td>${pillTiempo(r.Tiempo, r.TiempoMin)}</td><td>${esc(r.Posicion)}</td></tr>`;
+      html += `<tr><td>${esc(r.Contenedor)}</td><td>${esc(r.Nave)}</td><td class="col-tiempo">${pillTiempo(r.Tiempo, r.TiempoMin)}</td><td>${esc(r.Posicion)}</td></tr>`;
     });
     html += '</tbody></table>';
     container.innerHTML = html;
@@ -491,9 +552,9 @@
 
     if(data.length === 0){ container.innerHTML = '<div class="empty-state">sin unidades desconectadas para embarque</div>'; return; }
 
-    let html = '<table><thead><tr><th>Contenedor</th><th>Nave</th><th>Tiempo</th></tr></thead><tbody>';
+    let html = '<table><thead><tr><th>Contenedor</th><th>Nave</th><th class="col-tiempo">Tiempo</th></tr></thead><tbody>';
     data.sort((a,b)=> (b.TiempoMin??0) - (a.TiempoMin??0)).forEach(r => {
-      html += `<tr><td>${esc(r.Contenedor)}</td><td>${esc(r.Nave)}</td><td>${pillTiempo(r.Tiempo, r.TiempoMin)}</td></tr>`;
+      html += `<tr><td>${esc(r.Contenedor)}</td><td>${esc(r.Nave)}</td><td class="col-tiempo">${pillTiempo(r.Tiempo, r.TiempoMin)}</td></tr>`;
     });
     html += '</tbody></table>';
     container.innerHTML = html;
