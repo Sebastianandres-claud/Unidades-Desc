@@ -243,6 +243,9 @@
     vertical-align:middle;
   }
 
+  .mov-si{ color:var(--green); font-weight:700; }
+  .mov-no{ color:var(--muted); }
+
   .toggle-btn{
     display:block;
     width:100%;
@@ -651,6 +654,8 @@
     const tiempoMin = fechaEvento ? Math.round((ahora - fechaEvento)/60000) : null;
     const alerta = instancia === 'SIN CLASIFICAR' ? 'Revisar' : null;
 
+    const esMov = (moveStage === 'Completed') && !esVacio(discon) && (kind === 'YARD') && (powerTxt.trim() === '(0)');
+
     return {
       Contenedor: fila['Container No.'],
       Nave: fila['Outbound Carrier Name'],
@@ -659,6 +664,7 @@
       Tiempo: tiempoTranscurrido,
       TiempoMin: tiempoMin,
       ReqsPower: seMovio,
+      Mov: esMov,
       Alerta: alerta,
       Remarks: remarks
     };
@@ -718,10 +724,10 @@
     const sorted = data.sort((a,b)=> (b.TiempoMin??0) - (a.TiempoMin??0));
     const toShow = expandedGeneral ? sorted : sorted.slice(0, LIMIT_GENERAL);
 
-    let html = '<table><thead><tr><th style="width:20%">Contenedor</th><th style="width:22%">Instancia</th><th style="width:20%">Posición</th><th style="width:23%">Nave</th><th style="width:15%">Tiempo</th></tr></thead><tbody>';
+    let html = '<table><thead><tr><th style="width:18%">Contenedor</th><th style="width:19%">Instancia</th><th style="width:17%">Posición</th><th style="width:19%">Nave</th><th style="width:12%">Tiempo</th><th style="width:9%">Mov</th></tr></thead><tbody>';
     toShow.forEach(r => {
       const destacado = esDestacado(r.Remarks);
-      html += `<tr class="${destacado ? 'row-highlight' : ''}"><td>${esc(r.Contenedor)}</td><td>${badgeInstancia(r.Instancia)}${destacado ? '<span class="flag">USDA/AC</span>' : ''}</td><td>${esc(r.Posicion)}</td><td>${esc(r.Nave)}</td><td>${pillTiempo(r.Tiempo, r.TiempoMin)}</td></tr>`;
+      html += `<tr class="${destacado ? 'row-highlight' : ''}"><td>${esc(r.Contenedor)}</td><td>${badgeInstancia(r.Instancia)}${destacado ? '<span class="flag">USDA/AC</span>' : ''}</td><td>${esc(r.Posicion)}</td><td>${esc(r.Nave)}</td><td>${pillTiempo(r.Tiempo, r.TiempoMin)}</td><td class="${r.Mov ? 'mov-si' : 'mov-no'}">${r.Mov ? 'Sí' : 'No'}</td></tr>`;
     });
     html += '</tbody></table>';
 
