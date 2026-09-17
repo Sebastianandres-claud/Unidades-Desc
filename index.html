@@ -5,24 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Operación — Unidades Desconectadas</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
 
   :root{
-    --navy: #1c3a5c;
-    --navy-dark: #12283f;
-    --bg: #eef1f5;
+    --blue: #0f6cbd;
+    --blue-dark: #0b4f8c;
+    --bg: #f5f6f7;
     --panel: #ffffff;
-    --border: #ccd2db;
-    --grid: #ccd2db;
-    --divider: #a6303a;
-    --text: #1b2430;
-    --muted: #5c6774;
-    --red: #a6303a;
-    --red-bg: #f7e2e3;
-    --yellow: #8a6212;
-    --yellow-bg: #f6ecc9;
-    --green: #1f6e46;
-    --green-bg: #dcecdf;
+    --border: #e3e4e6;
+    --grid: #e8e9eb;
+    --head-bg: #f7f8f9;
+    --text: #24292e;
+    --muted: #6b7280;
+    --red: #c4314b;
+    --red-bg: #fdecee;
+    --yellow: #986f0b;
+    --yellow-bg: #fdf3d9;
+    --green: #107c41;
+    --green-bg: #e6f4ea;
   }
 
   *{ box-sizing:border-box; }
@@ -31,100 +31,97 @@
     margin:0;
     background:var(--bg);
     color:var(--text);
-    font-family:'Inter', system-ui, sans-serif;
+    font-family:'Segoe UI', 'Inter', system-ui, sans-serif;
     min-height:100vh;
+    font-size:13px;
   }
 
   header{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:18px 32px;
+    padding:10px 20px;
     background:var(--panel);
-    border-bottom:3px solid var(--navy);
+    border-bottom:1px solid var(--border);
     flex-wrap:wrap;
-    gap:12px;
+    gap:10px;
   }
 
   header .brand{
     display:flex;
     align-items:center;
-    gap:14px;
+    gap:10px;
   }
 
   header .brand-mark{
-    width:38px;
-    height:38px;
-    background:var(--navy);
+    width:26px;
+    height:26px;
+    background:var(--blue);
     display:flex;
     align-items:center;
     justify-content:center;
     color:#fff;
     font-family:'IBM Plex Mono', monospace;
     font-weight:700;
-    font-size:13px;
-    letter-spacing:0.02em;
+    font-size:10px;
   }
 
   header .eyebrow{
-    font-size:10.5px;
-    font-weight:700;
-    letter-spacing:0.12em;
+    font-size:9.5px;
+    font-weight:600;
+    letter-spacing:0.06em;
     color:var(--muted);
     text-transform:uppercase;
-    margin:0 0 2px;
+    margin:0;
   }
 
   header h1{
     margin:0;
-    font-size:19px;
-    font-weight:800;
-    letter-spacing:-0.01em;
-    color:var(--navy-dark);
-    text-transform:uppercase;
+    font-size:15px;
+    font-weight:700;
+    color:var(--text);
   }
 
   header .clock{
     font-family:'IBM Plex Mono', monospace;
-    font-size:12px;
+    font-size:10.5px;
     color:var(--muted);
-    margin-top:3px;
-    letter-spacing:0.02em;
   }
 
   .status{
     display:flex;
     align-items:center;
-    gap:8px;
+    gap:6px;
     font-family:'IBM Plex Mono', monospace;
-    font-size:11.5px;
+    font-size:10.5px;
     font-weight:600;
-    letter-spacing:0.06em;
-    text-transform:uppercase;
     color:var(--muted);
   }
 
   .dot{
-    width:7px;
-    height:7px;
+    width:6px;
+    height:6px;
+    border-radius:50%;
     background:var(--green);
-    box-shadow:0 0 0 0 rgba(31,110,70,.5);
+    box-shadow:0 0 0 0 rgba(16,124,65,.5);
     animation:pulse 2s infinite;
   }
   .dot.offline{ background:var(--red); animation:none; }
 
   @keyframes pulse{
-    0%{ box-shadow:0 0 0 0 rgba(31,110,70,.4); }
-    70%{ box-shadow:0 0 0 6px rgba(31,110,70,0); }
-    100%{ box-shadow:0 0 0 0 rgba(31,110,70,0); }
+    0%{ box-shadow:0 0 0 0 rgba(16,124,65,.4); }
+    70%{ box-shadow:0 0 0 5px rgba(16,124,65,0); }
+    100%{ box-shadow:0 0 0 0 rgba(16,124,65,0); }
   }
 
   main{
-    padding:22px 32px 60px;
+    padding:12px;
     display:grid;
-    grid-template-columns:1.15fr 0.85fr;
-    gap:18px;
+    grid-template-columns:1.2fr 1fr;
+    gap:12px;
     align-items:start;
+    max-width:1400px;
+    margin:0 auto;
   }
 
   @media (max-width: 980px){
@@ -134,80 +131,76 @@
   .panel{
     background:var(--panel);
     border:1px solid var(--border);
+    border-radius:3px;
     overflow:hidden;
   }
 
   .panel-title{
     display:flex;
-    align-items:baseline;
+    align-items:center;
     justify-content:space-between;
-    padding:11px 16px;
-    background:var(--navy);
-    border-left:4px solid var(--divider);
+    padding:7px 10px;
+    background:var(--head-bg);
+    border-bottom:1px solid var(--border);
   }
 
   .panel-title h2{
     margin:0;
-    font-size:12.5px;
-    font-weight:700;
-    letter-spacing:0.07em;
-    text-transform:uppercase;
-    color:#fff;
+    font-size:11px;
+    font-weight:600;
+    color:var(--text);
   }
 
   .panel-title .count{
     font-family:'IBM Plex Mono', monospace;
-    font-size:13px;
-    color:#fff;
+    font-size:11px;
+    color:var(--blue);
     font-weight:700;
-    background:rgba(255,255,255,0.15);
-    padding:1px 8px;
   }
 
   table{
     width:100%;
     border-collapse:collapse;
-    font-size:12.5px;
+    font-size:11.5px;
+    table-layout:fixed;
   }
 
   thead th{
     text-align:left;
-    padding:8px 14px;
-    background:#dde4ec;
-    color:var(--navy-dark);
-    font-weight:700;
-    font-size:10.5px;
-    letter-spacing:0.06em;
-    text-transform:uppercase;
+    padding:5px 8px;
+    background:var(--head-bg);
+    color:var(--muted);
+    font-weight:600;
+    font-size:10px;
     border:1px solid var(--grid);
-  }
-
-  thead th.col-tiempo{
-    border-left:2px solid var(--divider);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
   }
 
   tbody td{
-    padding:7px 14px;
+    padding:4px 8px;
     border:1px solid var(--grid);
     white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
     font-family:'IBM Plex Mono', monospace;
-    font-size:12.5px;
+    font-size:11px;
   }
 
-  tbody td.col-tiempo{
-    border-left:2px solid var(--divider);
-  }
+  tbody tr:nth-child(even){ background:#fafbfc; }
+  tbody tr:hover{ background:#eef6fc; }
 
-  tbody tr:nth-child(even){ background:#f7f8fa; }
-  tbody tr:hover{ background:#eaf0f6; }
+  tbody tr.row-highlight{ background:var(--yellow-bg) !important; }
+  tbody tr.row-highlight:hover{ background:#f9e9b8 !important; }
 
   .pill{
     display:inline-block;
-    padding:1px 8px;
+    padding:1px 6px;
     font-family:'IBM Plex Mono', monospace;
-    font-size:12px;
+    font-size:10.5px;
     font-weight:700;
-    border:1px solid currentColor;
+    border-radius:3px;
   }
 
   .pill-red{ background:var(--red-bg); color:var(--red); }
@@ -215,28 +208,60 @@
   .pill-green{ background:var(--green-bg); color:var(--green); }
 
   .badge{
-    display:inline-block;
-    padding:2px 8px;
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
     font-size:10.5px;
-    font-weight:700;
-    letter-spacing:0.03em;
-    text-transform:uppercase;
-    background:#e7eaee;
+    font-weight:600;
     color:var(--muted);
-    border:1px solid #c7ccd4;
   }
-  .badge-descarga{ background:var(--green-bg); color:var(--green); border-color:var(--green); }
-  .badge-calle{ background:#e3ecf5; color:var(--navy); border-color:var(--navy); }
-  .badge-embarque{ background:var(--yellow-bg); color:var(--yellow); border-color:var(--yellow); }
-  .badge-movimiento{ background:#e9e4f5; color:#5b3fa0; border-color:#5b3fa0; }
-  .badge-revisar{ background:var(--red-bg); color:var(--red); border-color:var(--red); }
+  .badge::before{
+    content:'';
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:currentColor;
+    flex-shrink:0;
+  }
+  .badge-descarga{ color:var(--green); }
+  .badge-calle{ color:var(--blue); }
+  .badge-embarque{ color:var(--yellow); }
+  .badge-movimiento{ color:#6b3fa0; }
+  .badge-revisar{ color:var(--red); }
+
+  .flag{
+    display:inline-block;
+    margin-left:5px;
+    padding:0 5px;
+    font-size:9px;
+    font-weight:700;
+    color:#8a5b00;
+    background:#ffe9a8;
+    border-radius:2px;
+    vertical-align:middle;
+  }
+
+  .toggle-btn{
+    display:block;
+    width:100%;
+    padding:6px;
+    background:var(--head-bg);
+    border:none;
+    border-top:1px solid var(--border);
+    color:var(--blue);
+    font-family:'Segoe UI', 'Inter', sans-serif;
+    font-size:11px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .toggle-btn:hover{ background:#eef6fc; }
 
   .empty-state, .error-state{
-    padding:32px 20px;
+    padding:20px;
     text-align:center;
     color:var(--muted);
     font-family:'IBM Plex Mono', monospace;
-    font-size:12.5px;
+    font-size:11.5px;
   }
   .error-state{ color:var(--red); }
 
@@ -244,12 +269,10 @@
 
   footer{
     text-align:center;
-    padding:14px;
+    padding:10px;
     color:var(--muted);
     font-family:'IBM Plex Mono', monospace;
-    font-size:10.5px;
-    letter-spacing:0.04em;
-    text-transform:uppercase;
+    font-size:9.5px;
   }
 </style>
 </head>
@@ -271,9 +294,9 @@
 </header>
 
 <main>
-  <div class="panel full-width">
+  <div class="panel">
     <div class="panel-title">
-      <h2>Movimientos y unidades en patio</h2>
+      <h2>Unidades desconectadas en patio</h2>
       <span class="count" id="countGeneral">—</span>
     </div>
     <div id="tableGeneral"><div class="empty-state">cargando…</div></div>
@@ -285,10 +308,8 @@
       <span class="count" id="countSinConexion">—</span>
     </div>
     <div id="tableSinConexion"><div class="empty-state">cargando…</div></div>
-  </div>
-
-  <div class="panel">
-    <div class="panel-title">
+    <div style="border-top:1px solid var(--border);"></div>
+    <div class="panel-title" style="border-top:1px solid var(--border);">
       <h2>Unidades desconectadas para embarque</h2>
       <span class="count" id="countEmbarque">—</span>
     </div>
@@ -316,6 +337,20 @@
   const statusDot = document.getElementById('statusDot');
   const statusText = document.getElementById('statusText');
   const opClock = document.getElementById('opClock');
+
+  let expandedGeneral = false;
+  let ultimasFilas = [];
+  const LIMIT_GENERAL = 8;
+
+  function esDestacado(remarks){
+    const txt = String(remarks ?? '').toUpperCase();
+    return /\bUSDA\b/.test(txt) || /\bAC\b/.test(txt);
+  }
+
+  function toggleGeneral(){
+    expandedGeneral = !expandedGeneral;
+    renderGeneral(ultimasFilas);
+  }
 
   // ---------- Utilidades de parseo (traducidas de la query M) ----------
 
@@ -522,11 +557,20 @@
 
     if(data.length === 0){ container.innerHTML = '<div class="empty-state">sin registros</div>'; return; }
 
-    let html = '<table><thead><tr><th>Contenedor</th><th>Instancia</th><th>Posición</th><th>Nave</th><th class="col-tiempo">Tiempo</th></tr></thead><tbody>';
-    data.sort((a,b)=> (b.TiempoMin??0) - (a.TiempoMin??0)).forEach(r => {
-      html += `<tr><td>${esc(r.Contenedor)}</td><td>${badgeInstancia(r.Instancia)}</td><td>${esc(r.Posicion)}</td><td>${esc(r.Nave)}</td><td class="col-tiempo">${pillTiempo(r.Tiempo, r.TiempoMin)}</td></tr>`;
+    const sorted = data.sort((a,b)=> (b.TiempoMin??0) - (a.TiempoMin??0));
+    const toShow = expandedGeneral ? sorted : sorted.slice(0, LIMIT_GENERAL);
+
+    let html = '<table><thead><tr><th style="width:20%">Contenedor</th><th style="width:22%">Instancia</th><th style="width:20%">Posición</th><th style="width:23%">Nave</th><th style="width:15%">Tiempo</th></tr></thead><tbody>';
+    toShow.forEach(r => {
+      const destacado = esDestacado(r.Remarks);
+      html += `<tr class="${destacado ? 'row-highlight' : ''}"><td>${esc(r.Contenedor)}</td><td>${badgeInstancia(r.Instancia)}${destacado ? '<span class="flag">USDA/AC</span>' : ''}</td><td>${esc(r.Posicion)}</td><td>${esc(r.Nave)}</td><td>${pillTiempo(r.Tiempo, r.TiempoMin)}</td></tr>`;
     });
     html += '</tbody></table>';
+
+    if(sorted.length > LIMIT_GENERAL){
+      html += `<button class="toggle-btn" onclick="toggleGeneral()">${expandedGeneral ? 'Mostrar menos' : `Ver todas (${sorted.length})`}</button>`;
+    }
+
     container.innerHTML = html;
   }
 
@@ -537,9 +581,10 @@
 
     if(data.length === 0){ container.innerHTML = '<div class="empty-state">sin unidades a bordo sin conexión</div>'; return; }
 
-    let html = '<table><thead><tr><th>Contenedor</th><th>Nave</th><th class="col-tiempo">Tiempo</th><th>Posición</th></tr></thead><tbody>';
+    let html = '<table><thead><tr><th style="width:28%">Contenedor</th><th style="width:32%">Nave</th><th style="width:20%">Tiempo</th><th style="width:20%">Posición</th></tr></thead><tbody>';
     data.sort((a,b)=> (b.TiempoMin??0) - (a.TiempoMin??0)).forEach(r => {
-      html += `<tr><td>${esc(r.Contenedor)}</td><td>${esc(r.Nave)}</td><td class="col-tiempo">${pillTiempo(r.Tiempo, r.TiempoMin)}</td><td>${esc(r.Posicion)}</td></tr>`;
+      const destacado = esDestacado(r.Remarks);
+      html += `<tr class="${destacado ? 'row-highlight' : ''}"><td>${esc(r.Contenedor)}${destacado ? '<span class="flag">USDA/AC</span>' : ''}</td><td>${esc(r.Nave)}</td><td>${pillTiempo(r.Tiempo, r.TiempoMin)}</td><td>${esc(r.Posicion)}</td></tr>`;
     });
     html += '</tbody></table>';
     container.innerHTML = html;
@@ -552,9 +597,10 @@
 
     if(data.length === 0){ container.innerHTML = '<div class="empty-state">sin unidades desconectadas para embarque</div>'; return; }
 
-    let html = '<table><thead><tr><th>Contenedor</th><th>Nave</th><th class="col-tiempo">Tiempo</th></tr></thead><tbody>';
+    let html = '<table><thead><tr><th style="width:40%">Contenedor</th><th style="width:35%">Nave</th><th style="width:25%">Tiempo</th></tr></thead><tbody>';
     data.sort((a,b)=> (b.TiempoMin??0) - (a.TiempoMin??0)).forEach(r => {
-      html += `<tr><td>${esc(r.Contenedor)}</td><td>${esc(r.Nave)}</td><td class="col-tiempo">${pillTiempo(r.Tiempo, r.TiempoMin)}</td></tr>`;
+      const destacado = esDestacado(r.Remarks);
+      html += `<tr class="${destacado ? 'row-highlight' : ''}"><td>${esc(r.Contenedor)}${destacado ? '<span class="flag">USDA/AC</span>' : ''}</td><td>${esc(r.Nave)}</td><td>${pillTiempo(r.Tiempo, r.TiempoMin)}</td></tr>`;
     });
     html += '</tbody></table>';
     container.innerHTML = html;
@@ -568,6 +614,7 @@
       const text = await res.text();
 
       const rows = procesar(text);
+      ultimasFilas = rows;
       renderGeneral(rows);
       renderSinConexion(rows);
       renderEmbarque(rows);
