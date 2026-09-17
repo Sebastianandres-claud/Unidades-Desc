@@ -269,12 +269,43 @@
 
   .kpi-strip{
     display:grid;
-    grid-template-columns:repeat(3, 1fr);
+    grid-template-columns:repeat(4, 1fr);
     gap:12px;
     max-width:1400px;
     margin:0 auto;
     padding:12px 12px 0;
   }
+
+  .tabs{
+    display:flex;
+    gap:2px;
+    padding:0 20px;
+    background:var(--panel);
+    border-bottom:1px solid var(--border);
+  }
+
+  .tab-btn{
+    padding:9px 16px;
+    border:none;
+    background:transparent;
+    font-family:'Segoe UI', 'Inter', sans-serif;
+    font-size:12px;
+    font-weight:600;
+    color:var(--muted);
+    cursor:pointer;
+    border-bottom:2px solid transparent;
+    margin-bottom:-1px;
+  }
+
+  .tab-btn:hover{ color:var(--text); }
+
+  .tab-btn.active{
+    color:var(--blue);
+    border-bottom:2px solid var(--blue);
+  }
+
+  .page{ display:none; }
+  .page.active{ display:block; }
 
   .kpi-card{
     background:var(--panel);
@@ -333,10 +364,21 @@
   </div>
 </header>
 
+<div class="tabs">
+  <button class="tab-btn active" data-page="page-unidades" onclick="mostrarPagina('page-unidades', this)">Unidades Desc</button>
+  <button class="tab-btn" data-page="page-planificacion" onclick="mostrarPagina('page-planificacion', this)">Planificación Proyectada</button>
+</div>
+
+<div id="page-unidades" class="page active">
+
 <div class="kpi-strip">
-  <div class="kpi-card alert" id="kpiPatioCard">
-    <div class="kpi-num" id="kpiPatio">—</div>
-    <div class="kpi-label">Desconectadas en patio</div>
+  <div class="kpi-card" id="kpiCalleCard">
+    <div class="kpi-num" id="kpiCalle">—</div>
+    <div class="kpi-label">Calle</div>
+  </div>
+  <div class="kpi-card alert" id="kpiMovimientoCard">
+    <div class="kpi-num" id="kpiMovimiento">—</div>
+    <div class="kpi-label">Movimiento</div>
   </div>
   <div class="kpi-card warn" id="kpiSinConexionCard">
     <div class="kpi-num" id="kpiSinConexion">—</div>
@@ -370,16 +412,22 @@
     </div>
     <div id="tableEmbarque"><div class="empty-state">cargando…</div></div>
   </div>
-
-  <div class="panel full-width">
-    <div class="panel-title">
-      <h2>Planilla Excel</h2>
-    </div>
-    <div style="padding:16px; display:flex; justify-content:center;">
-      <iframe width="900" height="520" frameborder="0" scrolling="no" src="https://tpsv.sharepoint.com/sites/TPSVPlanificacionNaviera/_layouts/15/Doc.aspx?sourcedoc={621b809b-e4fd-4531-9d66-5df414ca4610}&action=embedview&wdAllowInteractivity=False&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True&wdInConfigurator=True" style="width:100%; max-width:900px; border:1px solid var(--border);"></iframe>
-    </div>
-  </div>
 </main>
+
+</div>
+
+<div id="page-planificacion" class="page">
+  <main style="grid-template-columns:1fr;">
+    <div class="panel">
+      <div class="panel-title">
+        <h2>Planificación Proyectada</h2>
+      </div>
+      <div style="padding:16px; display:flex; justify-content:center;">
+        <iframe width="900" height="520" frameborder="0" scrolling="no" src="https://tpsv.sharepoint.com/sites/TPSVPlanificacionNaviera/_layouts/15/Doc.aspx?sourcedoc={621b809b-e4fd-4531-9d66-5df414ca4610}&action=embedview&wdAllowInteractivity=False&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True&wdInConfigurator=True" style="width:100%; max-width:900px; border:1px solid var(--border);"></iframe>
+      </div>
+    </div>
+  </main>
+</div>
 
 <footer>actualiza cada 10 segundos · fuente: DESCONECTADOSBI.txt</footer>
 
@@ -388,6 +436,13 @@
   const REFRESH_MS = 10000;
   const CODIGOS_EXCLUIDOS = ["TIP", "TQ", "OUT"];
   const DIAS = { LU:0, MA:1, MI:2, JU:3, VI:4, SA:5, DO:6 };
+
+  function mostrarPagina(pageId, btn){
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    btn.classList.add('active');
+  }
 
   const statusDot = document.getElementById('statusDot');
   const statusText = document.getElementById('statusText');
@@ -609,7 +664,10 @@
     const container = document.getElementById('tableGeneral');
     const data = rows.filter(r => !['EMBARCADO SIN CONEX','EMBARCADO SIN CONEXION (revisar)','EMBARQUE'].includes(r.Instancia));
     document.getElementById('countGeneral').textContent = data.length;
-    document.getElementById('kpiPatio').textContent = data.length;
+    const calleCount = data.filter(r => r.Instancia === 'CALLE' || r.Instancia === 'CALLE REVISAR').length;
+    const movimientoCount = data.filter(r => r.Instancia === 'MOVIMIENTO').length;
+    document.getElementById('kpiCalle').textContent = calleCount;
+    document.getElementById('kpiMovimiento').textContent = movimientoCount;
 
     if(data.length === 0){ container.innerHTML = '<div class="empty-state">sin registros</div>'; return; }
 
