@@ -269,11 +269,57 @@
 
   .kpi-strip{
     display:grid;
-    grid-template-columns:repeat(4, 1fr);
+    grid-template-columns:repeat(auto-fit, minmax(170px, 1fr));
     gap:12px;
     max-width:1400px;
     margin:0 auto;
     padding:12px 12px 0;
+  }
+
+  .kpi-card{
+    background:var(--panel);
+    border:2px solid var(--border);
+    border-radius:6px;
+    padding:10px 12px 12px;
+    text-align:center;
+    box-shadow:0 1px 2px rgba(16,24,40,0.04), 0 1px 6px rgba(16,24,40,0.04);
+  }
+
+  .kpi-card.c-blue{ border-color:var(--blue); }
+  .kpi-card.c-red{ border-color:var(--red); }
+  .kpi-card.c-amber{ border-color:var(--yellow); }
+  .kpi-card.c-green{ border-color:var(--green); }
+  .kpi-card.c-dark{ border-color:var(--text); }
+
+  .kpi-title{
+    font-size:12px;
+    font-weight:700;
+    color:var(--text);
+    margin:0 0 8px;
+  }
+
+  .kpi-metrics{
+    display:flex;
+    justify-content:space-around;
+    gap:6px;
+  }
+
+  .kpi-metric{ flex:1; }
+
+  .kpi-metric-label{
+    font-size:9.5px;
+    color:var(--muted);
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:0.02em;
+    margin-bottom:2px;
+  }
+
+  .kpi-metric-value{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:19px;
+    font-weight:700;
+    color:var(--text);
   }
 
   .tabs{
@@ -306,35 +352,6 @@
 
   .page{ display:none; }
   .page.active{ display:block; }
-
-  .kpi-card{
-    background:var(--panel);
-    border:1px solid var(--border);
-    border-left:4px solid var(--blue);
-    border-radius:4px;
-    padding:10px 14px;
-    box-shadow:0 1px 2px rgba(16,24,40,0.04), 0 1px 6px rgba(16,24,40,0.04);
-  }
-
-  .kpi-card.alert{ border-left-color:var(--red); }
-  .kpi-card.warn{ border-left-color:var(--yellow); }
-
-  .kpi-card .kpi-num{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:24px;
-    font-weight:700;
-    color:var(--text);
-    line-height:1;
-  }
-
-  .kpi-card .kpi-label{
-    margin-top:4px;
-    font-size:10.5px;
-    color:var(--muted);
-    font-weight:600;
-    text-transform:uppercase;
-    letter-spacing:0.04em;
-  }
 
   .full-width{ grid-column:1 / -1; }
 
@@ -372,21 +389,39 @@
 <div id="page-unidades" class="page active">
 
 <div class="kpi-strip">
-  <div class="kpi-card" id="kpiCalleCard">
-    <div class="kpi-num" id="kpiCalle">—</div>
-    <div class="kpi-label">Calle</div>
+  <div class="kpi-card c-blue" id="kpiCalleCard">
+    <p class="kpi-title">Calle</p>
+    <div class="kpi-metrics">
+      <div class="kpi-metric"><div class="kpi-metric-label">Contenedores</div><div class="kpi-metric-value" id="kpiCalleCount">—</div></div>
+      <div class="kpi-metric"><div class="kpi-metric-label">Promedio Mins</div><div class="kpi-metric-value" id="kpiCalleProm">—</div></div>
+    </div>
   </div>
-  <div class="kpi-card alert" id="kpiMovimientoCard">
-    <div class="kpi-num" id="kpiMovimiento">—</div>
-    <div class="kpi-label">Movimiento</div>
+  <div class="kpi-card c-red" id="kpiMovimientoCard">
+    <p class="kpi-title">Movimiento</p>
+    <div class="kpi-metrics">
+      <div class="kpi-metric"><div class="kpi-metric-label">Contenedores</div><div class="kpi-metric-value" id="kpiMovimientoCount">—</div></div>
+      <div class="kpi-metric"><div class="kpi-metric-label">Promedio Mins</div><div class="kpi-metric-value" id="kpiMovimientoProm">—</div></div>
+    </div>
   </div>
-  <div class="kpi-card warn" id="kpiSinConexionCard">
-    <div class="kpi-num" id="kpiSinConexion">—</div>
-    <div class="kpi-label">A bordo sin conexión</div>
+  <div class="kpi-card c-amber" id="kpiSinConexionCard">
+    <p class="kpi-title">A bordo sin conexión</p>
+    <div class="kpi-metrics">
+      <div class="kpi-metric"><div class="kpi-metric-label">Contenedores</div><div class="kpi-metric-value" id="kpiSinConexionCount">—</div></div>
+      <div class="kpi-metric"><div class="kpi-metric-label">Promedio Mins</div><div class="kpi-metric-value" id="kpiSinConexionProm">—</div></div>
+    </div>
   </div>
-  <div class="kpi-card" id="kpiEmbarqueCard">
-    <div class="kpi-num" id="kpiEmbarque">—</div>
-    <div class="kpi-label">Para embarque</div>
+  <div class="kpi-card c-green" id="kpiEmbarqueCard">
+    <p class="kpi-title">Para embarque</p>
+    <div class="kpi-metrics">
+      <div class="kpi-metric"><div class="kpi-metric-label">Contenedores</div><div class="kpi-metric-value" id="kpiEmbarqueCount">—</div></div>
+      <div class="kpi-metric"><div class="kpi-metric-label">Promedio Mins</div><div class="kpi-metric-value" id="kpiEmbarqueProm">—</div></div>
+    </div>
+  </div>
+  <div class="kpi-card c-dark" id="kpiTotalCard">
+    <p class="kpi-title">Total General</p>
+    <div class="kpi-metrics">
+      <div class="kpi-metric"><div class="kpi-metric-label">Unidades</div><div class="kpi-metric-value" id="kpiTotalCount">—</div></div>
+    </div>
   </div>
 </div>
 
@@ -455,6 +490,12 @@
   function esDestacado(remarks){
     const txt = String(remarks ?? '').toUpperCase();
     return /\bUSDA\b/.test(txt) || /\bAC\b/.test(txt);
+  }
+
+  function promedio(arr){
+    if(arr.length === 0) return '0.0';
+    const suma = arr.reduce((acc,r) => acc + (r.TiempoMin ?? 0), 0);
+    return (suma/arr.length).toFixed(1);
   }
 
   function toggleGeneral(){
@@ -664,10 +705,13 @@
     const container = document.getElementById('tableGeneral');
     const data = rows.filter(r => !['EMBARCADO SIN CONEX','EMBARCADO SIN CONEXION (revisar)','EMBARQUE'].includes(r.Instancia));
     document.getElementById('countGeneral').textContent = data.length;
-    const calleCount = data.filter(r => r.Instancia === 'CALLE' || r.Instancia === 'CALLE REVISAR').length;
-    const movimientoCount = data.filter(r => r.Instancia === 'MOVIMIENTO').length;
-    document.getElementById('kpiCalle').textContent = calleCount;
-    document.getElementById('kpiMovimiento').textContent = movimientoCount;
+
+    const calleRows = data.filter(r => r.Instancia === 'CALLE' || r.Instancia === 'CALLE REVISAR');
+    const movimientoRows = data.filter(r => r.Instancia === 'MOVIMIENTO');
+    document.getElementById('kpiCalleCount').textContent = calleRows.length;
+    document.getElementById('kpiCalleProm').textContent = promedio(calleRows);
+    document.getElementById('kpiMovimientoCount').textContent = movimientoRows.length;
+    document.getElementById('kpiMovimientoProm').textContent = promedio(movimientoRows);
 
     if(data.length === 0){ container.innerHTML = '<div class="empty-state">sin registros</div>'; return; }
 
@@ -692,7 +736,8 @@
     const container = document.getElementById('tableSinConexion');
     const data = rows.filter(r => ['EMBARCADO SIN CONEX','EMBARCADO SIN CONEXION (revisar)'].includes(r.Instancia));
     document.getElementById('countSinConexion').textContent = data.length;
-    document.getElementById('kpiSinConexion').textContent = data.length;
+    document.getElementById('kpiSinConexionCount').textContent = data.length;
+    document.getElementById('kpiSinConexionProm').textContent = promedio(data);
 
     if(data.length === 0){ container.innerHTML = '<div class="empty-state">sin unidades a bordo sin conexión</div>'; return; }
 
@@ -709,7 +754,8 @@
     const container = document.getElementById('tableEmbarque');
     const data = rows.filter(r => r.Instancia === 'EMBARQUE');
     document.getElementById('countEmbarque').textContent = data.length;
-    document.getElementById('kpiEmbarque').textContent = data.length;
+    document.getElementById('kpiEmbarqueCount').textContent = data.length;
+    document.getElementById('kpiEmbarqueProm').textContent = promedio(data);
 
     if(data.length === 0){ container.innerHTML = '<div class="empty-state">sin unidades desconectadas para embarque</div>'; return; }
 
@@ -731,6 +777,7 @@
 
       const rows = procesar(text);
       ultimasFilas = rows;
+      document.getElementById('kpiTotalCount').textContent = rows.length;
       renderGeneral(rows);
       renderSinConexion(rows);
       renderEmbarque(rows);
