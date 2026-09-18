@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Operación — Unidades Desconectadas</title>
+<title>Unidades Desconectadas - Control Operacional</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
 
@@ -109,7 +109,7 @@
   main{
     padding:12px;
     display:grid;
-    grid-template-columns:1.2fr 1fr;
+    grid-template-columns:repeat(3, 1fr);
     gap:12px;
     align-items:start;
     max-width:1400px;
@@ -389,11 +389,11 @@
     <div>
       <p class="eyebrow">Control Operacional</p>
       <h1>Unidades Desconectadas</h1>
-      <div class="clock" id="opClock">—</div>
+      <div class="clock" id="opClock">Cargando...</div>
     </div>
   </div>
   <div class="status">
-    <button class="print-btn" onclick="window.print()">🖨️ Exportar / Imprimir</button>
+    <button class="print-btn" onclick="exportarExcel()">Exportar Excel</button>
     <span class="dot" id="statusDot"></span>
     <span id="statusText">conectando</span>
   </div>
@@ -410,35 +410,35 @@
   <div class="kpi-card c-blue" id="kpiCalleCard">
     <p class="kpi-title">Calle</p>
     <div class="kpi-metrics">
-      <div class="kpi-metric"><div class="kpi-metric-label">Contenedores</div><div class="kpi-metric-value" id="kpiCalleCount">—</div></div>
-      <div class="kpi-metric"><div class="kpi-metric-label">Promedio Mins</div><div class="kpi-metric-value" id="kpiCalleProm">—</div></div>
+      <div class="kpi-metric"><div class="kpi-metric-label">Contenedores</div><div class="kpi-metric-value" id="kpiCalleCount">0</div></div>
+      <div class="kpi-metric"><div class="kpi-metric-label">Promedio Mins</div><div class="kpi-metric-value" id="kpiCalleProm">0.0</div></div>
     </div>
   </div>
   <div class="kpi-card c-red" id="kpiMovimientoCard">
     <p class="kpi-title">Movimiento</p>
     <div class="kpi-metrics">
-      <div class="kpi-metric"><div class="kpi-metric-label">Contenedores</div><div class="kpi-metric-value" id="kpiMovimientoCount">—</div></div>
-      <div class="kpi-metric"><div class="kpi-metric-label">Promedio Mins</div><div class="kpi-metric-value" id="kpiMovimientoProm">—</div></div>
+      <div class="kpi-metric"><div class="kpi-metric-label">Contenedores</div><div class="kpi-metric-value" id="kpiMovimientoCount">0</div></div>
+      <div class="kpi-metric"><div class="kpi-metric-label">Promedio Mins</div><div class="kpi-metric-value" id="kpiMovimientoProm">0.0</div></div>
     </div>
   </div>
   <div class="kpi-card c-amber" id="kpiSinConexionCard">
     <p class="kpi-title">A bordo sin conexión</p>
     <div class="kpi-metrics">
-      <div class="kpi-metric"><div class="kpi-metric-label">Contenedores</div><div class="kpi-metric-value" id="kpiSinConexionCount">—</div></div>
-      <div class="kpi-metric"><div class="kpi-metric-label">Promedio Mins</div><div class="kpi-metric-value" id="kpiSinConexionProm">—</div></div>
+      <div class="kpi-metric"><div class="kpi-metric-label">Contenedores</div><div class="kpi-metric-value" id="kpiSinConexionCount">0</div></div>
+      <div class="kpi-metric"><div class="kpi-metric-label">Promedio Mins</div><div class="kpi-metric-value" id="kpiSinConexionProm">0.0</div></div>
     </div>
   </div>
   <div class="kpi-card c-green" id="kpiEmbarqueCard">
     <p class="kpi-title">Para embarque</p>
     <div class="kpi-metrics">
-      <div class="kpi-metric"><div class="kpi-metric-label">Contenedores</div><div class="kpi-metric-value" id="kpiEmbarqueCount">—</div></div>
-      <div class="kpi-metric"><div class="kpi-metric-label">Promedio Mins</div><div class="kpi-metric-value" id="kpiEmbarqueProm">—</div></div>
+      <div class="kpi-metric"><div class="kpi-metric-label">Contenedores</div><div class="kpi-metric-value" id="kpiEmbarqueCount">0</div></div>
+      <div class="kpi-metric"><div class="kpi-metric-label">Promedio Mins</div><div class="kpi-metric-value" id="kpiEmbarqueProm">0.0</div></div>
     </div>
   </div>
   <div class="kpi-card c-dark" id="kpiTotalCard">
     <p class="kpi-title">Total General</p>
     <div class="kpi-metrics">
-      <div class="kpi-metric"><div class="kpi-metric-label">Unidades</div><div class="kpi-metric-value" id="kpiTotalCount">—</div></div>
+      <div class="kpi-metric"><div class="kpi-metric-label">Unidades</div><div class="kpi-metric-value" id="kpiTotalCount">0</div></div>
     </div>
   </div>
 </div>
@@ -447,7 +447,7 @@
   <div class="panel">
     <div class="panel-title">
       <h2>Unidades desconectadas en patio</h2>
-      <span class="count" id="countGeneral">—</span>
+      <span class="count" id="countGeneral">0</span>
     </div>
     <div id="tableGeneral"><div class="empty-state">cargando…</div></div>
   </div>
@@ -455,13 +455,15 @@
   <div class="panel">
     <div class="panel-title">
       <h2>Unidades a bordo sin conexión</h2>
-      <span class="count" id="countSinConexion">—</span>
+      <span class="count" id="countSinConexion">0</span>
     </div>
     <div id="tableSinConexion"><div class="empty-state">cargando…</div></div>
-    <div style="border-top:1px solid var(--border);"></div>
-    <div class="panel-title" style="border-top:1px solid var(--border);">
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">
       <h2>Unidades desconectadas para embarque</h2>
-      <span class="count" id="countEmbarque">—</span>
+      <span class="count" id="countEmbarque">0</span>
     </div>
     <div id="tableEmbarque"><div class="empty-state">cargando…</div></div>
   </div>
@@ -482,13 +484,42 @@
   </main>
 </div>
 
-<footer>actualiza cada 10 segundos · fuente: DESCONECTADOSBI.txt</footer>
 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
   const RAW_URL = "https://github-live-proxy.samiranda.workers.dev";
   const REFRESH_MS = 10000;
   const CODIGOS_EXCLUIDOS = ["TIP", "TQ", "OUT"];
   const DIAS = { LU:0, MA:1, MI:2, JU:3, VI:4, SA:5, DO:6 };
+
+  function exportarExcel(){
+    if(!ultimasFilas || ultimasFilas.length === 0){
+      alert('Todavía no hay datos cargados para exportar.');
+      return;
+    }
+
+    const datos = ultimasFilas.map(r => ({
+      'Contenedor': r.Contenedor,
+      'Instancia': r.Instancia,
+      'Posición': r.Posicion,
+      'Nave': r.Nave,
+      'Tiempo': r.Tiempo,
+      'Minutos': r.TiempoMin,
+      'Requiere Power': r.ReqsPower,
+      'Mov': r.Mov ? 'Sí' : 'No',
+      'Destacado (USDA/AC)': esDestacado(r.Remarks) ? 'Sí' : 'No',
+      'Remarks': r.Remarks
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(datos);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Unidades Desconectadas');
+
+    const ahora = new Date();
+    const sello = ahora.toISOString().slice(0,19).replace(/[:T]/g,'-');
+    XLSX.writeFile(wb, `unidades_desconectadas_${sello}.xlsx`);
+  }
 
   function mostrarPagina(pageId, btn){
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -701,7 +732,7 @@
   // ---------- Render ----------
 
   function pillTiempo(tiempo, minutos){
-    if(!tiempo) return '<span class="badge">—</span>';
+    if(!tiempo) return '<span class="badge">N/A</span>';
     let cls = 'pill-yellow';
     if(minutos >= 60) cls = 'pill-red';
     else if(minutos < 10) cls = 'pill-green';
