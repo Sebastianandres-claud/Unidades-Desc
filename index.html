@@ -228,8 +228,10 @@
     align-items:center;
     gap:4px;
     font-size:10.5px;
-    font-weight:600;
+    font-weight:700;
     color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:0.03em;
   }
   .badge::before{
     content:'';
@@ -241,8 +243,8 @@
   }
   .badge-descarga{ color:var(--green); }
   .badge-calle{ color:var(--blue); }
-  .badge-embarque{ color:var(--yellow); }
-  .badge-movimiento{ color:#6b3fa0; }
+  .badge-embarque{ color:var(--green); }
+  .badge-movimiento{ color:var(--red); }
   .badge-revisar{ color:var(--red); }
 
   .flag{
@@ -259,6 +261,33 @@
 
   .mov-si{ color:var(--green); font-weight:700; }
   .mov-no{ color:var(--muted); }
+
+  .time-cell{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:700;
+    text-align:center;
+  }
+  .time-red{ background:var(--red); color:#fff; }
+  .time-yellow{ background:var(--yellow); color:#3a2c00; }
+  .time-green{ background:var(--green); color:#fff; }
+  .time-neutral{ background:var(--head-bg); color:var(--muted); }
+
+  @keyframes flashUpdate{
+    0%{ background-color:#fff3b0; }
+    100%{ background-color:transparent; }
+  }
+  tr.flash-update{ animation:flashUpdate 1.6s ease-out; }
+
+  th.sortable{
+    cursor:pointer;
+    user-select:none;
+  }
+  th.sortable:hover{ background:#eef1f3; }
+  th.sortable .sort-arrow{
+    font-size:8px;
+    margin-left:3px;
+    color:var(--blue);
+  }
 
   .toggle-btn{
     display:block;
@@ -283,6 +312,14 @@
     font-size:11px;
   }
   .error-state{ color:var(--red); }
+
+  @keyframes dataPulse{
+    0%{ box-shadow:0 0 0 0 rgba(15,108,189,0.45); }
+    100%{ box-shadow:0 0 0 16px rgba(15,108,189,0); }
+  }
+  .kpi-strip.data-updated .kpi-card{
+    animation:dataPulse 0.9s ease-out;
+  }
 
   .kpi-strip{
     display:grid;
@@ -538,6 +575,37 @@
   let ultimasFilas = [];
   const LIMIT_GENERAL = 8;
 
+  let prevGeneral = {};
+  let prevSinConexion = {};
+  let prevEmbarque = {};
+
+  let sortDescGeneral = true;
+  let sortDescSinConexion = true;
+  let sortDescEmbarque = true;
+
+  function toggleSortGeneral(){
+    sortDescGeneral = !sortDescGeneral;
+    document.getElementById('sortArrowGeneral').textContent = sortDescGeneral ? '▼' : '▲';
+    renderGeneral(ultimasFilas);
+  }
+  function toggleSortSinConexion(){
+    sortDescSinConexion = !sortDescSinConexion;
+    document.getElementById('sortArrowSinConexion').textContent = sortDescSinConexion ? '▼' : '▲';
+    renderSinConexion(ultimasFilas);
+  }
+  function toggleSortEmbarque(){
+    sortDescEmbarque = !sortDescEmbarque;
+    document.getElementById('sortArrowEmbarque').textContent = sortDescEmbarque ? '▼' : '▲';
+    renderEmbarque(ultimasFilas);
+  }
+
+  function claseTiempo(minutos){
+    if(minutos === null || minutos === undefined) return 'time-neutral';
+    if(minutos >= 60) return 'time-red';
+    if(minutos < 10) return 'time-green';
+    return 'time-yellow';
+  }
+
   function etiquetaDestacado(remarks){
     const txt = String(remarks ?? '').toUpperCase();
     const esUSDA = /\bUSDA\b/.test(txt);
@@ -739,14 +807,6 @@
 
   // ---------- Render ----------
 
-  function pillTiempo(tiempo, minutos){
-    if(!tiempo) return '<span class="badge">N/A</span>';
-    let cls = 'pill-yellow';
-    if(minutos >= 60) cls = 'pill-red';
-    else if(minutos < 10) cls = 'pill-green';
-    return `<span class="pill ${cls}">${tiempo}</span>`;
-  }
-
   function badgeInstancia(inst){
     const map = {
       'DESCARGA':'badge-descarga', 'CALLE':'badge-calle', 'CALLE REVISAR':'badge-revisar',
@@ -775,15 +835,19 @@
 
     if(data.length === 0){ container.innerHTML = '<div class="empty-state">sin registros</div>'; return; }
 
-    const sorted = data.sort((a,b)=> (b.TiempoMin??0) - (a.TiempoMin??0));
+    const sorted = data.sort((a,b)=> sortDescGeneral ? (b.TiempoMin??-1) - (a.TiempoMin??-1) : (a.TiempoMin??-1) - (b.TiempoMin??-1));
     const toShow = expandedGeneral ? sorted : sorted.slice(0, LIMIT_GENERAL);
 
-    let html = '<table><thead><tr><th style="width:18%">Contenedor</th><th style="width:19%">Instancia</th><th style="width:17%">Posición</th><th style="width:19%">Nave</th><th style="width:12%">Tiempo</th><th style="width:9%">Mov</th></tr></thead><tbody>';
+    const nuevoPrev = {};
+    let html = `<table><thead><tr><th style="width:18%">Contenedor</th><th style="width:19%">Instancia</th><th style="width:17%">Posición</th><th style="width:17%">Nave</th><th style="width:14%" class="sortable" onclick="toggleSortGeneral()">Tiempo <span class="sort-arrow" id="sortArrowGeneral">${sortDescGeneral ? '▼' : '▲'}</span></th><th style="width:9%">Mov</th></tr></thead><tbody>`;
     toShow.forEach(r => {
       const etiqueta = etiquetaDestacado(r.Remarks);
-      html += `<tr class="${etiqueta ? 'row-highlight' : ''}"><td>${esc(r.Contenedor)}</td><td>${badgeInstancia(r.Instancia)}${etiqueta ? `<span class="flag">${etiqueta}</span>` : ''}</td><td>${esc(r.Posicion)}</td><td>${esc(r.Nave)}</td><td>${pillTiempo(r.Tiempo, r.TiempoMin)}</td><td class="${r.Mov ? 'mov-si' : 'mov-no'}">${r.Mov ? 'Sí' : 'No'}</td></tr>`;
+      const cambio = prevGeneral[r.Contenedor] !== undefined && prevGeneral[r.Contenedor] !== r.Instancia;
+      nuevoPrev[r.Contenedor] = r.Instancia;
+      html += `<tr class="${etiqueta ? 'row-highlight' : ''} ${cambio ? 'flash-update' : ''}"><td>${esc(r.Contenedor)}</td><td>${badgeInstancia(r.Instancia)}${etiqueta ? `<span class="flag">${etiqueta}</span>` : ''}</td><td>${esc(r.Posicion)}</td><td>${esc(r.Nave)}</td><td class="time-cell ${claseTiempo(r.TiempoMin)}">${r.Tiempo ?? 'N/A'}</td><td class="${r.Mov ? 'mov-si' : 'mov-no'}">${r.Mov ? 'Sí' : 'No'}</td></tr>`;
     });
     html += '</tbody></table>';
+    prevGeneral = nuevoPrev;
 
     if(sorted.length > LIMIT_GENERAL){
       html += `<button class="toggle-btn" onclick="toggleGeneral()">${expandedGeneral ? 'Mostrar menos' : `Ver todas (${sorted.length})`}</button>`;
@@ -801,12 +865,18 @@
 
     if(data.length === 0){ container.innerHTML = '<div class="empty-state">sin unidades a bordo sin conexión</div>'; return; }
 
-    let html = '<table><thead><tr><th style="width:28%">Contenedor</th><th style="width:32%">Nave</th><th style="width:20%">Tiempo</th><th style="width:20%">Posición</th></tr></thead><tbody>';
-    data.sort((a,b)=> (b.TiempoMin??0) - (a.TiempoMin??0)).forEach(r => {
+    const sorted = data.sort((a,b)=> sortDescSinConexion ? (b.TiempoMin??-1) - (a.TiempoMin??-1) : (a.TiempoMin??-1) - (b.TiempoMin??-1));
+
+    const nuevoPrev = {};
+    let html = `<table><thead><tr><th style="width:28%">Contenedor</th><th style="width:32%">Nave</th><th style="width:20%" class="sortable" onclick="toggleSortSinConexion()">Tiempo <span class="sort-arrow" id="sortArrowSinConexion">${sortDescSinConexion ? '▼' : '▲'}</span></th><th style="width:20%">Posición</th></tr></thead><tbody>`;
+    sorted.forEach(r => {
       const etiqueta = etiquetaDestacado(r.Remarks);
-      html += `<tr class="${etiqueta ? 'row-highlight' : ''}"><td>${esc(r.Contenedor)}${etiqueta ? `<span class="flag">${etiqueta}</span>` : ''}</td><td>${esc(r.Nave)}</td><td>${pillTiempo(r.Tiempo, r.TiempoMin)}</td><td>${esc(r.Posicion)}</td></tr>`;
+      const cambio = prevSinConexion[r.Contenedor] === undefined;
+      nuevoPrev[r.Contenedor] = true;
+      html += `<tr class="${etiqueta ? 'row-highlight' : ''} ${cambio ? 'flash-update' : ''}"><td>${esc(r.Contenedor)}${etiqueta ? `<span class="flag">${etiqueta}</span>` : ''}</td><td>${esc(r.Nave)}</td><td class="time-cell ${claseTiempo(r.TiempoMin)}">${r.Tiempo ?? 'N/A'}</td><td>${esc(r.Posicion)}</td></tr>`;
     });
     html += '</tbody></table>';
+    prevSinConexion = nuevoPrev;
     container.innerHTML = html;
   }
 
@@ -819,16 +889,26 @@
 
     if(data.length === 0){ container.innerHTML = '<div class="empty-state">sin unidades desconectadas para embarque</div>'; return; }
 
-    let html = '<table><thead><tr><th style="width:40%">Contenedor</th><th style="width:35%">Nave</th><th style="width:25%">Tiempo</th></tr></thead><tbody>';
-    data.sort((a,b)=> (b.TiempoMin??0) - (a.TiempoMin??0)).forEach(r => {
+    const sorted = data.sort((a,b)=> sortDescEmbarque ? (b.TiempoMin??-1) - (a.TiempoMin??-1) : (a.TiempoMin??-1) - (b.TiempoMin??-1));
+
+    const nuevoPrev = {};
+    let html = `<table><thead><tr><th style="width:40%">Contenedor</th><th style="width:35%">Nave</th><th style="width:25%" class="sortable" onclick="toggleSortEmbarque()">Tiempo <span class="sort-arrow" id="sortArrowEmbarque">${sortDescEmbarque ? '▼' : '▲'}</span></th></tr></thead><tbody>`;
+    sorted.forEach(r => {
       const etiqueta = etiquetaDestacado(r.Remarks);
-      html += `<tr class="${etiqueta ? 'row-highlight' : ''}"><td>${esc(r.Contenedor)}${etiqueta ? `<span class="flag">${etiqueta}</span>` : ''}</td><td>${esc(r.Nave)}</td><td>${pillTiempo(r.Tiempo, r.TiempoMin)}</td></tr>`;
+      const cambio = prevEmbarque[r.Contenedor] === undefined;
+      nuevoPrev[r.Contenedor] = true;
+      html += `<tr class="${etiqueta ? 'row-highlight' : ''} ${cambio ? 'flash-update' : ''}"><td>${esc(r.Contenedor)}${etiqueta ? `<span class="flag">${etiqueta}</span>` : ''}</td><td>${esc(r.Nave)}</td><td class="time-cell ${claseTiempo(r.TiempoMin)}">${r.Tiempo ?? 'N/A'}</td></tr>`;
     });
     html += '</tbody></table>';
+    prevEmbarque = nuevoPrev;
     container.innerHTML = html;
   }
 
+  let ultimaFechaReporte = null;
+
   async function fetchData(){
+    statusText.textContent = 'actualizando...';
+
     try{
       const url = `${RAW_URL}?t=${Date.now()}`;
       const res = await fetch(url, { cache: 'no-store' });
@@ -849,6 +929,14 @@
 
       if(fechaReporte){
         opClock.textContent = 'DATOS AL ' + fechaReporte.toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'2-digit'}) + ' ' + fechaReporte.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+
+        if(ultimaFechaReporte !== null && fechaReporte.getTime() !== ultimaFechaReporte.getTime()){
+          const strip = document.querySelector('.kpi-strip');
+          strip.classList.remove('data-updated');
+          void strip.offsetWidth;
+          strip.classList.add('data-updated');
+        }
+        ultimaFechaReporte = fechaReporte;
       } else {
         const lastModifiedHeader = res.headers.get('last-modified');
         const fileDate = lastModifiedHeader ? new Date(lastModifiedHeader) : null;
