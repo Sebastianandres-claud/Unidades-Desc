@@ -499,7 +499,9 @@
       return;
     }
 
-    const datos = ultimasFilas.map(r => ({
+    const filasOrdenadas = [...ultimasFilas].sort((a,b) => (b.TiempoMin ?? -1) - (a.TiempoMin ?? -1));
+
+    const datos = filasOrdenadas.map(r => ({
       'Contenedor': r.Contenedor,
       'Instancia': r.Instancia,
       'Posición': r.Posicion,
@@ -508,7 +510,7 @@
       'Minutos': r.TiempoMin,
       'Requiere Power': r.ReqsPower,
       'Mov': r.Mov ? 'Sí' : 'No',
-      'Destacado (USDA/AC)': esDestacado(r.Remarks) ? 'Sí' : 'No',
+      'Etiqueta': etiquetaDestacado(r.Remarks) ?? '',
       'Remarks': r.Remarks
     }));
 
@@ -536,9 +538,15 @@
   let ultimasFilas = [];
   const LIMIT_GENERAL = 8;
 
-  function esDestacado(remarks){
+  function etiquetaDestacado(remarks){
     const txt = String(remarks ?? '').toUpperCase();
-    return /\bUSDA\b/.test(txt) || /\bAC\b/.test(txt);
+    const esUSDA = /\bUSDA\b/.test(txt);
+    const esAC = /\bAC\b/.test(txt) || /\d+\s*\/\s*\d+/.test(txt);
+
+    const partes = [];
+    if(esUSDA) partes.push('COT');
+    if(esAC) partes.push('AC');
+    return partes.length > 0 ? partes.join('/') : null;
   }
 
   function promedio(arr){
@@ -772,8 +780,8 @@
 
     let html = '<table><thead><tr><th style="width:18%">Contenedor</th><th style="width:19%">Instancia</th><th style="width:17%">Posición</th><th style="width:19%">Nave</th><th style="width:12%">Tiempo</th><th style="width:9%">Mov</th></tr></thead><tbody>';
     toShow.forEach(r => {
-      const destacado = esDestacado(r.Remarks);
-      html += `<tr class="${destacado ? 'row-highlight' : ''}"><td>${esc(r.Contenedor)}</td><td>${badgeInstancia(r.Instancia)}${destacado ? '<span class="flag">USDA/AC</span>' : ''}</td><td>${esc(r.Posicion)}</td><td>${esc(r.Nave)}</td><td>${pillTiempo(r.Tiempo, r.TiempoMin)}</td><td class="${r.Mov ? 'mov-si' : 'mov-no'}">${r.Mov ? 'Sí' : 'No'}</td></tr>`;
+      const etiqueta = etiquetaDestacado(r.Remarks);
+      html += `<tr class="${etiqueta ? 'row-highlight' : ''}"><td>${esc(r.Contenedor)}</td><td>${badgeInstancia(r.Instancia)}${etiqueta ? `<span class="flag">${etiqueta}</span>` : ''}</td><td>${esc(r.Posicion)}</td><td>${esc(r.Nave)}</td><td>${pillTiempo(r.Tiempo, r.TiempoMin)}</td><td class="${r.Mov ? 'mov-si' : 'mov-no'}">${r.Mov ? 'Sí' : 'No'}</td></tr>`;
     });
     html += '</tbody></table>';
 
@@ -795,8 +803,8 @@
 
     let html = '<table><thead><tr><th style="width:28%">Contenedor</th><th style="width:32%">Nave</th><th style="width:20%">Tiempo</th><th style="width:20%">Posición</th></tr></thead><tbody>';
     data.sort((a,b)=> (b.TiempoMin??0) - (a.TiempoMin??0)).forEach(r => {
-      const destacado = esDestacado(r.Remarks);
-      html += `<tr class="${destacado ? 'row-highlight' : ''}"><td>${esc(r.Contenedor)}${destacado ? '<span class="flag">USDA/AC</span>' : ''}</td><td>${esc(r.Nave)}</td><td>${pillTiempo(r.Tiempo, r.TiempoMin)}</td><td>${esc(r.Posicion)}</td></tr>`;
+      const etiqueta = etiquetaDestacado(r.Remarks);
+      html += `<tr class="${etiqueta ? 'row-highlight' : ''}"><td>${esc(r.Contenedor)}${etiqueta ? `<span class="flag">${etiqueta}</span>` : ''}</td><td>${esc(r.Nave)}</td><td>${pillTiempo(r.Tiempo, r.TiempoMin)}</td><td>${esc(r.Posicion)}</td></tr>`;
     });
     html += '</tbody></table>';
     container.innerHTML = html;
@@ -813,8 +821,8 @@
 
     let html = '<table><thead><tr><th style="width:40%">Contenedor</th><th style="width:35%">Nave</th><th style="width:25%">Tiempo</th></tr></thead><tbody>';
     data.sort((a,b)=> (b.TiempoMin??0) - (a.TiempoMin??0)).forEach(r => {
-      const destacado = esDestacado(r.Remarks);
-      html += `<tr class="${destacado ? 'row-highlight' : ''}"><td>${esc(r.Contenedor)}${destacado ? '<span class="flag">USDA/AC</span>' : ''}</td><td>${esc(r.Nave)}</td><td>${pillTiempo(r.Tiempo, r.TiempoMin)}</td></tr>`;
+      const etiqueta = etiquetaDestacado(r.Remarks);
+      html += `<tr class="${etiqueta ? 'row-highlight' : ''}"><td>${esc(r.Contenedor)}${etiqueta ? `<span class="flag">${etiqueta}</span>` : ''}</td><td>${esc(r.Nave)}</td><td>${pillTiempo(r.Tiempo, r.TiempoMin)}</td></tr>`;
     });
     html += '</tbody></table>';
     container.innerHTML = html;
