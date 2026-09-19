@@ -599,6 +599,12 @@
     renderEmbarque(ultimasFilas);
   }
 
+  function formatPosicion(pos){
+    const txt = String(pos ?? '');
+    const idx = txt.lastIndexOf('*');
+    return idx === -1 ? txt : txt.substring(idx + 1);
+  }
+
   function claseTiempo(minutos){
     if(minutos === null || minutos === undefined) return 'time-neutral';
     if(minutos >= 60) return 'time-red';
@@ -839,12 +845,12 @@
     const toShow = expandedGeneral ? sorted : sorted.slice(0, LIMIT_GENERAL);
 
     const nuevoPrev = {};
-    let html = `<table><thead><tr><th style="width:18%">Contenedor</th><th style="width:19%">Instancia</th><th style="width:17%">Posición</th><th style="width:17%">Nave</th><th style="width:14%" class="sortable" onclick="toggleSortGeneral()">Tiempo <span class="sort-arrow" id="sortArrowGeneral">${sortDescGeneral ? '▼' : '▲'}</span></th><th style="width:9%">Mov</th></tr></thead><tbody>`;
+    let html = `<table><thead><tr><th style="width:22%">Contenedor</th><th style="width:24%">Instancia</th><th style="width:13%">Posición</th><th style="width:16%">Nave</th><th style="width:16%" class="sortable" onclick="toggleSortGeneral()">Tiempo <span class="sort-arrow" id="sortArrowGeneral">${sortDescGeneral ? '▼' : '▲'}</span></th><th style="width:9%">Mov</th></tr></thead><tbody>`;
     toShow.forEach(r => {
       const etiqueta = etiquetaDestacado(r.Remarks);
       const cambio = prevGeneral[r.Contenedor] !== undefined && prevGeneral[r.Contenedor] !== r.Instancia;
       nuevoPrev[r.Contenedor] = r.Instancia;
-      html += `<tr class="${etiqueta ? 'row-highlight' : ''} ${cambio ? 'flash-update' : ''}"><td>${esc(r.Contenedor)}</td><td>${badgeInstancia(r.Instancia)}${etiqueta ? `<span class="flag">${etiqueta}</span>` : ''}</td><td>${esc(r.Posicion)}</td><td>${esc(r.Nave)}</td><td class="time-cell ${claseTiempo(r.TiempoMin)}">${r.Tiempo ?? 'N/A'}</td><td class="${r.Mov ? 'mov-si' : 'mov-no'}">${r.Mov ? 'Sí' : 'No'}</td></tr>`;
+      html += `<tr class="${etiqueta ? 'row-highlight' : ''} ${cambio ? 'flash-update' : ''}"><td>${esc(r.Contenedor)}</td><td>${badgeInstancia(r.Instancia)}${etiqueta ? `<span class="flag">${etiqueta}</span>` : ''}</td><td>${esc(formatPosicion(r.Posicion))}</td><td>${esc(r.Nave)}</td><td class="time-cell ${claseTiempo(r.TiempoMin)}">${r.Tiempo ?? 'N/A'}</td><td class="${r.Mov ? 'mov-si' : 'mov-no'}">${r.Mov ? 'Sí' : 'No'}</td></tr>`;
     });
     html += '</tbody></table>';
     prevGeneral = nuevoPrev;
@@ -873,7 +879,7 @@
       const etiqueta = etiquetaDestacado(r.Remarks);
       const cambio = prevSinConexion[r.Contenedor] === undefined;
       nuevoPrev[r.Contenedor] = true;
-      html += `<tr class="${etiqueta ? 'row-highlight' : ''} ${cambio ? 'flash-update' : ''}"><td>${esc(r.Contenedor)}${etiqueta ? `<span class="flag">${etiqueta}</span>` : ''}</td><td>${esc(r.Nave)}</td><td class="time-cell ${claseTiempo(r.TiempoMin)}">${r.Tiempo ?? 'N/A'}</td><td>${esc(r.Posicion)}</td></tr>`;
+      html += `<tr class="${etiqueta ? 'row-highlight' : ''} ${cambio ? 'flash-update' : ''}"><td>${esc(r.Contenedor)}${etiqueta ? `<span class="flag">${etiqueta}</span>` : ''}</td><td>${esc(r.Nave)}</td><td class="time-cell ${claseTiempo(r.TiempoMin)}">${r.Tiempo ?? 'N/A'}</td><td>${esc(formatPosicion(r.Posicion))}</td></tr>`;
     });
     html += '</tbody></table>';
     prevSinConexion = nuevoPrev;
@@ -892,12 +898,12 @@
     const sorted = data.sort((a,b)=> sortDescEmbarque ? (b.TiempoMin??-1) - (a.TiempoMin??-1) : (a.TiempoMin??-1) - (b.TiempoMin??-1));
 
     const nuevoPrev = {};
-    let html = `<table><thead><tr><th style="width:40%">Contenedor</th><th style="width:35%">Nave</th><th style="width:25%" class="sortable" onclick="toggleSortEmbarque()">Tiempo <span class="sort-arrow" id="sortArrowEmbarque">${sortDescEmbarque ? '▼' : '▲'}</span></th></tr></thead><tbody>`;
+    let html = `<table><thead><tr><th style="width:32%">Contenedor</th><th style="width:28%">Nave</th><th style="width:20%" class="sortable" onclick="toggleSortEmbarque()">Tiempo <span class="sort-arrow" id="sortArrowEmbarque">${sortDescEmbarque ? '▼' : '▲'}</span></th><th style="width:20%">Posición</th></tr></thead><tbody>`;
     sorted.forEach(r => {
       const etiqueta = etiquetaDestacado(r.Remarks);
       const cambio = prevEmbarque[r.Contenedor] === undefined;
       nuevoPrev[r.Contenedor] = true;
-      html += `<tr class="${etiqueta ? 'row-highlight' : ''} ${cambio ? 'flash-update' : ''}"><td>${esc(r.Contenedor)}${etiqueta ? `<span class="flag">${etiqueta}</span>` : ''}</td><td>${esc(r.Nave)}</td><td class="time-cell ${claseTiempo(r.TiempoMin)}">${r.Tiempo ?? 'N/A'}</td></tr>`;
+      html += `<tr class="${etiqueta ? 'row-highlight' : ''} ${cambio ? 'flash-update' : ''}"><td>${esc(r.Contenedor)}${etiqueta ? `<span class="flag">${etiqueta}</span>` : ''}</td><td>${esc(r.Nave)}</td><td class="time-cell ${claseTiempo(r.TiempoMin)}">${r.Tiempo ?? 'N/A'}</td><td>${esc(formatPosicion(r.Posicion))}</td></tr>`;
     });
     html += '</tbody></table>';
     prevEmbarque = nuevoPrev;
