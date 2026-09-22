@@ -824,11 +824,14 @@ let instancia;
 
   // ---------- Render ----------
 
-  function badgeInstancia(inst){
+    function badgeInstancia(inst){
     const map = {
       'DESCARGA':'badge-descarga', 'CALLE':'badge-calle', 'CALLE REVISAR':'badge-revisar',
       'EMBARQUE':'badge-embarque', 'MOVIMIENTO':'badge-movimiento', 'DESPACHO':'badge-movimiento',
-      'SOBRE CAMION':'badge-calle', 'SIN CLASIFICAR':'badge-revisar'
+      'SOBRE CAMION':'badge-calle', 'SIN CLASIFICAR':'badge-revisar',
+      // Agrega estas dos líneas:
+      'EMBARQUE SOBRE CAMION': 'badge-embarque',
+      'MOVIMIENTO SOBRE CAMION': 'badge-movimiento'
     };
     const cls = map[inst] || '';
     return `<span class="badge ${cls}">${inst}</span>`;
@@ -838,13 +841,16 @@ let instancia;
     return String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
 
-  function renderGeneral(rows){
+    function renderGeneral(rows){
     const container = document.getElementById('tableGeneral');
-    const data = rows.filter(r => !['EMBARCADO SIN CONEX','EMBARCADO SIN CONEXION (revisar)','EMBARQUE'].includes(r.Instancia));
+    // Excluir también 'EMBARQUE SOBRE CAMION' de la tabla de patio
+    const data = rows.filter(r => !['EMBARCADO SIN CONEX','EMBARCADO SIN CONEXION (revisar)','EMBARQUE', 'EMBARQUE SOBRE CAMION'].includes(r.Instancia));
     document.getElementById('countGeneral').textContent = data.length;
 
     const calleRows = data.filter(r => r.Instancia === 'CALLE' || r.Instancia === 'CALLE REVISAR');
-    const movimientoRows = data.filter(r => r.Instancia === 'MOVIMIENTO');
+    // Agregar MOVIMIENTO SOBRE CAMION a los KPIs de Movimiento
+    const movimientoRows = data.filter(r => r.Instancia === 'MOVIMIENTO' || r.Instancia === 'MOVIMIENTO SOBRE CAMION');
+    
     document.getElementById('kpiCalleCount').textContent = calleRows.length;
     document.getElementById('kpiCalleProm').textContent = promedio(calleRows);
     document.getElementById('kpiMovimientoCount').textContent = movimientoRows.length;
@@ -897,10 +903,13 @@ let instancia;
     container.innerHTML = html;
   }
 
-  function renderEmbarque(rows){
+    function renderEmbarque(rows){
     const container = document.getElementById('tableEmbarque');
-    const data = rows.filter(r => r.Instancia === 'EMBARQUE');
+    // Incluir EMBARQUE SOBRE CAMION
+    const data = rows.filter(r => r.Instancia === 'EMBARQUE' || r.Instancia === 'EMBARQUE SOBRE CAMION');
+    
     document.getElementById('countEmbarque').textContent = data.length;
+    // ... resto de la función igual
     document.getElementById('kpiEmbarqueCount').textContent = data.length;
     document.getElementById('kpiEmbarqueProm').textContent = promedio(data);
 
