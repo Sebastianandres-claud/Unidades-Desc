@@ -746,10 +746,10 @@
     const kind = String(fila['Kind'] ?? '').trim();
     const moveStage = String(fila['Move Stage'] ?? '').trim();
 
-    let instancia;
-    if(posActual.startsWith('*TR')){
-      instancia = 'SOBRE CAMION';
-    } else if(posActual.length > 10){
+let instancia;
+
+    // 1. Evaluamos primero todo lo demás (longitud > 10 y caso general)
+    if(posActual.length > 10){
       if(kind === 'DSCH') instancia = 'DESCARGA';
       else if(kind === 'LOAD') instancia = 'EMBARCADO SIN CONEX';
       else instancia = 'EMBARCADO SIN CONEXION (revisar)';
@@ -769,7 +769,18 @@
       }
     }
 
-    const usaDiscon = ['MOVIMIENTO','EMBARQUE','DESPACHO','SOBRE CAMION','SIN CLASIFICAR','DESCARGA'].includes(instancia);
+    // 2. Si está con posición sobre camión, filtramos si es embarque, movimiento u otro
+    if(posActual.startsWith('*TR')){
+      if(instancia === 'EMBARQUE'){
+        instancia = 'EMBARQUE SOBRE CAMION';
+      } else if(instancia === 'MOVIMIENTO'){
+        instancia = 'MOVIMIENTO SOBRE CAMION';
+      } else {
+        instancia = 'SOBRE CAMION'; // Valor por defecto si cae en otra categoría
+      }
+    }
+
+    const usaDiscon = ['MOVIMIENTO','EMBARQUE','DESPACHO','SOBRE CAMION','SIN CLASIFICAR','DESCARGA','MOVIMIENTO SOBRE CAMION','EMBARQUE SOBRE CAMION'].includes(instancia);
     const usaYardIn = ['CALLE','CALLE REVISAR'].includes(instancia);
     const usaComplete = ['EMBARCADO SIN CONEX','EMBARCADO SIN CONEXION (revisar)'].includes(instancia);
 
