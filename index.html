@@ -1,127 +1,219 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Unidades Desconectadas - Control Operacional</title>
-  
-  <!-- Enlace a la hoja de estilos separada -->
-  <link rel="stylesheet" href="css/styles.css?v=9">
-</head>
-<body>
-
-<header>
-  <div class="brand">
-    <img class="brand-mark" src="LOGO-SITRANS-scaled.png" alt="SITRANS">
-    <div>
-      <p class="eyebrow">Control Operacional</p>
-      <h1>Unidades Desconectadas</h1>
-      <div class="clock" id="opClock">Cargando...</div>
-    </div>
-  </div>
-  <div class="status">
-    <button class="print-btn" onclick="exportarExcel()">Exportar Excel</button>
-    <span class="dot" id="statusDot"></span>
-    <span id="statusText">conectando</span>
-  </div>
-</header>
-
-<div class="tabs">
-  <button class="tab-btn active" data-page="page-unidades" onclick="mostrarPagina('page-unidades', this)">Unidades Desc</button>
-  <button class="tab-btn" data-page="page-planificacion" onclick="mostrarPagina('page-planificacion', this)">Planificación Proyectada</button>
-</div>
-
-<div id="page-unidades" class="page active">
-
-  <div class="kpi-strip">
-    <div class="kpi-card c-blue" id="kpiCalleCard">
-      <p class="kpi-title">Calle</p>
-      <div class="kpi-metrics">
-        <div class="kpi-metric"><div class="kpi-metric-label">Contenedores</div><div class="kpi-metric-value" id="kpiCalleCount">0</div></div>
-        <div class="kpi-metric"><div class="kpi-metric-label">Promedio Mins</div><div class="kpi-metric-value" id="kpiCalleProm">0.0</div></div>
+<!-- FRANJA DE 5 TARJETAS KPI -->
+<div class="kpi-strip">
+  <div class="kpi-card">
+    <h3>Calle</h3>
+    <div class="metrics">
+      <div class="metric">
+        <span>Contenedores</span>
+        <strong id="kpi-calle-cant">1</strong>
       </div>
-    </div>
-    <div class="kpi-card c-red" id="kpiMovimientoCard">
-      <p class="kpi-title">Movimiento</p>
-      <div class="kpi-metrics">
-        <div class="kpi-metric"><div class="kpi-metric-label">Contenedores</div><div class="kpi-metric-value" id="kpiMovimientoCount">0</div></div>
-        <div class="kpi-metric"><div class="kpi-metric-label">Promedio Mins</div><div class="kpi-metric-value" id="kpiMovimientoProm">0.0</div></div>
-      </div>
-    </div>
-    <div class="kpi-card c-amber" id="kpiSinConexionCard">
-      <p class="kpi-title">A bordo sin conexión</p>
-      <div class="kpi-metrics">
-        <div class="kpi-metric"><div class="kpi-metric-label">Contenedores</div><div class="kpi-metric-value" id="kpiSinConexionCount">0</div></div>
-        <div class="kpi-metric"><div class="kpi-metric-label">Promedio Mins</div><div class="kpi-metric-value" id="kpiSinConexionProm">0.0</div></div>
-      </div>
-    </div>
-    <div class="kpi-card c-green" id="kpiEmbarqueCard">
-      <p class="kpi-title">Para embarque</p>
-      <div class="kpi-metrics">
-        <div class="kpi-metric"><div class="kpi-metric-label">Contenedores</div><div class="kpi-metric-value" id="kpiEmbarqueCount">0</div></div>
-        <div class="kpi-metric"><div class="kpi-metric-label">Promedio Mins</div><div class="kpi-metric-value" id="kpiEmbarqueProm">0.0</div></div>
-      </div>
-    </div>
-    <div class="kpi-card c-dark" id="kpiTotalCard">
-      <p class="kpi-title">Total General</p>
-      <div class="kpi-metrics">
-        <div class="kpi-metric"><div class="kpi-metric-label">Unidades</div><div class="kpi-metric-value" id="kpiTotalCount">0</div></div>
+      <div class="metric">
+        <span>Promedio Mins</span>
+        <strong id="kpi-calle-prom">135.0</strong>
       </div>
     </div>
   </div>
 
-  <main>
-    <div class="panel">
-      <div class="panel-title">
-        <h2>Unidades desconectadas en patio</h2>
-        <span class="count" id="countGeneral">0</span>
+  <div class="kpi-card">
+    <h3>Movimiento</h3>
+    <div class="metrics">
+      <div class="metric">
+        <span>Contenedores</span>
+        <strong id="kpi-mov-cant">0</strong>
       </div>
-      <div class="panel-body">
-        <div id="tableGeneral"><div class="empty-state">cargando…</div></div>
+      <div class="metric">
+        <span>Promedio Mins</span>
+        <strong id="kpi-mov-prom">0.0</strong>
       </div>
     </div>
+  </div>
 
-    <div class="panel">
-      <div class="panel-title">
-        <h2>Unidades a bordo sin conexión</h2>
-        <span class="count" id="countSinConexion">0</span>
+  <div class="kpi-card">
+    <h3>A bordo sin conexión</h3>
+    <div class="metrics">
+      <div class="metric">
+        <span>Contenedores</span>
+        <strong id="kpi-abordom-cant">4</strong>
       </div>
-      <div class="panel-body">
-        <div id="tableSinConexion"><div class="empty-state">cargando…</div></div>
+      <div class="metric">
+        <span>Promedio Mins</span>
+        <strong id="kpi-abordom-prom">171.5</strong>
       </div>
     </div>
+  </div>
 
-    <div class="panel">
-      <div class="panel-title">
-        <h2>Unidades desconectadas para embarque</h2>
-        <span class="count" id="countEmbarque">0</span>
+  <div class="kpi-card">
+    <h3>Para embarque</h3>
+    <div class="metrics">
+      <div class="metric">
+        <span>Contenedores</span>
+        <strong id="kpi-embarque-cant">68</strong>
       </div>
-      <div class="panel-body">
-        <div id="tableEmbarque"><div class="empty-state">cargando…</div></div>
+      <div class="metric">
+        <span>Promedio Mins</span>
+        <strong id="kpi-embarque-prom">166.9</strong>
       </div>
     </div>
-  </main>
+  </div>
+
+  <div class="kpi-card">
+    <h3>Total General</h3>
+    <div class="metrics">
+      <div class="metric">
+        <span>Unidades</span>
+        <strong id="kpi-total-cant">74</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENEDOR GRID ÚNICO DE 3 COLUMNAS LADO A LADO -->
+<div class="grid">
+
+  <!-- COLUMNA 1: UNIDADES DESCONECTADAS EN PATIO -->
+  <div class="panel" id="panel-patio">
+    <div class="panel-header">
+      <span class="panel-title">Unidades desconectadas en patio</span>
+      <span class="count-badge" id="count-patio">2</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th class="sortable">Contenedor</th>
+          <th class="sortable">Instancia</th>
+          <th class="sortable">Posición</th>
+          <th class="sortable">Nave</th>
+          <th class="sortable">Tiempo ▼</th>
+          <th class="sortable">Mov</th>
+        </tr>
+      </thead>
+      <tbody id="tbody-patio">
+        <tr>
+          <td>MNBU3028509</td>
+          <td><span class="badge-descarga">DESCARGA</span></td>
+          <td>060210</td>
+          <td>TRUCK</td>
+          <td><span class="time-cell time-red">02:31</span></td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>GESU9470530</td>
+          <td><span class="badge-calle">CALLE</span></td>
+          <td>22-39043</td>
+          <td>MSC FLORIANA VI</td>
+          <td><span class="time-cell time-red">02:15</span></td>
+          <td>No</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- COLUMNA 2: UNIDADES A BORDO SIN CONEXIÓN -->
+  <div class="panel" id="panel-abordom">
+    <div class="panel-header">
+      <span class="panel-title">Unidades a bordo sin conexión</span>
+      <span class="count-badge" id="count-abordom">4</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th class="sortable">Contenedor</th>
+          <th class="sortable">Nave</th>
+          <th class="sortable">Tiempo ▼</th>
+          <th class="sortable">Posición</th>
+        </tr>
+      </thead>
+      <tbody id="tbody-abordom">
+        <tr>
+          <td>MMAU1311043 <span class="flag">AC</span></td>
+          <td>MAERSK BALI</td>
+          <td><span class="time-cell time-red">03:40</span></td>
+          <td>380408</td>
+        </tr>
+        <tr>
+          <td>UACU4769686</td>
+          <td>ONE SINCERITY</td>
+          <td><span class="time-cell time-red">03:15</span></td>
+          <td>540814</td>
+        </tr>
+        <tr>
+          <td>MNBU0357814</td>
+          <td>MAERSK BALI</td>
+          <td><span class="time-cell time-red">02:16</span></td>
+          <td>340904</td>
+        </tr>
+        <tr>
+          <td>MNBU0403355</td>
+          <td>MAERSK BALI</td>
+          <td><span class="time-cell time-red">02:15</span></td>
+          <td>340906</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- COLUMNA 3: UNIDADES DESCONECTADAS PARA EMBARQUE -->
+  <div class="panel" id="panel-embarque">
+    <div class="panel-header">
+      <span class="panel-title">Unidades desconectadas para embarque</span>
+      <span class="count-badge" id="count-embarque">68</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th class="sortable">Contenedor</th>
+          <th class="sortable">Nave</th>
+          <th class="sortable">Tiempo ▼</th>
+          <th class="sortable">Posición</th>
+        </tr>
+      </thead>
+      <tbody id="tbody-embarque">
+        <tr>
+          <td>SUDU8245903</td>
+          <td>MAERSK BALI</td>
+          <td><span class="time-cell time-red">03:02</span></td>
+          <td>TR-30</td>
+        </tr>
+        <tr>
+          <td>MNBU0147464</td>
+          <td>MAERSK BALI</td>
+          <td><span class="time-cell time-red">03:02</span></td>
+          <td>TR-44</td>
+        </tr>
+        <tr>
+          <td>SUDU6036885</td>
+          <td>MAERSK BALI</td>
+          <td><span class="time-cell time-red">03:01</span></td>
+          <td>TR-69</td>
+        </tr>
+        <tr>
+          <td>MNBU3146100</td>
+          <td>MAERSK BALI</td>
+          <td><span class="time-cell time-red">02:59</span></td>
+          <td>TR-45</td>
+        </tr>
+        <tr>
+          <td>MNBU4608163</td>
+          <td>MAERSK BALI</td>
+          <td><span class="time-cell time-red">02:55</span></td>
+          <td>20-05095</td>
+        </tr>
+        <tr>
+          <td>MNBU3948873</td>
+          <td>MAERSK BALI</td>
+          <td><span class="time-cell time-red">02:55</span></td>
+          <td>TR-47</td>
+        </tr>
+        <tr>
+          <td>MNBU4340208</td>
+          <td>MAERSK BALI</td>
+          <td><span class="time-cell time-red">02:55</span></td>
+          <td>TR-56</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
 </div>
 
-<div id="page-planificacion" class="page">
-  <main style="grid-template-columns:1fr; max-width:100%; padding:12px;">
-    <div class="panel">
-      <div class="panel-title">
-        <h2>Planificación Proyectada</h2>
-      </div>
-      <div style="padding:10px; display:flex; justify-content:center;">
-        <iframe width="1600" height="850" frameborder="0" scrolling="no" src="https://tpsv.sharepoint.com/sites/TPSVPlanificacionNaviera/_layouts/15/Doc.aspx?sourcedoc={621b809b-e4fd-4531-9d66-5df414ca4610}&action=embedview&wdAllowInteractivity=False&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True&wdInConfigurator=True" style="width:100%; max-width:100%; height:80vh; border:1px solid var(--border);"></iframe>
-      </div>
-    </div>
-  </main>
-</div>
 
-<!-- Librería Externa -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
-<!-- Enlace a la lógica JS separada con 'defer' -->
-<script src="js/script.js" defer></script>
-
-</body>
-</html>
