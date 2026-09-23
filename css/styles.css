@@ -245,14 +245,37 @@ tbody tr.row-highlight:hover{ background:#f9e9b8 !important; }
 .mov-si{ color:var(--green); font-weight:700; text-align:center; }
 .mov-no{ color:var(--muted); text-align:center; }
 
-.time-cell{
-  font-family:'IBM Plex Mono', monospace;
-  font-weight:700;
-  text-align:center;
+/* --- Badges de Tiempo con Estilo Dashboard Profesional --- */
+.time-cell {
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  text-align: center;
+  font-size: 0.85rem;
+  letter-spacing: 0.3px;
 }
-.time-red{ background:#DC2626; color:#fff; }
-.time-yellow{ background:#FFD700; color:#3d2c00; }
-.time-green{ background:#16A34A; color:#fff; }
+
+/* Verde Suave (Menos de 10 min) */
+.time-green {
+  background-color: #e6f4ea;
+  color: #137333;
+  border: 1px solid #ceead6;
+}
+
+/* Ámbar / Dorado Cálido (10 a 59 min - reemplaza al mostaza) */
+.time-yellow {
+  background-color: #fef7e0;
+  color: #b06000;
+  border: 1px solid #fde293;
+}
+
+/* Rojo Crítico (60 min o más) */
+.time-red {
+  background-color: #fce8e6;
+  color: #c5221f;
+  border: 1px solid #fad2cf;
+}
 .time-neutral{ background:var(--head-bg); color:var(--muted); }
 
 @keyframes flashUpdate{
