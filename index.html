@@ -932,15 +932,27 @@ let instancia;
 
   let ultimaFechaReporte = null;
 
-  async function fetchData(){
+async function fetchData(){
     statusText.textContent = 'actualizando...';
 
     try{
+      // Añadir timestamp para evitar caché en el navegador y en Cloudflare
       const url = `${RAW_URL}?t=${Date.now()}`;
-      const res = await fetch(url, { cache: 'no-store' });
+      const res = await fetch(url, { 
+        cache: 'no-store',
+        headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }
+      });
+      
       if(!res.ok) throw new Error('HTTP ' + res.status);
-      const text = await res.text();
+      
+      let text = await res.text();
 
+      // LIMPIEZA DE ENTORNO: Remueve el BOM (\ufeff) que inyecta GitHub/Worker sin alterar tu texto
+      if (text.charCodeAt(0) === 0xFEFF) {
+        text = text.slice(1);
+      }
+
+      // Tu lógica procesa el texto exactamente igual que antes
       const rows = procesar(text);
       ultimasFilas = rows;
       document.getElementById('kpiTotalCount').textContent = rows.length;
