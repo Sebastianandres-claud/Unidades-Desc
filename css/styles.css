@@ -1,108 +1,95 @@
 /* =========================================================
-   SITRANS - CONTROL OPERACIONAL (POWER BI EXECUTIVE THEME)
+   SITRANS - CONTROL OPERACIONAL (ESTILO ORIGINAL CON SEGOE UI)
    ========================================================= */
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
 }
 
 body {
-  background-color: #f3f2f1; /* Gris de lienzo estándar de Power BI */
-  color: #323130;
-  padding: 16px 24px;
+  background-color: #f8f9fa;
+  color: #201f1e;
+  padding: 16px 20px;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* --- Encabezado Principal --- */
+/* --- Encabezado --- */
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background: #ffffff;
-  padding: 16px 24px;
-  border-radius: 8px;
-  box-shadow: 0 1.6px 3.6px 0 rgba(0,0,0,0.06), 0 0.3px 0.9px 0 rgba(0,0,0,0.04);
+  padding: 12px 20px;
+  border-bottom: 1px solid #e1dfdd;
   margin-bottom: 16px;
-  border: 1px solid #e1dfdd;
 }
 
 header .brand {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
 }
 
 header .brand-mark {
-  height: 62px; /* Logo Sitrans destacado y legible */
+  height: 58px; /* Logo grande y nítido */
   width: auto;
   object-fit: contain;
 }
 
 .eyebrow {
-  font-size: 0.75rem;
+  font-size: 0.68rem;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
   color: #605e5c;
   font-weight: 700;
-  margin-bottom: 2px;
 }
 
 h1 {
-  font-size: 1.4rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: #201f1e;
-  line-height: 1.2;
 }
 
 .clock {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: #605e5c;
   font-weight: 600;
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
-/* Acciones en Header (Exportar Excel y Estado) */
+/* Botón Excel y Estado */
 header > div:last-child {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-button, .tab-btn, .btn-export {
-  font-family: 'Segoe UI', sans-serif;
-}
-
 button[onclick="exportarExcel()"] {
-  background-color: #ffffff;
-  border: 1px solid #107c41;
-  color: #107c41;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #374151;
   font-weight: 600;
-  padding: 8px 16px;
+  padding: 6px 14px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.85rem;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  font-size: 0.8rem;
 }
 
 button[onclick="exportarExcel()"]:hover {
-  background-color: #107c41;
-  color: #ffffff;
+  background: #f3f4f6;
 }
 
 .status {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: #323130;
-  background: #f3f2f1;
-  padding: 6px 12px;
-  border-radius: 20px;
+  color: #374151;
 }
 
 .status-dot {
@@ -112,14 +99,10 @@ button[onclick="exportarExcel()"]:hover {
   background-color: #107c41;
 }
 
-.status-dot.offline {
-  background-color: #a80000;
-}
-
-/* --- Navegación por Pestañas --- */
+/* --- Pestañas --- */
 .tabs {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   margin-bottom: 16px;
   border-bottom: 2px solid #e1dfdd;
 }
@@ -127,247 +110,197 @@ button[onclick="exportarExcel()"]:hover {
 .tab-btn {
   background: none;
   border: none;
-  padding: 8px 16px;
-  font-size: 0.9rem;
+  padding: 8px 12px;
+  font-size: 0.85rem;
   font-weight: 600;
-  color: #605e5c;
+  color: #005a9e;
   cursor: pointer;
   border-bottom: 3px solid transparent;
   margin-bottom: -2px;
-  transition: all 0.2s;
 }
 
 .tab-btn.active {
-  color: #005a9e; /* Azul Power BI */
   border-bottom-color: #005a9e;
+  font-weight: 700;
 }
 
-/* --- Tarjetas KPI (Power BI Style Cards) --- */
+/* --- Tarjetas KPI (Estructura Original con Bordes de Color) --- */
 .kpi-strip {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .kpi-card {
   background: #ffffff;
-  border-radius: 6px;
-  padding: 12px 16px;
-  box-shadow: 0 1.6px 3.6px 0 rgba(0,0,0,0.06);
-  border: 1px solid #e1dfdd;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  border-radius: 4px;
+  padding: 10px 12px;
+  border: 2px solid #e1dfdd; /* Ancho de borde original */
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
 }
 
-/* Barras superiores de acento por categoría */
-.kpi-card:nth-child(1) { border-top: 4px solid #005a9e; } /* Calle - Azul */
-.kpi-card:nth-child(2) { border-top: 4px solid #a80000; } /* Movimiento - Rojo */
-.kpi-card:nth-child(3) { border-top: 4px solid #b06000; } /* Sin Conexión - Dorado */
-.kpi-card:nth-child(4) { border-top: 4px solid #107c41; } /* Embarque - Verde */
-.kpi-card:nth-child(5) { border-top: 4px solid #323130; } /* Total - Oscuro */
+/* Colores de bordes completos por tarjeta */
+.kpi-card:nth-child(1) { border-color: #005a9e; } /* Calle - Azul */
+.kpi-card:nth-child(2) { border-color: #a80000; } /* Movimiento - Rojo */
+.kpi-card:nth-child(3) { border-color: #b06000; } /* Sin Conexión - Dorado */
+.kpi-card:nth-child(4) { border-color: #107c41; } /* Para Embarque - Verde */
+.kpi-card:nth-child(5) { border-color: #201f1e; } /* Total General - Oscuro */
 
 .kpi-card h3 {
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  color: #605e5c;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: #201f1e;
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .kpi-card .metrics {
   display: flex;
   justify-content: space-around;
-  align-items: baseline;
-}
-
-.kpi-card .metric {
+  align-items: center;
   text-align: center;
 }
 
 .kpi-card .metric span {
   display: block;
-  font-size: 0.65rem;
-  color: #8a8886;
+  font-size: 0.62rem;
+  color: #605e5c;
   font-weight: 700;
   text-transform: uppercase;
 }
 
 .kpi-card .metric strong {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: #201f1e;
 }
 
-/* --- Layout de Tablas --- */
+/* --- Tablas y Paneles --- */
 .page { display: none; }
 .page.active { display: block; }
 
 .grid {
   display: grid;
-  grid-template-columns: 1.15fr 0.9fr 0.95fr;
-  gap: 16px;
+  grid-template-columns: 1.1fr 0.9fr 1fr;
+  gap: 12px;
   align-items: start;
 }
 
 .panel {
   background: #ffffff;
-  border-radius: 6px;
-  border: 1px solid #e1dfdd;
-  box-shadow: 0 1.6px 3.6px 0 rgba(0,0,0,0.06);
-  padding: 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 12px;
 }
 
 .panel-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #edebe9;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
 }
 
 .panel-title {
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  color: #323130;
+  color: #201f1e;
+  border-left: 3px solid #005a9e;
+  padding-left: 6px;
 }
 
 .count-badge {
-  background-color: #eff6fc;
   color: #005a9e;
   font-weight: 700;
-  font-size: 0.75rem;
-  padding: 2px 8px;
-  border-radius: 12px;
+  font-size: 0.8rem;
 }
 
-/* --- Estilo Visual de Tablas --- */
+/* --- Formato de Tabla Original --- */
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
 }
 
 th {
-  background-color: #faf9f8;
-  color: #605e5c;
-  font-weight: 700;
+  background-color: #f9fafb;
+  color: #4b5563;
+  font-weight: 600;
   text-align: left;
-  padding: 8px 10px;
-  border-bottom: 2px solid #e1dfdd;
-  font-size: 0.73rem;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
+  padding: 6px 8px;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.72rem;
 }
 
-th.sortable {
-  cursor: pointer;
-  user-select: none;
-}
-th.sortable:hover {
-  color: #005a9e;
-}
+th.sortable { cursor: pointer; }
 
 td {
-  padding: 7px 10px;
-  border-bottom: 1px solid #edebe9;
-  color: #323130;
+  padding: 6px 8px;
+  border-bottom: 1px solid #f3f4f6;
+  color: #1f2937;
   vertical-align: middle;
 }
 
 tr:hover td {
-  background-color: #f3f2f1; /* Efecto hover elegante */
+  background-color: #f9fafb;
 }
 
-/* Destacado del Número de Contenedor */
-td:first-child {
-  font-weight: 700;
-  color: #201f1e;
-  letter-spacing: 0.2px;
-}
+/* Indicadores tipo punto original */
+.badge-descarga { color: #107c41; font-weight: 700; }
+.badge-descarga::before { content: "• "; font-size: 0.9rem; }
 
-/* --- Badges y Alertas --- */
-.badge {
-  display: inline-block;
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-}
+.badge-calle { color: #005a9e; font-weight: 700; }
+.badge-calle::before { content: "• "; font-size: 0.9rem; }
 
-.badge-calle { background-color: #deecf9; color: #005a9e; }
-.badge-descarga { background-color: #d1e7dd; color: #0f5132; }
-.badge-movimiento { background-color: #fde8e8; color: #a80000; }
-.badge-embarque { background-color: #fff3cd; color: #8a6d3b; }
-.badge-revisar { background-color: #f3e8ff; color: #6b21a8; }
-
-.flag {
-  background-color: #fff8e1;
-  color: #b06000;
-  font-size: 0.65rem;
-  font-weight: 700;
-  padding: 1px 4px;
-  border-radius: 3px;
-  border: 1px solid #ffe082;
-  margin-left: 4px;
-}
-
-/* --- Tiempos Ejecutivo (Verde / Ámbar / Rojo) --- */
+/* --- Badges de Tiempo (<15m Verde, 15-25m Amarillo, >=26m Rojo) --- */
 .time-cell {
+  font-family: 'Segoe UI', sans-serif;
   font-weight: 700;
-  padding: 3px 8px;
+  padding: 2px 8px;
   border-radius: 4px;
   display: inline-block;
   text-align: center;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
 }
 
 .time-green {
   background-color: #e6f4ea;
   color: #137333;
-  border: 1px solid #ceead6;
 }
 
 .time-yellow {
   background-color: #fef7e0;
   color: #b06000;
-  border: 1px solid #fde293;
 }
 
 .time-red {
   background-color: #fce8e6;
   color: #c5221f;
-  border: 1px solid #fad2cf;
 }
 
-/* Botones dentro de las tablas */
+.flag {
+  background-color: #fef7e0;
+  color: #b06000;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 3px;
+  margin-left: 4px;
+}
+
 .toggle-btn {
   width: 100%;
-  background: #faf9f8;
+  background: #ffffff;
   border: 1px solid #e1dfdd;
   color: #005a9e;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  padding: 7px;
+  padding: 6px;
   margin-top: 8px;
   border-radius: 4px;
   cursor: pointer;
-  transition: background 0.2s;
 }
 
-.toggle-btn:hover {
-  background: #f3f2f1;
-}
-
-.empty-state {
-  padding: 24px;
-  text-align: center;
-  color: #8a8886;
-  font-style: italic;
-  font-size: 0.85rem;
-}
+.toggle-btn:hover { background: #f3f2f1; }
+.empty-state { text-align: center; color: #605e5c; padding: 16px; font-style: italic; }
