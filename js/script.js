@@ -93,9 +93,9 @@ function formatPosicion(pos){
 
 function claseTiempo(minutos){
   if(minutos === null || minutos === undefined) return 'time-neutral';
-  if(minutos >= 60) return 'time-red';
-  if(minutos < 10) return 'time-green';
-  return 'time-yellow';
+  if(minutos >= 26) return 'time-red';       // 26 minutos o más
+  if(minutos < 15) return 'time-green';      // Menos de 15 minutos
+  return 'time-yellow';                      // Entre 15 y 25 minutos
 }
 
 function etiquetaDestacado(remarks){
