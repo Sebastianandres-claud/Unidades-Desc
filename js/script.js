@@ -4,8 +4,10 @@ const CODIGOS_EXCLUIDOS = ["TIP", "TQ", "OUT"];
 const DIAS = { LU:0, MA:1, MI:2, JU:3, VI:4, SA:5, DO:6 };
 
 let expandedGeneral = false;
+let expandedEmbarque = false;
 let ultimasFilas = [];
 const LIMIT_GENERAL = 8;
+const LIMIT_EMBARQUE = 8;
 
 let prevGeneral = {};
 let prevSinConexion = {};
@@ -69,6 +71,16 @@ function toggleSortEmbarque(){
   renderEmbarque(ultimasFilas);
 }
 
+function toggleGeneral(){
+  expandedGeneral = !expandedGeneral;
+  renderGeneral(ultimasFilas);
+}
+
+function toggleEmbarque(){
+  expandedEmbarque = !expandedEmbarque;
+  renderEmbarque(ultimasFilas);
+}
+
 function formatPosicion(pos){
   if(pos === null || pos === undefined) return '-';
   const txt = String(pos).trim();
@@ -101,11 +113,6 @@ function promedio(arr){
   if(arr.length === 0) return '0.0';
   const suma = arr.reduce((acc,r) => acc + (r.TiempoMin ?? 0), 0);
   return (suma/arr.length).toFixed(1);
-}
-
-function toggleGeneral(){
-  expandedGeneral = !expandedGeneral;
-  renderGeneral(ultimasFilas);
 }
 
 function esVacio(v){ return v === null || v === undefined || String(v).trim() === ''; }
@@ -400,10 +407,11 @@ function renderEmbarque(rows){
   if(data.length === 0){ container.innerHTML = '<div class="empty-state">sin unidades desconectadas para embarque</div>'; return; }
 
   const sorted = data.sort((a,b)=> sortDescEmbarque ? (b.TiempoMin??-1) - (a.TiempoMin??-1) : (a.TiempoMin??-1) - (b.TiempoMin??-1));
+  const toShow = expandedEmbarque ? sorted : sorted.slice(0, LIMIT_EMBARQUE);
 
   const nuevoPrev = {};
   let html = `<table><thead><tr><th style="width:36%">Contenedor</th><th style="width:27%">Nave</th><th style="width:18%" class="sortable" onclick="toggleSortEmbarque()">Tiempo <span class="sort-arrow">${sortDescEmbarque ? '▼' : '▲'}</span></th><th style="width:19%">Posición</th></tr></thead><tbody>`;
-  sorted.forEach(r => {
+  toShow.forEach(r => {
     const etiqueta = etiquetaDestacado(r.Remarks);
     const cambio = prevEmbarque[r.Contenedor] === undefined;
     nuevoPrev[r.Contenedor] = true;
@@ -411,6 +419,11 @@ function renderEmbarque(rows){
   });
   html += '</tbody></table>';
   prevEmbarque = nuevoPrev;
+
+  if(sorted.length > LIMIT_EMBARQUE){
+    html += `<button class="toggle-btn" onclick="toggleEmbarque()">${expandedEmbarque ? 'Mostrar menos' : `Ver todas (${sorted.length})`}</button>`;
+  }
+
   container.innerHTML = html;
 }
 
