@@ -47,8 +47,9 @@ header .brand{
 }
 
 header .brand-mark{
-  height:34px;
+  height:48px; /* Aumentado de 34px a 48px */
   width:auto;
+  object-fit:contain;
 }
 
 header .eyebrow{
