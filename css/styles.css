@@ -18,15 +18,19 @@
   --green-bg: #e6f4ea;
 }
 
-*{ box-sizing:border-box; }
+/* --- Tipografía Global Segoe UI --- */
+* {
+  box-sizing: border-box;
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
 
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:'Segoe UI', 'Inter', system-ui, sans-serif;
-  min-height:100vh;
-  font-size:13px;
+body {
+  margin: 0;
+  padding: 16px;
+  background-color: #f8f9fa;
+  color: #202124;
+  -webkit-font-smoothing: antialiased; /* Suaviza los bordes de las letras */
+  -moz-osx-font-smoothing: grayscale;
 }
 
 header{
@@ -40,16 +44,17 @@ header{
   gap:10px;
 }
 
-header .brand{
-  display:flex;
-  align-items:center;
-  gap:10px;
+/* --- Header y Logo --- */
+header .brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
-header .brand-mark{
-  height:48px; /* Aumentado de 34px a 48px */
-  width:auto;
-  object-fit:contain;
+header .brand-mark {
+  height: 68px; /* Aumentado a 68px para mayor presencia */
+  width: auto;
+  object-fit: contain;
 }
 
 header .eyebrow{
@@ -245,32 +250,33 @@ tbody tr.row-highlight:hover{ background:#f9e9b8 !important; }
 .mov-si{ color:var(--green); font-weight:700; text-align:center; }
 .mov-no{ color:var(--muted); text-align:center; }
 
-/* --- Badges de Tiempo con Estilo Dashboard Profesional --- */
+/* --- Badges de Tiempo --- */
 .time-cell {
+  font-family: 'Segoe UI', sans-serif;
   font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 4px;
+  padding: 4px 10px;
+  border-radius: 6px;
   display: inline-block;
   text-align: center;
-  font-size: 0.85rem;
-  letter-spacing: 0.3px;
+  font-size: 0.88rem;
+  letter-spacing: 0.2px;
 }
 
-/* Verde Suave (Menos de 10 min) */
+/* Verde Suave (< 15 min) */
 .time-green {
   background-color: #e6f4ea;
   color: #137333;
   border: 1px solid #ceead6;
 }
 
-/* Ámbar / Dorado Cálido (10 a 59 min - reemplaza al mostaza) */
+/* Ámbar / Dorado Cálido (15 a 25 min) */
 .time-yellow {
   background-color: #fef7e0;
   color: #b06000;
   border: 1px solid #fde293;
 }
 
-/* Rojo Crítico (60 min o más) */
+/* Rojo Crítico (>= 26 min) */
 .time-red {
   background-color: #fce8e6;
   color: #c5221f;
