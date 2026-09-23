@@ -1,6 +1,6 @@
 /* =========================================================
    SITRANS - CONTROL OPERACIONAL
-   3 Columnas en Paralelo (| Tabla 1 | Tabla 2 | Tabla 3 |) + Segoe UI
+   3 Columnas Paralelas Lado a Lado (| Tabla 1 | Tabla 2 | Tabla 3 |)
    ========================================================= */
 
 * {
@@ -13,18 +13,18 @@
 body {
   background-color: #f8f9fa;
   color: #201f1e;
-  padding: 14px 20px;
+  padding: 12px 18px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* --- Encabezado Superior --- */
+/* --- Encabezado --- */
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background: #ffffff;
-  padding: 12px 20px;
+  padding: 10px 18px;
   border-bottom: 1px solid #e1dfdd;
   margin-bottom: 14px;
 }
@@ -77,7 +77,6 @@ button[onclick="exportarExcel()"] {
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.8rem;
-  transition: background 0.15s;
 }
 
 button[onclick="exportarExcel()"]:hover {
@@ -133,24 +132,24 @@ button[onclick="exportarExcel()"]:hover {
 .kpi-strip {
   display: grid !important;
   grid-template-columns: repeat(5, 1fr) !important;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 10px;
+  margin-bottom: 14px;
   width: 100%;
 }
 
 .kpi-card {
   background: #ffffff;
   border-radius: 4px;
-  padding: 8px 12px;
+  padding: 8px 10px;
   border: 2px solid #e1dfdd;
   box-shadow: 0 1px 2px rgba(0,0,0,0.02);
 }
 
-.kpi-card:nth-child(1) { border-color: #005a9e; } /* Calle */
-.kpi-card:nth-child(2) { border-color: #a80000; } /* Movimiento */
-.kpi-card:nth-child(3) { border-color: #b06000; } /* Sin Conexión */
-.kpi-card:nth-child(4) { border-color: #107c41; } /* Para Embarque */
-.kpi-card:nth-child(5) { border-color: #201f1e; } /* Total */
+.kpi-card:nth-child(1) { border-color: #005a9e; }
+.kpi-card:nth-child(2) { border-color: #a80000; }
+.kpi-card:nth-child(3) { border-color: #b06000; }
+.kpi-card:nth-child(4) { border-color: #107c41; }
+.kpi-card:nth-child(5) { border-color: #201f1e; }
 
 .kpi-card h3 {
   font-size: 0.8rem;
@@ -162,9 +161,9 @@ button[onclick="exportarExcel()"]:hover {
 
 .kpi-card .metrics {
   display: flex !important;
-  flex-direction: row !important;
+  flex-direction: row !important; /* Fuerza Contenedores y Promedio LADO A LADO */
   justify-content: space-around !important;
-  align-items: center !important;
+  align-items: flex-end !important;
   width: 100%;
 }
 
@@ -178,6 +177,7 @@ button[onclick="exportarExcel()"]:hover {
   color: #605e5c;
   font-weight: 700;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .kpi-card .metric strong {
@@ -187,14 +187,14 @@ button[onclick="exportarExcel()"]:hover {
   color: #201f1e;
 }
 
-/* --- Layout Estricto de 3 Columnas Lado a Lado (| Panel 1 | Panel 2 | Panel 3 |) --- */
+/* --- Layout Paralelo: 3 Columnas Lado a Lado (| T1 | T2 | T3 |) --- */
 .page { display: none; }
 .page.active { display: block; }
 
 .grid {
   display: grid !important;
-  grid-template-columns: repeat(3, 1fr) !important; /* Fuerza 3 columnas iguales en paralelo */
-  gap: 14px !important;
+  grid-template-columns: repeat(3, 1fr) !important; /* 3 Columnas de igual tamaño en horizontal */
+  gap: 12px !important;
   align-items: start !important;
   width: 100% !important;
 }
@@ -204,7 +204,7 @@ button[onclick="exportarExcel()"]:hover {
   border: 1px solid #d1d5db;
   border-radius: 4px;
   padding: 10px 12px;
-  min-width: 0 !important; /* Permite que el panel mantenga su columna sin ensancharse */
+  min-width: 0 !important; /* Impide que las tablas empujen el panel hacia abajo */
   overflow-x: auto;
 }
 
@@ -231,7 +231,7 @@ button[onclick="exportarExcel()"]:hover {
   font-size: 0.82rem;
 }
 
-/* --- Tablas --- */
+/* --- Estilo de Tablas --- */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -268,7 +268,6 @@ td:first-child {
   color: #201f1e;
 }
 
-/* Indicadores de Instancia */
 .badge-descarga { color: #107c41; font-weight: 700; }
 .badge-descarga::before { content: "• "; font-size: 0.85rem; }
 
