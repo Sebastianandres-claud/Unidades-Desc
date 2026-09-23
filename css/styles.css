@@ -1,5 +1,6 @@
 /* =========================================================
-   SITRANS - CONTROL OPERACIONAL (ESTILO ORIGINAL CON SEGOE UI)
+   SITRANS - CONTROL OPERACIONAL
+   Layout Original (3 Tablas Horizontales en Paralelo + Segoe UI)
    ========================================================= */
 
 * {
@@ -12,20 +13,20 @@
 body {
   background-color: #f8f9fa;
   color: #201f1e;
-  padding: 16px 20px;
+  padding: 12px 18px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* --- Encabezado --- */
+/* --- Encabezado Superior --- */
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background: #ffffff;
-  padding: 12px 20px;
+  padding: 10px 18px;
   border-bottom: 1px solid #e1dfdd;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 header .brand {
@@ -35,7 +36,7 @@ header .brand {
 }
 
 header .brand-mark {
-  height: 58px; /* Logo grande y nítido */
+  height: 58px; /* Logo grande de Sitrans */
   width: auto;
   object-fit: contain;
 }
@@ -61,7 +62,6 @@ h1 {
   margin-top: 2px;
 }
 
-/* Botón Excel y Estado */
 header > div:last-child {
   display: flex;
   align-items: center;
@@ -77,6 +77,7 @@ button[onclick="exportarExcel()"] {
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.8rem;
+  transition: background 0.15s;
 }
 
 button[onclick="exportarExcel()"]:hover {
@@ -99,18 +100,22 @@ button[onclick="exportarExcel()"]:hover {
   background-color: #107c41;
 }
 
+.status-dot.offline {
+  background-color: #a80000;
+}
+
 /* --- Pestañas --- */
 .tabs {
   display: flex;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   border-bottom: 2px solid #e1dfdd;
 }
 
 .tab-btn {
   background: none;
   border: none;
-  padding: 8px 12px;
+  padding: 6px 12px;
   font-size: 0.85rem;
   font-weight: 600;
   color: #005a9e;
@@ -124,35 +129,34 @@ button[onclick="exportarExcel()"]:hover {
   font-weight: 700;
 }
 
-/* --- Tarjetas KPI (Estructura Original con Bordes de Color) --- */
+/* --- Franja de 5 Tarjetas KPI --- */
 .kpi-strip {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 10px;
+  margin-bottom: 14px;
 }
 
 .kpi-card {
   background: #ffffff;
   border-radius: 4px;
-  padding: 10px 12px;
-  border: 2px solid #e1dfdd; /* Ancho de borde original */
-  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  padding: 8px 10px;
+  border: 2px solid #e1dfdd;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
 }
 
-/* Colores de bordes completos por tarjeta */
-.kpi-card:nth-child(1) { border-color: #005a9e; } /* Calle - Azul */
-.kpi-card:nth-child(2) { border-color: #a80000; } /* Movimiento - Rojo */
-.kpi-card:nth-child(3) { border-color: #b06000; } /* Sin Conexión - Dorado */
-.kpi-card:nth-child(4) { border-color: #107c41; } /* Para Embarque - Verde */
-.kpi-card:nth-child(5) { border-color: #201f1e; } /* Total General - Oscuro */
+.kpi-card:nth-child(1) { border-color: #005a9e; } /* Calle */
+.kpi-card:nth-child(2) { border-color: #a80000; } /* Movimiento */
+.kpi-card:nth-child(3) { border-color: #b06000; } /* Sin Conexión */
+.kpi-card:nth-child(4) { border-color: #107c41; } /* Para Embarque */
+.kpi-card:nth-child(5) { border-color: #201f1e; } /* Total */
 
 .kpi-card h3 {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 700;
   color: #201f1e;
   text-align: center;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .kpi-card .metrics {
@@ -164,34 +168,36 @@ button[onclick="exportarExcel()"]:hover {
 
 .kpi-card .metric span {
   display: block;
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   color: #605e5c;
   font-weight: 700;
   text-transform: uppercase;
 }
 
 .kpi-card .metric strong {
-  font-size: 1.4rem;
+  font-size: 1.35rem;
   font-weight: 700;
   color: #201f1e;
 }
 
-/* --- Tablas y Paneles --- */
+/* --- Layout Paralelo de 3 Tablas (Horizontal Lado a Lado) --- */
 .page { display: none; }
 .page.active { display: block; }
 
 .grid {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr 1fr;
+  grid-template-columns: 1.25fr 0.85fr 0.9fr; /* Ajuste exacto de las 3 columnas */
   gap: 12px;
   align-items: start;
+  width: 100%;
 }
 
 .panel {
   background: #ffffff;
   border: 1px solid #d1d5db;
   border-radius: 4px;
-  padding: 12px;
+  padding: 10px 12px;
+  min-width: 0;
 }
 
 .panel-header {
@@ -200,6 +206,7 @@ button[onclick="exportarExcel()"]:hover {
   align-items: center;
   margin-bottom: 8px;
   padding-bottom: 4px;
+  border-bottom: 1px solid #f3f4f6;
 }
 
 .panel-title {
@@ -216,52 +223,62 @@ button[onclick="exportarExcel()"]:hover {
   font-size: 0.8rem;
 }
 
-/* --- Formato de Tabla Original --- */
+/* --- Formato de Tablas Compactas --- */
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.78rem;
+  font-size: 0.77rem;
 }
 
 th {
   background-color: #f9fafb;
-  color: #4b5563;
-  font-weight: 600;
+  color: #605e5c;
+  font-weight: 700;
   text-align: left;
-  padding: 6px 8px;
+  padding: 5px 6px;
   border-bottom: 1px solid #e5e7eb;
   font-size: 0.72rem;
+  white-space: nowrap;
 }
 
 th.sortable { cursor: pointer; }
 
 td {
-  padding: 6px 8px;
+  padding: 5px 6px;
   border-bottom: 1px solid #f3f4f6;
   color: #1f2937;
   vertical-align: middle;
+  white-space: nowrap;
 }
 
 tr:hover td {
   background-color: #f9fafb;
 }
 
-/* Indicadores tipo punto original */
+td:first-child {
+  font-weight: 700;
+  color: #201f1e;
+}
+
+/* Indicadores de Instancia con Puntos */
 .badge-descarga { color: #107c41; font-weight: 700; }
 .badge-descarga::before { content: "• "; font-size: 0.9rem; }
 
 .badge-calle { color: #005a9e; font-weight: 700; }
 .badge-calle::before { content: "• "; font-size: 0.9rem; }
 
-/* --- Badges de Tiempo (<15m Verde, 15-25m Amarillo, >=26m Rojo) --- */
+.badge-movimiento { color: #a80000; font-weight: 700; }
+.badge-movimiento::before { content: "• "; font-size: 0.9rem; }
+
+/* Badges de Tiempo (<15m Verde, 15-25m Ámbar, >=26m Rojo) */
 .time-cell {
   font-family: 'Segoe UI', sans-serif;
   font-weight: 700;
-  padding: 2px 8px;
+  padding: 2px 6px;
   border-radius: 4px;
   display: inline-block;
   text-align: center;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
 }
 
 .time-green {
@@ -296,8 +313,8 @@ tr:hover td {
   color: #005a9e;
   font-size: 0.78rem;
   font-weight: 600;
-  padding: 6px;
-  margin-top: 8px;
+  padding: 5px;
+  margin-top: 6px;
   border-radius: 4px;
   cursor: pointer;
 }
