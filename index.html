@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Control Operacional — Sitrans</title>
-  <link rel="stylesheet" href="css/styles.css?v=5.0">
+  <link rel="stylesheet" href="css/styles.css?v=6.0">
 </head>
 <body>
 
-  <!-- CABECERA INSTITUCIONAL EJECUTIVA -->
+  <!-- CABECERA INSTITUCIONAL -->
   <header class="exec-header">
     <div class="brand-wrapper">
       <div class="brand-badge">SITRANS</div>
@@ -23,7 +23,7 @@
     </button>
   </header>
 
-  <!-- PESTAÑAS SUB TIPO POWER BI -->
+  <!-- PESTAÑAS -->
   <nav class="exec-tabs">
     <button class="tab-link active" onclick="mostrarPagina('page-unidades', this)">Unidades Desconectadas</button>
     <button class="tab-link" onclick="mostrarPagina('page-planificacion', this)">Planificación Proyectada</button>
@@ -33,7 +33,7 @@
     <!-- PÁGINA 1: UNIDADES DESCONECTADAS -->
     <div id="page-unidades" class="page-container">
       
-      <!-- GRILLA DE TARJETAS KPI -->
+      <!-- GRILLA DE KPIS (5 CARDS EN FILA) -->
       <section class="kpi-row">
         
         <div class="kpi-card calle">
@@ -104,82 +104,77 @@
 
       </section>
 
-      <!-- GRILLA DE TABLAS DE DETALLE -->
-      <section class="dashboard-grid">
+      <!-- GRILLA DE 3 TABLAS EN PARALELO (VISIBLES SIEMPRE AL MISMO TIEMPO) -->
+      <section class="tables-parallel-grid">
         
-        <!-- Columna Izquierda Principal: Patio -->
-        <div class="tables-col">
-          <div class="card-panel">
-            <div class="panel-header">
-              <h2>Unidades desconectadas en patio</h2>
-              <span class="badge-count" id="count-patio">0</span>
-            </div>
-            <div class="table-wrapper">
-              <table class="exec-table" id="tbl-patio">
-                <thead>
-                  <tr>
-                    <th>Contenedor</th>
-                    <th>Instancia</th>
-                    <th>Posición</th>
-                    <th>Nave</th>
-                    <th>Tiempo</th>
-                    <th>Mov</th>
-                  </tr>
-                </thead>
-                <tbody id="tbody-patio">
-                  <tr><td colspan="6" class="empty-state">sin registros</td></tr>
-                </tbody>
-              </table>
-            </div>
+        <!-- Tabla 1: Patio -->
+        <div class="card-panel">
+          <div class="panel-header">
+            <h2>Unidades desconectadas en patio</h2>
+            <span class="badge-count" id="count-patio">0</span>
+          </div>
+          <div class="table-wrapper">
+            <table class="exec-table" id="tbl-patio">
+              <thead>
+                <tr>
+                  <th>Contenedor</th>
+                  <th>Instancia</th>
+                  <th>Posición</th>
+                  <th>Nave</th>
+                  <th>Tiempo</th>
+                  <th>Mov</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-patio">
+                <tr><td colspan="6" class="empty-state">sin registros</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
-        <!-- Columna Derecha: A Bordo + Embarque -->
-        <div class="tables-col">
-          
-          <div class="card-panel">
-            <div class="panel-header">
-              <h2>A bordo sin conexión</h2>
-              <span class="badge-count" id="count-bordo">0</span>
-            </div>
-            <div class="table-wrapper">
-              <table class="exec-table" id="tbl-bordo">
-                <thead>
-                  <tr>
-                    <th>Contenedor</th>
-                    <th>Nave</th>
-                    <th>Tiempo</th>
-                    <th>Posición</th>
-                  </tr>
-                </thead>
-                <tbody id="tbody-bordo">
-                  <tr><td colspan="4" class="empty-state">sin unidades a bordo sin conexión</td></tr>
-                </tbody>
-              </table>
-            </div>
+        <!-- Tabla 2: A Bordo -->
+        <div class="card-panel">
+          <div class="panel-header">
+            <h2>A bordo sin conexión</h2>
+            <span class="badge-count" id="count-bordo">0</span>
           </div>
-
-          <div class="card-panel">
-            <div class="panel-header">
-              <h2>Desconectadas para embarque</h2>
-              <span class="badge-count" id="count-embarque">0</span>
-            </div>
-            <div class="table-wrapper">
-              <table class="exec-table" id="tbl-embarque">
-                <thead>
-                  <tr>
-                    <th>Contenedor</th>
-                    <th>Nave</th>
-                    <th>Tiempo</th>
-                  </tr>
-                </thead>
-                <tbody id="tbody-embarque">
-                  <tr><td colspan="3" class="empty-state">sin unidades desconectadas para embarque</td></tr>
-                </tbody>
-              </table>
-            </div>
+          <div class="table-wrapper">
+            <table class="exec-table" id="tbl-bordo">
+              <thead>
+                <tr>
+                  <th>Contenedor</th>
+                  <th>Nave</th>
+                  <th>Tiempo</th>
+                  <th>Posición</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-bordo">
+                <tr><td colspan="4" class="empty-state">sin unidades a bordo sin conexión</td></tr>
+              </tbody>
+            </table>
           </div>
+        </div>
 
+        <!-- Tabla 3: Para Embarque -->
+        <div class="card-panel">
+          <div class="panel-header">
+            <h2>Desconectadas para embarque</h2>
+            <span class="badge-count" id="count-embarque">0</span>
+          </div>
+          <div class="table-wrapper">
+            <table class="exec-table" id="tbl-embarque">
+              <thead>
+                <tr>
+                  <th>Contenedor</th>
+                  <th>Nave</th>
+                  <th>Tiempo</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-embarque">
+                <tr><td colspan="3" class="empty-state">sin unidades desconectadas para embarque</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
       </section>
@@ -192,7 +187,7 @@
         <div class="panel-header">
           <h2>Planificación Proyectada Naviera</h2>
         </div>
-        <div style="width: 100%; height: 600px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border-color);">
+        <div style="width: 100%; height: 620px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border-color);">
           <iframe 
             src="https://tpsv.sharepoint.com/sites/TPSVPlanificacionNaviera/_layouts/15/Doc.aspx?sourcedoc={621b809b-e4fd-4531-9d66-5df414ca4610}&action=embedview&wdAllowInteractivity=False&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True" 
             width="100%" 
@@ -206,6 +201,6 @@
 
   </main>
 
-  <script src="js/script.js?v=5.0"></script>
+  <script src="js/script.js?v=6.0"></script>
 </body>
 </html>
