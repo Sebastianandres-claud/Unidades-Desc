@@ -3,17 +3,6 @@
    ========================================================================== */
 
 const RAW_URL = "https://github-live-proxy.samiranda.workers.dev";
-
-async function fetchData(){
-  try{
-    // Agrega timestamp para forzar lectura fresca
-    const url = `${RAW_URL}?t=${Date.now()}`;
-    const res = await fetch(url, { 
-      cache: 'no-store',
-      headers: { "Pragma": "no-cache", "Cache-Control": "no-cache" }
-    });
-    
-    // ... resto del código ...
 const REFRESH_MS = 10000;
 const CODIGOS_EXCLUIDOS = ["TIP", "TQ", "OUT"];
 const DIAS = { LU:0, MA:1, MI:2, JU:3, VI:4, SA:5, DO:6 };
@@ -172,15 +161,25 @@ function esPosicionVigente(pos, anioActual){
 function mondayIndex(date){ return (date.getDay() + 6) % 7; }
 
 function parseDiscon(valor){
-  const txt = String(valor ?? '').trim();
-  if(txt.length !== 10) return null;
-  const yy = parseInt(txt.substring(0,2),10);
-  const mm = parseInt(txt.substring(2,4),10);
-  const dd = parseInt(txt.substring(4,6),10);
-  const hh = parseInt(txt.substring(6,8),10);
-  const mi = parseInt(txt.substring(8,10),10);
-  if([yy,mm,dd,hh,mi].some(isNaN)) return null;
-  return new Date(2000+yy, mm-1, dd, hh, mi, 0);
+  if (!valor) return null;
+  const txt = String(valor).trim();
+  if (!txt) return null;
+
+  if (/^\d{10}$/.test(txt)) {
+    const yy = parseInt(txt.substring(0,2),10);
+    const mm = parseInt(txt.substring(2,4),10);
+    const dd = parseInt(txt.substring(4,6),10);
+    const hh = parseInt(txt.substring(6,8),10);
+    const mi = parseInt(txt.substring(8,10),10);
+    if (![yy,mm,dd,hh,mi].some(isNaN)) {
+      return new Date(2000+yy, mm-1, dd, hh, mi, 0);
+    }
+  }
+
+  const parsed = Date.parse(txt);
+  if (!isNaN(parsed)) return new Date(parsed);
+
+  return null;
 }
 
 function parseHoraSimple(valor, ahora){
@@ -226,11 +225,12 @@ function extraerFechaReporte(text){
 
   for (let i = lines.length - 1; i >= 0; i--) {
     const line = lines[i];
-    const matchTSV = line.match(/^(\d{2})[\/\-](\d{2})[\/\-](\d{2,4})[\t\s]+(\d{2}):(\d{2}):(\d{2})$/);
+    const matchTSV = line.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})[\t\s]+(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
     if (matchTSV) {
       let yr = Number(matchTSV[3]);
       if (yr < 100) yr += 2000;
-      return new Date(yr, Number(matchTSV[2]) - 1, Number(matchTSV[1]), Number(matchTSV[4]), Number(matchTSV[5]), Number(matchTSV[6]));
+      const sec = matchTSV[6] ? Number(matchTSV[6]) : 0;
+      return new Date(yr, Number(matchTSV[2]) - 1, Number(matchTSV[1]), Number(matchTSV[4]), Number(matchTSV[5]), sec);
     }
     if (/DATOS\s+AL|OPERACI[OÓ]N/i.test(line)) {
       const matchTexto = line.match(/\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}\s+\d{1,2}:\d{2}(:\d{2})?(\s*[ap]\.?\s*m\.?)?/i);
@@ -244,9 +244,14 @@ function parseTSV(text){
   const cleanText = text.replace(/^\ufeff/, '');
   const lines = cleanText.replace(/\r/g,'').split('\n');
   if(lines.length === 0) return [];
-  const headers = lines[0].split('\t').map(h => h.trim());
+
+  // Busca dinámicamente la fila que contiene las cabeceras
+  let headerIndex = lines.findIndex(l => l.includes('Container No.') || l.includes('Container'));
+  if (headerIndex === -1) headerIndex = 0;
+
+  const headers = lines[headerIndex].split('\t').map(h => h.trim());
   const rows = [];
-  for(let i=1;i<lines.length;i++){
+  for(let i = headerIndex + 1; i < lines.length; i++){
     const line = lines[i];
     if(!line || !line.includes('\t')) continue;
     const cells = line.split('\t');
@@ -258,6 +263,8 @@ function parseTSV(text){
 }
 
 function calcularFila(fila, ahora, anioActual){
+  if (!fila) return null;
+
   const powerTxt = String(fila['Power'] ?? '');
   const seMovio = powerTxt.includes('(') ? 'Sí' : 'No';
   const powerNum = parseInt(powerTxt.replace(/[()]/g,'').trim(), 10) || 0;
@@ -329,9 +336,9 @@ function procesar(text){
   const anioActual = ahora.getFullYear();
   const rows = parseTSV(text);
 
-  const filasValidas = rows.filter(r => !esVacio(r['Container No.']));
+  const filasValidas = rows.filter(r => r && !esVacio(r['Container No.']));
   const sinBasura = filasValidas.filter(r => esPosicionVigente(r['Current Position'], anioActual));
-  const calculadas = sinBasura.map(r => calcularFila(r, ahora, anioActual));
+  const calculadas = sinBasura.map(r => calcularFila(r, ahora, anioActual)).filter(Boolean);
   return calculadas.filter(r => !String(r.Remarks ?? '').toUpperCase().includes('NO CONECTAR'));
 }
 
@@ -472,7 +479,7 @@ function renderEmbarque(rows){
 }
 
 // ==========================================
-// CICLO DE CONSULTA
+// CICLO DE CONSULTA Y ACTUALIZACIÓN
 // ==========================================
 
 async function fetchData(){
@@ -510,10 +517,13 @@ async function fetchData(){
         const dStr = fechaReporte.toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'2-digit'});
         const tStr = fechaReporte.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
         opClock.textContent = 'DATOS AL ' + dStr + ' ' + tStr;
-      } else if(typeof fechaReporte === 'string'){
+      } else if(typeof fechaReporte === 'string' && fechaReporte.trim() !== ''){
         opClock.textContent = fechaReporte;
-      } else if(!opClock.textContent.includes('DATOS AL')) {
-        opClock.textContent = 'DATOS AL --/--/-- --:--';
+      } else {
+        const ahora = new Date();
+        const dStr = ahora.toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'2-digit'});
+        const tStr = ahora.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+        opClock.textContent = 'ACTUALIZADO ' + dStr + ' ' + tStr;
       }
     }
 
