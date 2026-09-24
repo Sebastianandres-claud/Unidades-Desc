@@ -3,163 +3,199 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Unidades Desconectadas - Control Operacional</title>
-  
-  <!-- Tipografía Segoe UI como principal -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  
-  <!-- Hoja de estilos CSS externa -->
-  <link rel="stylesheet" href="css/styles.css">
+  <title>Control Operacional - Sitrans</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Fuente oficial de Power BI / Windows -->
+  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <header>
-    <div class="brand">
-      <img class="brand-mark" src="./LOGO-SITRANS-scaled.png" alt="SITRANS">
-      <div>
-        <p class="eyebrow">Control Operacional</p>
-        <h1>Unidades Desconectadas</h1>
-        <div class="clock" id="opClock">Cargando...</div>
+  <!-- HEADER INSTITUCIONAL -->
+  <header class="pbi-header">
+    <div class="header-left">
+      <img class="brand-logo" src="./LOGO-SITRANS-scaled.png" alt="SITRANS">
+      <div class="header-titles">
+        <span class="sub-category">CONTROL OPERACIONAL</span>
+        <h1 class="main-title">Unidades Desconectadas</h1>
+        <span class="timestamp" id="last-update">DATOS AL --/--/-- --:--</span>
       </div>
     </div>
-    <div class="status">
-      <button class="print-btn" onclick="exportarExcel()">Exportar Excel</button>
-      <span class="dot" id="statusDot"></span>
-      <span id="statusText">conectando</span>
+    <div class="header-right">
+      <button class="btn-pbi-export" onclick="exportToExcel()">Exportar Excel</button>
     </div>
   </header>
 
-  <nav class="tabs">
-    <button class="tab-btn active" data-page="page-unidades" onclick="mostrarPagina('page-unidades', this)">Unidades Desc</button>
-    <button class="tab-btn" data-page="page-planificacion" onclick="mostrarPagina('page-planificacion', this)">Planificación Proyectada</button>
+  <!-- NAVEGACIÓN POR PESTAÑAS -->
+  <nav class="pbi-tabs">
+    <button class="tab-item active">Unidades Desc</button>
+    <button class="tab-item">Planificación Proyectada</button>
   </nav>
 
-  <div id="page-unidades" class="page active">
+  <!-- CONTENIDO PRINCIPAL DEL DASHBOARD -->
+  <main class="dashboard-container">
 
-    <section class="kpi-strip">
-      <div class="kpi-card c-blue" id="kpiCalleCard">
-        <p class="kpi-title">Calle</p>
-        <div class="kpi-metrics">
-          <div class="kpi-metric">
-            <div class="kpi-metric-label">Contenedores</div>
-            <div class="kpi-metric-value" id="kpiCalleCount">0</div>
+    <!-- GRILLA DE TARJETAS KPI SUPERIORES (5 TARJETAS) -->
+    <section class="kpi-grid">
+      
+      <!-- Calle -->
+      <div class="kpi-card border-blue">
+        <div class="kpi-title">Calle</div>
+        <div class="kpi-values">
+          <div class="metric">
+            <span class="metric-label">CONTENEDORES</span>
+            <span class="metric-value" id="kpi-calle-cnt">0</span>
           </div>
-          <div class="kpi-metric">
-            <div class="kpi-metric-label">Promedio Mins</div>
-            <div class="kpi-metric-value" id="kpiCalleProm">0.0</div>
+          <div class="metric">
+            <span class="metric-label">PROMEDIO MINS</span>
+            <span class="metric-value" id="kpi-calle-avg">0.0</span>
           </div>
         </div>
       </div>
 
-      <div class="kpi-card c-red" id="kpiMovimientoCard">
-        <p class="kpi-title">Movimiento</p>
-        <div class="kpi-metrics">
-          <div class="kpi-metric">
-            <div class="kpi-metric-label">Contenedores</div>
-            <div class="kpi-metric-value" id="kpiMovimientoCount">0</div>
+      <!-- Movimiento -->
+      <div class="kpi-card border-red">
+        <div class="kpi-title">Movimiento</div>
+        <div class="kpi-values">
+          <div class="metric">
+            <span class="metric-label">CONTENEDORES</span>
+            <span class="metric-value" id="kpi-mov-cnt">0</span>
           </div>
-          <div class="kpi-metric">
-            <div class="kpi-metric-label">Promedio Mins</div>
-            <div class="kpi-metric-value" id="kpiMovimientoProm">0.0</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="kpi-card c-amber" id="kpiSinConexionCard">
-        <p class="kpi-title">A bordo sin conexión</p>
-        <div class="kpi-metrics">
-          <div class="kpi-metric">
-            <div class="kpi-metric-label">Contenedores</div>
-            <div class="kpi-metric-value" id="kpiSinConexionCount">0</div>
-          </div>
-          <div class="kpi-metric">
-            <div class="kpi-metric-label">Promedio Mins</div>
-            <div class="kpi-metric-value" id="kpiSinConexionProm">0.0</div>
+          <div class="metric">
+            <span class="metric-label">PROMEDIO MINS</span>
+            <span class="metric-value" id="kpi-mov-avg">0.0</span>
           </div>
         </div>
       </div>
 
-      <div class="kpi-card c-green" id="kpiEmbarqueCard">
-        <p class="kpi-title">Para embarque</p>
-        <div class="kpi-metrics">
-          <div class="kpi-metric">
-            <div class="kpi-metric-label">Contenedores</div>
-            <div class="kpi-metric-value" id="kpiEmbarqueCount">0</div>
+      <!-- A bordo sin conexión -->
+      <div class="kpi-card border-orange">
+        <div class="kpi-title">A bordo sin conexión</div>
+        <div class="kpi-values">
+          <div class="metric">
+            <span class="metric-label">CONTENEDORES</span>
+            <span class="metric-value" id="kpi-bordo-cnt">0</span>
           </div>
-          <div class="kpi-metric">
-            <div class="kpi-metric-label">Promedio Mins</div>
-            <div class="kpi-metric-value" id="kpiEmbarqueProm">0.0</div>
+          <div class="metric">
+            <span class="metric-label">PROMEDIO MINS</span>
+            <span class="metric-value" id="kpi-bordo-avg">0.0</span>
           </div>
         </div>
       </div>
 
-      <div class="kpi-card c-dark" id="kpiTotalCard">
-        <p class="kpi-title">Total General</p>
-        <div class="kpi-metrics">
-          <div class="kpi-metric">
-            <div class="kpi-metric-label">Unidades</div>
-            <div class="kpi-metric-value" id="kpiTotalCount">0</div>
+      <!-- Para embarque -->
+      <div class="kpi-card border-green">
+        <div class="kpi-title">Para embarque</div>
+        <div class="kpi-values">
+          <div class="metric">
+            <span class="metric-label">CONTENEDORES</span>
+            <span class="metric-value" id="kpi-emb-cnt">0</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">PROMEDIO MINS</span>
+            <span class="metric-value" id="kpi-emb-avg">0.0</span>
           </div>
         </div>
       </div>
+
+      <!-- Total General -->
+      <div class="kpi-card border-dark">
+        <div class="kpi-title">Total General</div>
+        <div class="kpi-values single-metric">
+          <div class="metric">
+            <span class="metric-label">UNIDADES</span>
+            <span class="metric-value" id="kpi-total-cnt">0</span>
+          </div>
+        </div>
+      </div>
+
     </section>
 
-    <main>
-      <div class="panel">
-        <div class="panel-title">
-          <h2>Unidades desconectadas en patio</h2>
-          <span class="count" id="countGeneral">0</span>
+    <!-- GRILLA DE TABLAS DE DETALLE (3 SECCIONES) -->
+    <section class="tables-grid">
+      
+      <!-- Tabla 1: Patio -->
+      <div class="table-card">
+        <div class="table-card-header">
+          <div class="header-left-indicator">
+            <span class="blue-bar"></span>
+            <h3>Unidades desconectadas en patio</h3>
+          </div>
+          <span class="badge-count" id="count-patio">0</span>
         </div>
-        <div id="tableGeneral">
-          <div class="empty-state">cargando…</div>
+        <div class="table-wrapper">
+          <table id="tbl-patio">
+            <thead>
+              <tr>
+                <th>Contenedor</th>
+                <th>Instancia</th>
+                <th>Posición</th>
+                <th>Nave</th>
+                <th>Tipo</th>
+                <th>Tiempo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="6" class="empty-state">sin registros</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tabla 2: A bordo sin conexión -->
+      <div class="table-card">
+        <div class="table-card-header">
+          <div class="header-left-indicator">
+            <span class="blue-bar"></span>
+            <h3>Unidades a bordo sin conexión</h3>
+          </div>
+          <span class="badge-count" id="count-bordo">0</span>
+        </div>
+        <div class="table-wrapper">
+          <table id="tbl-bordo">
+            <thead>
+              <tr>
+                <th>Contenedor</th>
+                <th>Nave</th>
+                <th>Tiempo</th>
+                <th>Posición</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="4" class="empty-state">sin unidades a bordo sin conexión</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <div class="panel">
-        <div class="panel-title">
-          <h2>Unidades a bordo sin conexión</h2>
-          <span class="count" id="countSinConexion">0</span>
+      <!-- Tabla 3: Para embarque -->
+      <div class="table-card">
+        <div class="table-card-header">
+          <div class="header-left-indicator">
+            <span class="blue-bar"></span>
+            <h3>Unidades desconectadas para embarque</h3>
+          </div>
+          <span class="badge-count" id="count-embarque">0</span>
         </div>
-        <div id="tableSinConexion">
-          <div class="empty-state">cargando…</div>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-title">
-          <h2>Unidades desconectadas para embarque</h2>
-          <span class="count" id="countEmbarque">0</span>
-        </div>
-        <div id="tableEmbarque">
-          <div class="empty-state">cargando…</div>
-        </div>
-      </div>
-    </main>
-
-  </div>
-
-  <div id="page-planificacion" class="page">
-    <main class="planificacion-wrapper">
-      <div class="panel">
-        <div class="panel-title">
-          <h2>Planificación Proyectada</h2>
-        </div>
-        <div class="iframe-container">
-          <iframe 
-            src="https://tpsv.sharepoint.com/sites/TPSVPlanificacionNaviera/_layouts/15/Doc.aspx?sourcedoc={621b809b-e4fd-4531-9d66-5df414ca4610}&action=embedview&wdAllowInteractivity=False&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True&wdInConfigurator=True" 
-            title="Planificación Proyectada"
-            frameborder="0" 
-            scrolling="no">
-          </iframe>
+        <div class="table-wrapper">
+          <table id="tbl-embarque">
+            <thead>
+              <tr>
+                <th>Contenedor</th>
+                <th>Nave</th>
+                <th>Tiempo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="3" class="empty-state">sin unidades desconectadas para embarque</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
-    </main>
-  </div>
 
-  <!-- Librería externa para exportación Excel -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <!-- Lógica de JavaScript externa -->
+    </section>
+
+  </main>
+
   <script src="js/script.js"></script>
 </body>
 </html>
