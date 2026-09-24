@@ -164,11 +164,11 @@ h1 {
   box-shadow: 0 2px 4px rgba(0,0,0,0.03);
 }
 
-.kpi-card.c-blue   { border-top-color: #005a9e; }
-.kpi-card.c-red    { border-top-color: #a80000; }
-.kpi-card.c-amber  { border-top-color: #b06000; }
-.kpi-card.c-green  { border-top-color: #107c41; }
-.kpi-card.c-dark   { border-top-color: #201f1e; }
+.kpi-card.c-blue { border-top-color: #005a9e; }
+.kpi-card.c-red { border-top-color: #a80000; }
+.kpi-card.c-amber { border-top-color: #b06000; }
+.kpi-card.c-green { border-top-color: #107c41; }
+.kpi-card.c-dark { border-top-color: #201f1e; }
 
 .kpi-title {
   font-size: 0.8rem;
