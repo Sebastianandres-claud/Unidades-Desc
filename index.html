@@ -5,226 +5,203 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Control Operacional - Sitrans</title>
   <link rel="stylesheet" href="css/styles.css?v=3.0">
-  <!-- Fuente oficial de Power BI / Windows -->
-  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <!-- HEADER INSTITUCIONAL -->
-  <header class="pbi-header">
-    <div class="header-left">
-      <img class="brand-logo" src="./LOGO-SITRANS-scaled.png" alt="SITRANS">
-      <div class="header-titles">
-        <span class="sub-category">CONTROL OPERACIONAL</span>
-        <h1 class="main-title">Unidades Desconectadas</h1>
-        <span class="timestamp" id="last-update">DATOS AL --/--/-- --:--</span>
+  <!-- ENCABEZADO TÉCNICO -->
+  <header>
+    <div class="brand-section">
+      <div class="logo-sitrans">SITRANS</div>
+      <div class="title-area">
+        <h1>Unidades Desconectadas</h1>
+        <div class="timestamp" id="last-update">DATOS AL --/--/-- --:--</div>
       </div>
     </div>
-    <div class="header-right">
-      <button class="btn-pbi-export" onclick="exportToExcel()">Exportar Excel</button>
-    </div>
+    <button class="btn-export" onclick="exportToExcel()">Exportar Excel</button>
   </header>
 
-<!-- NAVEGACIÓN POR PESTAÑAS -->
-<nav class="pbi-tabs">
-  <button class="tab-item active" onclick="mostrarPagina('page-unidades', this)">Unidades Desc</button>
-  <button class="tab-item" onclick="mostrarPagina('page-planificacion', this)">Planificación Proyectada</button>
-</nav>
+  <!-- NAVEGACIÓN POR PESTAÑAS -->
+  <nav class="tabs-container">
+    <button class="tab-btn active" onclick="mostrarPagina('page-unidades', this)">Unidades Desc</button>
+    <button class="tab-btn" onclick="mostrarPagina('page-planificacion', this)">Planificación Proyectada</button>
+  </nav>
 
-<!-- CONTENIDO PRINCIPAL DEL DASHBOARD -->
-<main class="dashboard-container">
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="dashboard-container">
 
-  <!-- PÁGINA 1: UNIDADES DESCONECTADAS -->
-  <div id="page-unidades" class="page active">
-    <!-- GRILLA DE TARJETAS KPI SUPERIORES (5 TARJETAS) -->
-    <section class="kpi-grid">
-      <!-- (Tus tarjetas KPI aquí como las teníamos) -->
-    </section>
+    <!-- PÁGINA 1: UNIDADES DESCONECTADAS -->
+    <div id="page-unidades" class="page active">
+      
+      <!-- GRILLA DE TARJETAS KPI (5 CATEGORÍAS) -->
+      <section class="kpi-grid">
+        
+        <!-- Calle -->
+        <div class="kpi-card calle">
+          <div class="kpi-title">Calle</div>
+          <div class="kpi-metrics">
+            <div class="metric-box">
+              <span class="metric-label">CONTENEDORES</span>
+              <span class="metric-value" id="kpi-calle-cnt">0</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">PROMEDIO MINS</span>
+              <span class="metric-value" id="kpi-calle-avg">0.0</span>
+            </div>
+          </div>
+        </div>
 
-    <!-- GRILLA DE TABLAS DE DETALLE (3 SECCIONES) -->
-    <section class="tables-grid">
-      <!-- (Tus 3 tablas aquí como las teníamos) -->
-    </section>
-  </div>
+        <!-- Movimiento -->
+        <div class="kpi-card movimiento">
+          <div class="kpi-title">Movimiento</div>
+          <div class="kpi-metrics">
+            <div class="metric-box">
+              <span class="metric-label">CONTENEDORES</span>
+              <span class="metric-value" id="kpi-mov-cnt">0</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">PROMEDIO MINS</span>
+              <span class="metric-value" id="kpi-mov-avg">0.0</span>
+            </div>
+          </div>
+        </div>
 
-<!-- PÁGINA 2: PLANIFICACIÓN PROYECTADA -->
-<div id="page-planificacion" class="page">
-  <div class="table-card iframe-card">
-    <div class="table-card-header">
-      <div class="header-left-indicator">
-        <span class="blue-bar"></span>
-        <h3>Planificación Proyectada Naviera</h3>
+        <!-- A bordo sin conexión -->
+        <div class="kpi-card a-bordo">
+          <div class="kpi-title">A bordo sin conexión</div>
+          <div class="kpi-metrics">
+            <div class="metric-box">
+              <span class="metric-label">CONTENEDORES</span>
+              <span class="metric-value" id="kpi-bordo-cnt">0</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">PROMEDIO MINS</span>
+              <span class="metric-value" id="kpi-bordo-avg">0.0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Para embarque -->
+        <div class="kpi-card embarque">
+          <div class="kpi-title">Para embarque</div>
+          <div class="kpi-metrics">
+            <div class="metric-box">
+              <span class="metric-label">CONTENEDORES</span>
+              <span class="metric-value" id="kpi-emb-cnt">0</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">PROMEDIO MINS</span>
+              <span class="metric-value" id="kpi-emb-avg">0.0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total General -->
+        <div class="kpi-card total">
+          <div class="kpi-title">Total General</div>
+          <div class="kpi-metrics">
+            <div class="metric-box">
+              <span class="metric-label">UNIDADES</span>
+              <span class="metric-value" id="kpi-total-cnt">0</span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- GRILLA DE TABLAS DE DETALLE (3 SECCIONES) -->
+      <section class="tables-grid">
+        
+        <!-- Tabla 1: Patio -->
+        <div class="table-card">
+          <div class="table-title-bar">
+            <h2>Unidades desconectadas en patio</h2>
+            <span class="badge-count" id="count-patio">0</span>
+          </div>
+          <div class="table-container">
+            <table class="tech-table" id="tbl-patio">
+              <thead>
+                <tr>
+                  <th>Contenedor</th>
+                  <th>Instancia</th>
+                  <th>Posición</th>
+                  <th>Nave</th>
+                  <th>Tiempo</th>
+                  <th>Mov</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-patio">
+                <tr><td colspan="6" class="empty-state">sin registros</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tabla 2: A bordo sin conexión -->
+        <div class="table-card">
+          <div class="table-title-bar">
+            <h2>Unidades a bordo sin conexión</h2>
+            <span class="badge-count" id="count-bordo">0</span>
+          </div>
+          <div class="table-container">
+            <table class="tech-table" id="tbl-bordo">
+              <thead>
+                <tr>
+                  <th>Contenedor</th>
+                  <th>Nave</th>
+                  <th>Tiempo</th>
+                  <th>Posición</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-bordo">
+                <tr><td colspan="4" class="empty-state">sin unidades a bordo sin conexión</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tabla 3: Para embarque -->
+        <div class="table-card">
+          <div class="table-title-bar">
+            <h2>Unidades desconectadas para embarque</h2>
+            <span class="badge-count" id="count-embarque">0</span>
+          </div>
+          <div class="table-container">
+            <table class="tech-table" id="tbl-embarque">
+              <thead>
+                <tr>
+                  <th>Contenedor</th>
+                  <th>Nave</th>
+                  <th>Tiempo</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-embarque">
+                <tr><td colspan="3" class="empty-state">sin unidades desconectadas para embarque</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+
+    <!-- PÁGINA 2: PLANIFICACIÓN PROYECTADA -->
+    <div id="page-planificacion" class="page" style="display: none;">
+      <div class="table-card">
+        <div class="table-title-bar">
+          <h2>Planificación Proyectada Naviera</h2>
+        </div>
+        <div style="width: 100%; height: 620px; border-radius: 4px; overflow: hidden; border: 1px solid #cbd5e1;">
+          <iframe 
+            src="https://tpsv.sharepoint.com/sites/TPSVPlanificacionNaviera/_layouts/15/Doc.aspx?sourcedoc={621b809b-e4fd-4531-9d66-5df414ca4610}&action=embedview&wdAllowInteractivity=False&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True" 
+            width="100%" 
+            height="100%" 
+            frameborder="0" 
+            scrolling="no">
+          </iframe>
+        </div>
       </div>
     </div>
-    <div class="embed-wrapper">
-      <iframe 
-        src="https://tpsv.sharepoint.com/sites/TPSVPlanificacionNaviera/_layouts/15/Doc.aspx?sourcedoc={621b809b-e4fd-4531-9d66-5df414ca4610}&action=embedview&wdAllowInteractivity=False&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True&wdInConfigurator=True" 
-        frameborder="0" 
-        scrolling="no">
-      </iframe>
-    </div>
-  </div>
-</div>
-
-    <!-- GRILLA DE TARJETAS KPI SUPERIORES (5 TARJETAS) -->
-    <section class="kpi-grid">
-      
-      <!-- Calle -->
-      <div class="kpi-card border-blue">
-        <div class="kpi-title">Calle</div>
-        <div class="kpi-values">
-          <div class="metric">
-            <span class="metric-label">CONTENEDORES</span>
-            <span class="metric-value" id="kpi-calle-cnt">0</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">PROMEDIO MINS</span>
-            <span class="metric-value" id="kpi-calle-avg">0.0</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Movimiento -->
-      <div class="kpi-card border-red">
-        <div class="kpi-title">Movimiento</div>
-        <div class="kpi-values">
-          <div class="metric">
-            <span class="metric-label">CONTENEDORES</span>
-            <span class="metric-value" id="kpi-mov-cnt">0</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">PROMEDIO MINS</span>
-            <span class="metric-value" id="kpi-mov-avg">0.0</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- A bordo sin conexión -->
-      <div class="kpi-card border-orange">
-        <div class="kpi-title">A bordo sin conexión</div>
-        <div class="kpi-values">
-          <div class="metric">
-            <span class="metric-label">CONTENEDORES</span>
-            <span class="metric-value" id="kpi-bordo-cnt">0</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">PROMEDIO MINS</span>
-            <span class="metric-value" id="kpi-bordo-avg">0.0</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Para embarque -->
-      <div class="kpi-card border-green">
-        <div class="kpi-title">Para embarque</div>
-        <div class="kpi-values">
-          <div class="metric">
-            <span class="metric-label">CONTENEDORES</span>
-            <span class="metric-value" id="kpi-emb-cnt">0</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">PROMEDIO MINS</span>
-            <span class="metric-value" id="kpi-emb-avg">0.0</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Total General -->
-      <div class="kpi-card border-dark">
-        <div class="kpi-title">Total General</div>
-        <div class="kpi-values single-metric">
-          <div class="metric">
-            <span class="metric-label">UNIDADES</span>
-            <span class="metric-value" id="kpi-total-cnt">0</span>
-          </div>
-        </div>
-      </div>
-
-    </section>
-
-    <!-- GRILLA DE TABLAS DE DETALLE (3 SECCIONES) -->
-    <section class="tables-grid">
-      
-      <!-- Tabla 1: Patio -->
-      <div class="table-card">
-        <div class="table-card-header">
-          <div class="header-left-indicator">
-            <span class="blue-bar"></span>
-            <h3>Unidades desconectadas en patio</h3>
-          </div>
-          <span class="badge-count" id="count-patio">0</span>
-        </div>
-        <div class="table-wrapper">
-          <table id="tbl-patio">
-            <thead>
-              <tr>
-                <th>Contenedor</th>
-                <th>Instancia</th>
-                <th>Posición</th>
-                <th>Nave</th>
-                <th>Tipo</th>
-                <th>Tiempo</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td colspan="6" class="empty-state">sin registros</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Tabla 2: A bordo sin conexión -->
-      <div class="table-card">
-        <div class="table-card-header">
-          <div class="header-left-indicator">
-            <span class="blue-bar"></span>
-            <h3>Unidades a bordo sin conexión</h3>
-          </div>
-          <span class="badge-count" id="count-bordo">0</span>
-        </div>
-        <div class="table-wrapper">
-          <table id="tbl-bordo">
-            <thead>
-              <tr>
-                <th>Contenedor</th>
-                <th>Nave</th>
-                <th>Tiempo</th>
-                <th>Posición</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td colspan="4" class="empty-state">sin unidades a bordo sin conexión</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Tabla 3: Para embarque -->
-      <div class="table-card">
-        <div class="table-card-header">
-          <div class="header-left-indicator">
-            <span class="blue-bar"></span>
-            <h3>Unidades desconectadas para embarque</h3>
-          </div>
-          <span class="badge-count" id="count-embarque">0</span>
-        </div>
-        <div class="table-wrapper">
-          <table id="tbl-embarque">
-            <thead>
-              <tr>
-                <th>Contenedor</th>
-                <th>Nave</th>
-                <th>Tiempo</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td colspan="3" class="empty-state">sin unidades desconectadas para embarque</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-    </section>
 
   </main>
 
