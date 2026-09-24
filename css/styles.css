@@ -261,3 +261,14 @@ tr:nth-child(even) td {
   padding: 24px !important;
   font-style: italic;
 }
+
+/* Control de visibilidad de pestañas */
+.page {
+  display: none;
+}
+
+.page.active {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
