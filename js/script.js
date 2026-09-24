@@ -1,4 +1,5 @@
-const RAW_URL = "https://github-live-proxy.samiranda.workers.dev";
+// Reemplaza <USUARIO> y <REPOSITORIO> por tus datos de GitHub
+const RAW_URL = "https://raw.githubusercontent.com/Sebastianandres-claud/Unidades-Desc/main/DESCONECTADOSBI.txt";
 const REFRESH_MS = 10000;
 const CODIGOS_EXCLUIDOS = ["TIP", "TQ", "OUT"];
 const DIAS = { LU:0, MA:1, MI:2, JU:3, VI:4, SA:5, DO:6 };
