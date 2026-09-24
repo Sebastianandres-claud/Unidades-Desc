@@ -1,81 +1,295 @@
-/* ===================================================
-   ESTILO MANUAL TÉCNICO / LIBRO DE CIENCIA
-   =================================================== */
+/* ==========================================================================
+   DASHBOARD UNIDADES DESCONECTADAS - ESTILO MANUAL TÉCNICO (2010)
+   ========================================================================== */
+
+/* --- RESET Y VARIABLES --- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 :root {
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  /* Tipografías */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   --font-mono: "Consolas", "Courier New", "Liberation Mono", monospace;
-  
-  /* Colores Identificadores */
+
+  /* Paleta Neutral (Libro Técnico) */
+  --bg-app: #f1f5f9;
+  --bg-card: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-color: #cbd5e1;
+  --header-dark: #1e293b;
+
+  /* Categorías y Colores Identificadores */
   --color-calle: #0284c7;
-  --bg-calle-row: rgba(224, 242, 254, 0.6);
-  
+  --bg-calle-row: #e0f2fe;
+
   --color-movimiento: #dc2626;
-  --bg-movimiento-row: rgba(254, 226, 226, 0.6);
-  
+  --bg-movimiento-row: #fee2e2;
+
   --color-a-bordo: #d97706;
-  --bg-a-bordo-row: rgba(254, 243, 199, 0.6);
-  
+  --bg-a-bordo-row: #fef3c7;
+
   --color-embarque: #16a34a;
-  --bg-embarque-row: rgba(220, 252, 231, 0.6);
+  --bg-embarque-row: #dcfce7;
+
+  --color-total: #0f172a;
 }
 
-/* Envoltorio de Tabla con Scroll Nativo (Reemplaza al botón "Mostrar Más") */
-.table-container {
-  max-height: 520px;
-  overflow-y: auto;
-  border: 1px solid #cbd5e1;
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  padding: 16px 24px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* --- ENCABEZADO Y NAVEGACIÓN --- */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-card);
+  padding: 12px 20px;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
-  background: #ffffff;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.03);
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-/* Ocultar el botón viejo si aún existe en el HTML */
-#btnMostrarMas, .btn-mostrar {
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo-sitrans {
+  font-weight: 900;
+  font-size: 18px;
+  letter-spacing: -0.5px;
+  color: #0369a1;
+  border-right: 2px solid var(--border-color);
+  padding-right: 16px;
+}
+
+.title-area h1 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.title-area .timestamp {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+}
+
+.btn-export {
+  background-color: #ffffff;
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-export:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+}
+
+/* --- PESTAÑAS (TABS) --- */
+.tabs-container {
+  display: flex;
+  gap: 4px;
+  border-bottom: 2px solid var(--border-color);
+  margin-bottom: 16px;
+}
+
+.tab-btn {
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+}
+
+.tab-btn.active {
+  color: #0284c7;
+  border-bottom-color: #0284c7;
+  background-color: rgba(2, 132, 199, 0.04);
+}
+
+/* --- SECCIÓN KPI (TARJETAS) --- */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 10px 14px;
+  border-top: 4px solid var(--border-color);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  text-align: center;
+}
+
+/* Bordes superiores alineados a categorías */
+.kpi-card.calle { border-top-color: var(--color-calle); }
+.kpi-card.movimiento { border-top-color: var(--color-movimiento); }
+.kpi-card.a-bordo { border-top-color: var(--color-a-bordo); }
+.kpi-card.embarque { border-top-color: var(--color-embarque); }
+.kpi-card.total { border-top-color: var(--color-total); }
+
+.kpi-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.kpi-metrics {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.metric-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.metric-value {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+/* --- DISPOSICIÓN DE TABLAS EN PARALELO --- */
+.tables-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+
+.table-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.table-title-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.table-title-bar h2 {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.table-title-bar h2::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 12px;
+  background-color: #0284c7;
+}
+
+.badge-count {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 800;
+  color: #0284c7;
+}
+
+/* --- CONTENEDOR DE SCROLL NATIVO (SIN MOSTRAR MÁS) --- */
+.table-container {
+  max-height: 480px;
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  background: #ffffff;
+}
+
+/* Eliminación total del botón Mostrar Más / Menos */
+#btnMostrarMas, .btn-mostrar, .btn-mostrar-menos {
   display: none !important;
 }
 
-/* Estilo de la Tabla */
+/* --- ESTILO DE LA TABLA TÉCNICA --- */
 table.tech-table {
   width: 100%;
   border-collapse: collapse;
-  font-family: var(--font-sans);
-  font-size: 12.5px;
-  color: #1e293b;
+  font-size: 11.5px;
+  text-align: left;
 }
 
 table.tech-table th {
   position: sticky;
   top: 0;
-  background-color: #1e293b;
-  color: #f8fafc;
-  font-weight: 600;
+  background-color: var(--header-dark);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 10px;
   text-transform: uppercase;
-  font-size: 11px;
   letter-spacing: 0.5px;
-  padding: 9px 12px;
+  padding: 8px 10px;
   border-bottom: 2px solid #0f172a;
-  z-index: 10;
-  text-align: left;
+  z-index: 5;
 }
 
 table.tech-table td {
-  padding: 7px 12px;
+  padding: 6px 10px;
   border-bottom: 1px solid #e2e8f0;
   white-space: nowrap;
 }
 
-/* --- Destacado de Filas por Categoria (Mismo color que tarjetas) --- */
+/* --- DESTACADO DE FILAS SEGÚN CATEGORÍA (Mismo color de tarjetas) --- */
 tr.row-calle { background-color: var(--bg-calle-row) !important; }
 tr.row-movimiento { background-color: var(--bg-movimiento-row) !important; }
 tr.row-a-bordo { background-color: var(--bg-a-bordo-row) !important; }
 tr.row-embarque { background-color: var(--bg-embarque-row) !important; }
 
-/* Tipografía de Contenedores y Posición */
+/* Tipografía de Códigos */
 .container-code {
   font-family: var(--font-mono);
   font-weight: 700;
-  letter-spacing: 0.5px;
   color: #0f172a;
 }
 
@@ -84,18 +298,18 @@ tr.row-embarque { background-color: var(--bg-embarque-row) !important; }
   color: #475569;
 }
 
-/* --- Mini Badges Técnicos (COT / AC) --- */
+/* --- MINI BADGES TÉCNICOS (COT / AC) --- */
 .badge {
   display: inline-block;
-  padding: 1px 5px;
+  padding: 1px 4px;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 800;
-  border-radius: 3px;
-  margin-left: 6px;
+  border-radius: 2px;
+  margin-left: 5px;
   vertical-align: middle;
-  line-height: 1.2;
-  letter-spacing: 0.5px;
+  line-height: 1;
+  letter-spacing: 0.3px;
 }
 
 .badge-cot {
@@ -108,4 +322,23 @@ tr.row-embarque { background-color: var(--bg-embarque-row) !important; }
   background-color: #16a34a;
   color: #ffffff;
   border: 1px solid #15803d;
+}
+
+/* --- ESTADO VACÍO --- */
+.empty-state {
+  padding: 30px 10px;
+  text-align: center;
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 11px;
+}
+
+/* --- RESPONSIVIDAD BÁSICA --- */
+@media (max-width: 1200px) {
+  .tables-grid {
+    grid-template-columns: 1fr;
+  }
+  .kpi-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
