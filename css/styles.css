@@ -1,401 +1,263 @@
-/* =========================================================
-   SITRANS - CONTROL OPERACIONAL
-   Diseño Moderno (Segoe UI) - 3 Columnas Paralelas
-   ========================================================= */
-
+/* Reset y estilos generales Power BI */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-  background-color: #f4f5f7;
-  color: #201f1e;
-  padding: 16px 24px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  background-color: #f2f4f7;
+  color: #1f2937;
+  font-size: 13px;
   min-height: 100vh;
 }
 
-/* --- Encabezado --- */
-header {
+/* Header */
+.pbi-header {
+  background-color: #ffffff;
+  padding: 12px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #ffffff;
-  padding: 12px 20px;
-  border-radius: 8px;
-  border: 1px solid #e1dfdd;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-  gap: 12px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-header .brand {
+.header-left {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-header .brand-mark {
-  height: 48px;
+.brand-logo {
+  height: 32px;
   width: auto;
   object-fit: contain;
 }
 
-.eyebrow {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: #605e5c;
-  font-weight: 700;
-}
-
-h1 {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #201f1e;
-}
-
-.clock {
-  font-size: 0.75rem;
-  color: #605e5c;
-  font-weight: 600;
-  margin-top: 2px;
-}
-
-.status {
+.header-titles {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #374151;
+  flex-direction: column;
 }
 
-.print-btn {
-  background: #ffffff;
+.sub-category {
+  font-size: 10px;
+  font-weight: 700;
+  color: #6b7280;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.main-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  margin: 1px 0;
+}
+
+.timestamp {
+  font-size: 10px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.btn-pbi-export {
+  background-color: #ffffff;
   border: 1px solid #d1d5db;
   color: #374151;
-  font-weight: 600;
   padding: 6px 14px;
-  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 4px;
   cursor: pointer;
-  font-size: 0.8rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
 }
 
-.print-btn:hover {
-  background: #f3f4f6;
+.btn-pbi-export:hover {
+  background-color: #f9fafb;
   border-color: #9ca3af;
 }
 
-/* Indicador de Punto de Estado */
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: #107c41;
-  display: inline-block;
-  box-shadow: 0 0 0 0 rgba(16, 124, 65, 0.4);
-  animation: pulse 2s infinite;
-}
-
-.dot.offline {
-  background-color: #a80000;
-  animation: none;
-}
-
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(16, 124, 65, 0.4); }
-  70% { box-shadow: 0 0 0 6px rgba(16, 124, 65, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(16, 124, 65, 0); }
-}
-
-/* --- Pestañas --- */
-.tabs {
+/* Tablas de Navegación */
+.pbi-tabs {
+  background-color: #ffffff;
+  padding: 0 24px;
   display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
-  border-bottom: 2px solid #e1dfdd;
+  gap: 8px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-.tab-btn {
+.tab-item {
   background: none;
   border: none;
-  padding: 8px 16px;
-  font-size: 0.85rem;
+  padding: 10px 16px;
+  font-size: 12px;
   font-weight: 600;
-  color: #605e5c;
+  color: #6b7280;
   cursor: pointer;
   border-bottom: 3px solid transparent;
-  margin-bottom: -2px;
-  transition: color 0.2s, border-color 0.2s;
 }
 
-.tab-btn:hover {
-  color: #005a9e;
+.tab-item.active {
+  color: #0284c7;
+  border-bottom-color: #0284c7;
 }
 
-.tab-btn.active {
-  color: #005a9e;
-  border-bottom-color: #005a9e;
-  font-weight: 700;
+/* Layout Principal */
+.dashboard-container {
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-/* --- Franja KPI (5 Tarjetas Lado a Lado) --- */
-.kpi-strip {
+/* Grilla KPI */
+.kpi-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 12px;
-  margin-bottom: 16px;
-  width: 100%;
 }
 
 .kpi-card {
-  background: #ffffff;
-  border-radius: 8px;
+  background-color: #ffffff;
+  border-radius: 4px;
   padding: 10px 14px;
-  border: 1px solid #e1dfdd;
-  border-top: 4px solid #605e5c;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  border-top-width: 4px;
 }
 
-.kpi-card.c-blue { border-top-color: #005a9e; }
-.kpi-card.c-red { border-top-color: #a80000; }
-.kpi-card.c-amber { border-top-color: #b06000; }
-.kpi-card.c-green { border-top-color: #107c41; }
-.kpi-card.c-dark { border-top-color: #201f1e; }
+/* Colores de Borde Superior Power BI */
+.border-blue   { border-top-color: #00509d; }
+.border-red    { border-top-color: #a81c1c; }
+.border-orange { border-top-color: #b86b00; }
+.border-green  { border-top-color: #1e7e34; }
+.border-dark   { border-top-color: #1a1a1a; }
 
 .kpi-title {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #201f1e;
   text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #111827;
   margin-bottom: 8px;
 }
 
-.kpi-metrics {
+.kpi-values {
   display: flex;
   justify-content: space-around;
-  align-items: flex-end;
-  width: 100%;
-}
-
-.kpi-metric {
-  text-align: center;
-  flex: 1;
-}
-
-.kpi-metric-label {
-  font-size: 0.62rem;
-  color: #605e5c;
-  font-weight: 700;
-  text-transform: uppercase;
-  white-space: nowrap;
-  margin-bottom: 2px;
-}
-
-.kpi-metric-value {
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: #201f1e;
-}
-
-/* --- Layout Principal (3 Columnas Paralelas) --- */
-.page { display: none; }
-.page.active { display: block; }
-
-main {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  align-items: start;
-  width: 100%;
-}
-
-.panel {
-  background: #ffffff;
-  border: 1px solid #e1dfdd;
-  border-radius: 8px;
-  padding: 12px 14px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-  min-width: 0;
-  overflow-x: auto;
-}
-
-.panel-title {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
-  padding-bottom: 6px;
-  border-bottom: 1px solid #f3f4f6;
-  border-left: 3px solid #005a9e;
-  padding-left: 8px;
 }
 
-.panel-title h2 {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #201f1e;
-}
-
-.panel-title .count {
-  color: #005a9e;
-  font-weight: 700;
-  font-size: 0.85rem;
-}
-
-/* --- Estilos de Tablas --- */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.78rem;
-}
-
-thead th {
-  background-color: #f9fafb;
-  color: #605e5c;
-  font-weight: 700;
-  text-align: left;
-  padding: 8px;
-  border-bottom: 1px solid #e5e7eb;
-  font-size: 0.72rem;
-  white-space: nowrap;
-}
-
-th.sortable {
-  cursor: pointer;
-  user-select: none;
-}
-
-th.sortable:hover {
-  background-color: #f3f4f6;
-}
-
-tbody td {
-  padding: 7px 8px;
-  border-bottom: 1px solid #f3f4f6;
-  color: #1f2937;
-  vertical-align: middle;
-  white-space: nowrap;
-}
-
-tbody tr:hover td {
-  background-color: #f9fafb;
-}
-
-tbody tr:nth-child(even) {
-  background-color: #fcfcfd;
-}
-
-tbody tr.row-highlight {
-  background-color: #fef7e0 !important;
-}
-
-/* --- Badges de Estado --- */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-weight: 700;
-  font-size: 0.75rem;
-}
-
-.badge::before {
-  content: '•';
-  font-size: 1rem;
-  line-height: 0;
-}
-
-.badge-descarga { color: #107c41; }
-.badge-calle { color: #005a9e; }
-.badge-embarque { color: #107c41; }
-.badge-movimiento { color: #a80000; }
-.badge-revisar { color: #c5221f; }
-
-/* Celdas de Tiempo */
-.time-cell {
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 4px;
-  text-align: center;
-  font-size: 0.76rem;
-}
-
-.time-green { background-color: #e6f4ea; color: #137333; }
-.time-yellow { background-color: #fef7e0; color: #b06000; }
-.time-red { background-color: #fce8e6; color: #c5221f; }
-.time-neutral { background-color: #f3f4f6; color: #605e5c; }
-
-.flag {
-  background-color: #fef7e0;
-  color: #b06000;
-  font-size: 0.65rem;
-  font-weight: 700;
-  padding: 1px 5px;
-  border-radius: 3px;
-  margin-left: 6px;
-}
-
-.mov-si { color: #107c41; font-weight: 700; }
-.mov-no { color: #9ca3af; }
-
-.toggle-btn {
-  width: 100%;
-  background: #ffffff;
-  border: 1px solid #e1dfdd;
-  color: #005a9e;
-  font-size: 0.78rem;
-  font-weight: 600;
-  padding: 6px;
-  margin-top: 8px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.toggle-btn:hover { background: #f3f2f1; }
-
-.empty-state {
-  text-align: center;
-  color: #605e5c;
-  padding: 16px;
-  font-size: 0.8rem;
-}
-
-/* --- Planificación / Iframe --- */
-.planificacion-wrapper {
-  grid-template-columns: 1fr;
-  padding: 0;
-}
-
-.iframe-container {
-  padding: 10px;
-  display: flex;
+.kpi-values.single-metric {
   justify-content: center;
 }
 
-.iframe-container iframe {
+.metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.metric-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: #6b7280;
+  letter-spacing: 0.3px;
+}
+
+.metric-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #000000;
+  margin-top: 2px;
+}
+
+/* Grilla de Tablas */
+.tables-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.table-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  min-height: 250px;
+}
+
+.table-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.header-left-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.blue-bar {
+  width: 3px;
+  height: 14px;
+  background-color: #00509d;
+  display: inline-block;
+}
+
+.table-card-header h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.badge-count {
+  font-size: 12px;
+  font-weight: 700;
+  color: #00509d;
+}
+
+/* Estilos de Tabla Compacta */
+.table-wrapper {
   width: 100%;
-  height: 80vh;
-  border: 1px solid #e1dfdd;
-  border-radius: 6px;
+  overflow-x: auto;
 }
 
-/* Animaciones */
-@keyframes flashUpdate {
-  0% { background-color: #fef3c7; }
-  100% { background-color: transparent; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
 }
-tr.flash-update { animation: flashUpdate 1.6s ease-out; }
 
-/* Responsivo */
-@media (max-width: 1024px) {
-  .kpi-strip { grid-template-columns: repeat(3, 1fr); }
-  main { grid-template-columns: 1fr; }
+th {
+  background-color: #7dd3fc; /* Azul claro estilo Power BI */
+  color: #000000;
+  font-weight: 600;
+  text-align: left;
+  padding: 6px 8px;
+  border: 1px solid #e5e7eb;
+}
+
+td {
+  padding: 6px 8px;
+  border: 1px solid #f3f4f6;
+  color: #374151;
+}
+
+tr:nth-child(even) td {
+  background-color: #f9fafb;
+}
+
+.empty-state {
+  text-align: center;
+  color: #9ca3af;
+  padding: 24px !important;
+  font-style: italic;
 }
