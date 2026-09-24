@@ -49,10 +49,14 @@ function exportarExcel(){
   XLSX.writeFile(wb, `unidades_desconectadas_${sello}.xlsx`);
 }
 
-function mostrarPagina(pageId, btn){
+function mostrarPagina(pageId, btn) {
+  // Ocultar todas las páginas y desmarcar botones
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(pageId).classList.add('active');
+  document.querySelectorAll('.tab-item').forEach(b => b.classList.remove('active'));
+
+  // Activar la página y el botón seleccionados
+  const targetPage = document.getElementById(pageId);
+  if (targetPage) targetPage.classList.add('active');
   btn.classList.add('active');
 }
 
