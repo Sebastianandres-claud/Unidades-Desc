@@ -79,12 +79,10 @@ function obtenerBadgesHTML(remarks) {
   const rem = String(remarks).trim();
   let html = '';
 
-  // Regla COT (USDA)
   if (/USDA/i.test(rem)) {
     html += `<span class="badge-tag cot">COT</span>`;
   }
 
-  // Regla AC (Fracción o AC, ignorando s/a)
   const tieneFraccionNum = /\b\d+\/\d+\b/.test(rem);
   const tieneAC = /\bAC\b/i.test(rem);
   const esSinAtmosfera = /s\/a/i.test(rem);
@@ -100,8 +98,17 @@ function obtenerBadgesTexto(remarks) {
   if (!remarks) return '';
   const rem = String(remarks).trim();
   const partes = [];
+
   if (/USDA/i.test(rem)) partes.push('COT');
-  if ((\b\d+\/\d+\b/.test(rem) || /\bAC\b/i.test(rem)) && !/s\/a/i.test(rem)) partes.push('AC');
+
+  const tieneFraccionNum = /\b\d+\/\d+\b/.test(rem);
+  const tieneAC = /\bAC\b/i.test(rem);
+  const esSinAtmosfera = /s\/a/i.test(rem);
+
+  if ((tieneFraccionNum || tieneAC) && !esSinAtmosfera) {
+    partes.push('AC');
+  }
+
   return partes.join('/');
 }
 
@@ -117,9 +124,9 @@ function formatPosicion(pos){
 
 function claseTiempo(minutos){
   if(minutos === null || minutos === undefined) return '';
-  if(minutos >= 26) return 'style="color:#e11d48; font-weight:700;"'; // Alerta rojo
-  if(minutos < 15) return 'style="color:#059669; font-weight:600;"'; // Normal verde
-  return 'style="color:#d97706; font-weight:600;"'; // Precaución amarillo
+  if(minutos >= 26) return 'style="color:#e11d48; font-weight:700;"';
+  if(minutos < 15) return 'style="color:#059669; font-weight:600;"';
+  return 'style="color:#d97706; font-weight:600;"';
 }
 
 function promedio(arr){
