@@ -1,6 +1,6 @@
 /* =========================================================
    SITRANS - CONTROL OPERACIONAL
-   3 Columnas Paralelas Lado a Lado (| Tabla 1 | Tabla 2 | Tabla 3 |)
+   Diseño Moderno (Segoe UI) - 3 Columnas Paralelas
    ========================================================= */
 
 * {
@@ -11,11 +11,12 @@
 }
 
 body {
-  background-color: #f8f9fa;
+  background-color: #f4f5f7;
   color: #201f1e;
-  padding: 12px 18px;
+  padding: 16px 24px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
 }
 
 /* --- Encabezado --- */
@@ -24,9 +25,13 @@ header {
   justify-content: space-between;
   align-items: center;
   background: #ffffff;
-  padding: 10px 18px;
-  border-bottom: 1px solid #e1dfdd;
-  margin-bottom: 14px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: 1px solid #e1dfdd;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 header .brand {
@@ -36,13 +41,13 @@ header .brand {
 }
 
 header .brand-mark {
-  height: 58px; /* Logo grande de Sitrans */
+  height: 48px;
   width: auto;
   object-fit: contain;
 }
 
 .eyebrow {
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.8px;
   color: #605e5c;
@@ -62,256 +67,283 @@ h1 {
   margin-top: 2px;
 }
 
-header > div:last-child {
+.status {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
 }
 
-button[onclick="exportarExcel()"] {
+.print-btn {
   background: #ffffff;
   border: 1px solid #d1d5db;
   color: #374151;
   font-weight: 600;
   padding: 6px 14px;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 0.8rem;
+  transition: all 0.2s ease;
 }
 
-button[onclick="exportarExcel()"]:hover {
+.print-btn:hover {
   background: #f3f4f6;
+  border-color: #9ca3af;
 }
 
-.status {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #374151;
-}
-
-.status-dot {
+/* Indicador de Punto de Estado */
+.dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background-color: #107c41;
+  display: inline-block;
+  box-shadow: 0 0 0 0 rgba(16, 124, 65, 0.4);
+  animation: pulse 2s infinite;
 }
 
-.status-dot.offline {
+.dot.offline {
   background-color: #a80000;
+  animation: none;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(16, 124, 65, 0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(16, 124, 65, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 124, 65, 0); }
 }
 
 /* --- Pestañas --- */
 .tabs {
   display: flex;
   gap: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
   border-bottom: 2px solid #e1dfdd;
 }
 
 .tab-btn {
   background: none;
   border: none;
-  padding: 6px 12px;
+  padding: 8px 16px;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #005a9e;
+  color: #605e5c;
   cursor: pointer;
   border-bottom: 3px solid transparent;
   margin-bottom: -2px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.tab-btn:hover {
+  color: #005a9e;
 }
 
 .tab-btn.active {
+  color: #005a9e;
   border-bottom-color: #005a9e;
   font-weight: 700;
 }
 
-/* --- Franja de 5 Tarjetas KPI --- */
+/* --- Franja KPI (5 Tarjetas Lado a Lado) --- */
 .kpi-strip {
-  display: grid !important;
-  grid-template-columns: repeat(5, 1fr) !important;
-  gap: 10px;
-  margin-bottom: 14px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
   width: 100%;
 }
 
 .kpi-card {
   background: #ffffff;
-  border-radius: 4px;
-  padding: 8px 10px;
-  border: 2px solid #e1dfdd;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  border-radius: 8px;
+  padding: 10px 14px;
+  border: 1px solid #e1dfdd;
+  border-top: 4px solid #605e5c;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.03);
 }
 
-.kpi-card:nth-child(1) { border-color: #005a9e; }
-.kpi-card:nth-child(2) { border-color: #a80000; }
-.kpi-card:nth-child(3) { border-color: #b06000; }
-.kpi-card:nth-child(4) { border-color: #107c41; }
-.kpi-card:nth-child(5) { border-color: #201f1e; }
+.kpi-card.c-blue   { border-top-color: #005a9e; }
+.kpi-card.c-red    { border-top-color: #a80000; }
+.kpi-card.c-amber  { border-top-color: #b06000; }
+.kpi-card.c-green  { border-top-color: #107c41; }
+.kpi-card.c-dark   { border-top-color: #201f1e; }
 
-.kpi-card h3 {
+.kpi-title {
   font-size: 0.8rem;
   font-weight: 700;
   color: #201f1e;
   text-align: center;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
-.kpi-card .metrics {
-  display: flex !important;
-  flex-direction: row !important; /* Fuerza Contenedores y Promedio LADO A LADO */
-  justify-content: space-around !important;
-  align-items: flex-end !important;
+.kpi-metrics {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
   width: 100%;
 }
 
-.kpi-card .metric {
+.kpi-metric {
   text-align: center;
+  flex: 1;
 }
 
-.kpi-card .metric span {
-  display: block;
+.kpi-metric-label {
   font-size: 0.62rem;
   color: #605e5c;
   font-weight: 700;
   text-transform: uppercase;
   white-space: nowrap;
+  margin-bottom: 2px;
 }
 
-.kpi-card .metric strong {
-  display: block;
+.kpi-metric-value {
   font-size: 1.35rem;
   font-weight: 700;
   color: #201f1e;
 }
 
-/* --- Layout Paralelo: 3 Columnas Lado a Lado (| T1 | T2 | T3 |) --- */
+/* --- Layout Principal (3 Columnas Paralelas) --- */
 .page { display: none; }
 .page.active { display: block; }
 
-.grid {
-  display: grid !important;
-  grid-template-columns: repeat(3, 1fr) !important; /* 3 Columnas de igual tamaño en horizontal */
-  gap: 12px !important;
-  align-items: start !important;
-  width: 100% !important;
+main {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  align-items: start;
+  width: 100%;
 }
 
 .panel {
   background: #ffffff;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  padding: 10px 12px;
-  min-width: 0 !important; /* Impide que las tablas empujen el panel hacia abajo */
+  border: 1px solid #e1dfdd;
+  border-radius: 8px;
+  padding: 12px 14px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  min-width: 0;
   overflow-x: auto;
 }
 
-.panel-header {
+.panel-title {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
-  padding-bottom: 4px;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
   border-bottom: 1px solid #f3f4f6;
+  border-left: 3px solid #005a9e;
+  padding-left: 8px;
 }
 
-.panel-title {
+.panel-title h2 {
   font-size: 0.85rem;
   font-weight: 700;
   color: #201f1e;
-  border-left: 3px solid #005a9e;
-  padding-left: 6px;
 }
 
-.count-badge {
+.panel-title .count {
   color: #005a9e;
   font-weight: 700;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
 }
 
-/* --- Estilo de Tablas --- */
+/* --- Estilos de Tablas --- */
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.77rem;
+  font-size: 0.78rem;
 }
 
-th {
+thead th {
   background-color: #f9fafb;
   color: #605e5c;
   font-weight: 700;
   text-align: left;
-  padding: 6px 8px;
+  padding: 8px;
   border-bottom: 1px solid #e5e7eb;
   font-size: 0.72rem;
   white-space: nowrap;
 }
 
-th.sortable { cursor: pointer; }
+th.sortable {
+  cursor: pointer;
+  user-select: none;
+}
 
-td {
-  padding: 6px 8px;
+th.sortable:hover {
+  background-color: #f3f4f6;
+}
+
+tbody td {
+  padding: 7px 8px;
   border-bottom: 1px solid #f3f4f6;
   color: #1f2937;
   vertical-align: middle;
   white-space: nowrap;
 }
 
-tr:hover td {
+tbody tr:hover td {
   background-color: #f9fafb;
 }
 
-td:first-child {
-  font-weight: 700;
-  color: #201f1e;
+tbody tr:nth-child(even) {
+  background-color: #fcfcfd;
 }
 
-.badge-descarga { color: #107c41; font-weight: 700; }
-.badge-descarga::before { content: "• "; font-size: 0.85rem; }
+tbody tr.row-highlight {
+  background-color: #fef7e0 !important;
+}
 
-.badge-calle { color: #005a9e; font-weight: 700; }
-.badge-calle::before { content: "• "; font-size: 0.85rem; }
-
-.badge-movimiento { color: #a80000; font-weight: 700; }
-.badge-movimiento::before { content: "• "; font-size: 0.85rem; }
-
-/* Tiempos de Alerta (<15m Verde, 15-25m Ámbar, >=26m Rojo) */
-.time-cell {
-  font-family: 'Segoe UI', sans-serif;
+/* --- Badges de Estado --- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-weight: 700;
-  padding: 2px 6px;
+  font-size: 0.75rem;
+}
+
+.badge::before {
+  content: '•';
+  font-size: 1rem;
+  line-height: 0;
+}
+
+.badge-descarga { color: #107c41; }
+.badge-calle { color: #005a9e; }
+.badge-embarque { color: #107c41; }
+.badge-movimiento { color: #a80000; }
+.badge-revisar { color: #c5221f; }
+
+/* Celdas de Tiempo */
+.time-cell {
+  font-weight: 700;
+  padding: 3px 8px;
   border-radius: 4px;
-  display: inline-block;
   text-align: center;
   font-size: 0.76rem;
 }
 
-.time-green {
-  background-color: #e6f4ea;
-  color: #137333;
-}
-
-.time-yellow {
-  background-color: #fef7e0;
-  color: #b06000;
-}
-
-.time-red {
-  background-color: #fce8e6;
-  color: #c5221f;
-}
+.time-green { background-color: #e6f4ea; color: #137333; }
+.time-yellow { background-color: #fef7e0; color: #b06000; }
+.time-red { background-color: #fce8e6; color: #c5221f; }
+.time-neutral { background-color: #f3f4f6; color: #605e5c; }
 
 .flag {
   background-color: #fef7e0;
   color: #b06000;
   font-size: 0.65rem;
   font-weight: 700;
-  padding: 1px 4px;
+  padding: 1px 5px;
   border-radius: 3px;
-  margin-left: 4px;
+  margin-left: 6px;
 }
+
+.mov-si { color: #107c41; font-weight: 700; }
+.mov-no { color: #9ca3af; }
 
 .toggle-btn {
   width: 100%;
@@ -320,11 +352,50 @@ td:first-child {
   color: #005a9e;
   font-size: 0.78rem;
   font-weight: 600;
-  padding: 5px;
-  margin-top: 6px;
-  border-radius: 4px;
+  padding: 6px;
+  margin-top: 8px;
+  border-radius: 6px;
   cursor: pointer;
+  transition: background 0.2s;
 }
 
 .toggle-btn:hover { background: #f3f2f1; }
-.empty-state { text-align: center; color: #605e5c; padding: 14px; font-style: italic; }
+
+.empty-state {
+  text-align: center;
+  color: #605e5c;
+  padding: 16px;
+  font-size: 0.8rem;
+}
+
+/* --- Planificación / Iframe --- */
+.planificacion-wrapper {
+  grid-template-columns: 1fr;
+  padding: 0;
+}
+
+.iframe-container {
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.iframe-container iframe {
+  width: 100%;
+  height: 80vh;
+  border: 1px solid #e1dfdd;
+  border-radius: 6px;
+}
+
+/* Animaciones */
+@keyframes flashUpdate {
+  0% { background-color: #fef3c7; }
+  100% { background-color: transparent; }
+}
+tr.flash-update { animation: flashUpdate 1.6s ease-out; }
+
+/* Responsivo */
+@media (max-width: 1024px) {
+  .kpi-strip { grid-template-columns: repeat(3, 1fr); }
+  main { grid-template-columns: 1fr; }
+}
