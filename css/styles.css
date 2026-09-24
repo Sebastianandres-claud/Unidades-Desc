@@ -1,296 +1,111 @@
-/* Reset y estilos generales Power BI */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+/* ===================================================
+   ESTILO MANUAL TÉCNICO / LIBRO DE CIENCIA
+   =================================================== */
+
+:root {
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "Consolas", "Courier New", "Liberation Mono", monospace;
+  
+  /* Colores Identificadores */
+  --color-calle: #0284c7;
+  --bg-calle-row: rgba(224, 242, 254, 0.6);
+  
+  --color-movimiento: #dc2626;
+  --bg-movimiento-row: rgba(254, 226, 226, 0.6);
+  
+  --color-a-bordo: #d97706;
+  --bg-a-bordo-row: rgba(254, 243, 199, 0.6);
+  
+  --color-embarque: #16a34a;
+  --bg-embarque-row: rgba(220, 252, 231, 0.6);
 }
 
-body {
-  background-color: #f2f4f7;
-  color: #1f2937;
-  font-size: 13px;
-  min-height: 100vh;
-}
-
-/* Header */
-.pbi-header {
-  background-color: #ffffff;
-  padding: 12px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.brand-logo {
-  height: 32px;
-  width: auto;
-  object-fit: contain;
-}
-
-.header-titles {
-  display: flex;
-  flex-direction: column;
-}
-
-.sub-category {
-  font-size: 10px;
-  font-weight: 700;
-  color: #6b7280;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
-.main-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: #111827;
-  margin: 1px 0;
-}
-
-.timestamp {
-  font-size: 10px;
-  font-weight: 600;
-  color: #6b7280;
-}
-
-.btn-pbi-export {
-  background-color: #ffffff;
-  border: 1px solid #d1d5db;
-  color: #374151;
-  padding: 6px 14px;
-  font-size: 12px;
-  font-weight: 600;
+/* Envoltorio de Tabla con Scroll Nativo (Reemplaza al botón "Mostrar Más") */
+.table-container {
+  max-height: 520px;
+  overflow-y: auto;
+  border: 1px solid #cbd5e1;
   border-radius: 4px;
-  cursor: pointer;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s ease;
+  background: #ffffff;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.03);
 }
 
-.btn-pbi-export:hover {
-  background-color: #f9fafb;
-  border-color: #9ca3af;
+/* Ocultar el botón viejo si aún existe en el HTML */
+#btnMostrarMas, .btn-mostrar {
+  display: none !important;
 }
 
-/* Tablas de Navegación */
-.pbi-tabs {
-  background-color: #ffffff;
-  padding: 0 24px;
-  display: flex;
-  gap: 8px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.tab-item {
-  background: none;
-  border: none;
-  padding: 10px 16px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #6b7280;
-  cursor: pointer;
-  border-bottom: 3px solid transparent;
-}
-
-.tab-item.active {
-  color: #0284c7;
-  border-bottom-color: #0284c7;
-}
-
-/* Layout Principal */
-.dashboard-container {
-  padding: 16px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-/* Grilla KPI */
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
-}
-
-.kpi-card {
-  background-color: #ffffff;
-  border-radius: 4px;
-  padding: 10px 14px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  border: 1px solid #e5e7eb;
-  border-top-width: 4px;
-}
-
-/* Colores de Borde Superior Power BI */
-.border-blue   { border-top-color: #00509d; }
-.border-red    { border-top-color: #a81c1c; }
-.border-orange { border-top-color: #b86b00; }
-.border-green  { border-top-color: #1e7e34; }
-.border-dark   { border-top-color: #1a1a1a; }
-
-.kpi-title {
-  text-align: center;
-  font-size: 12px;
-  font-weight: 700;
-  color: #111827;
-  margin-bottom: 8px;
-}
-
-.kpi-values {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
-
-.kpi-values.single-metric {
-  justify-content: center;
-}
-
-.metric {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.metric-label {
-  font-size: 9px;
-  font-weight: 700;
-  color: #6b7280;
-  letter-spacing: 0.3px;
-}
-
-.metric-value {
-  font-size: 20px;
-  font-weight: 700;
-  color: #000000;
-  margin-top: 2px;
-}
-
-/* Grilla de Tablas */
-.tables-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  align-items: start;
-}
-
-.table-card {
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  min-height: 250px;
-}
-
-.table-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.header-left-indicator {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.blue-bar {
-  width: 3px;
-  height: 14px;
-  background-color: #00509d;
-  display: inline-block;
-}
-
-.table-card-header h3 {
-  font-size: 13px;
-  font-weight: 700;
-  color: #111827;
-}
-
-.badge-count {
-  font-size: 12px;
-  font-weight: 700;
-  color: #00509d;
-}
-
-/* Estilos de Tabla Compacta */
-.table-wrapper {
-  width: 100%;
-  overflow-x: auto;
-}
-
-table {
+/* Estilo de la Tabla */
+table.tech-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 11px;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  color: #1e293b;
 }
 
-th {
-  background-color: #7dd3fc; /* Azul claro estilo Power BI */
-  color: #000000;
+table.tech-table th {
+  position: sticky;
+  top: 0;
+  background-color: #1e293b;
+  color: #f8fafc;
   font-weight: 600;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  padding: 9px 12px;
+  border-bottom: 2px solid #0f172a;
+  z-index: 10;
   text-align: left;
-  padding: 6px 8px;
-  border: 1px solid #e5e7eb;
 }
 
-td {
-  padding: 6px 8px;
-  border: 1px solid #f3f4f6;
-  color: #374151;
+table.tech-table td {
+  padding: 7px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
 }
 
-tr:nth-child(even) td {
-  background-color: #f9fafb;
+/* --- Destacado de Filas por Categoria (Mismo color que tarjetas) --- */
+tr.row-calle { background-color: var(--bg-calle-row) !important; }
+tr.row-movimiento { background-color: var(--bg-movimiento-row) !important; }
+tr.row-a-bordo { background-color: var(--bg-a-bordo-row) !important; }
+tr.row-embarque { background-color: var(--bg-embarque-row) !important; }
+
+/* Tipografía de Contenedores y Posición */
+.container-code {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #0f172a;
 }
 
-.empty-state {
-  text-align: center;
-  color: #9ca3af;
-  padding: 24px !important;
-  font-style: italic;
+.pos-code {
+  font-family: var(--font-mono);
+  color: #475569;
 }
 
-/* Control de visibilidad de pestañas */
-.page {
-  display: none;
+/* --- Mini Badges Técnicos (COT / AC) --- */
+.badge {
+  display: inline-block;
+  padding: 1px 5px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  border-radius: 3px;
+  margin-left: 6px;
+  vertical-align: middle;
+  line-height: 1.2;
+  letter-spacing: 0.5px;
 }
 
-.page.active {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-/* Estilos para la pestaña de Excel Embebido */
-.iframe-card {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
+.badge-cot {
+  background-color: #0284c7;
+  color: #ffffff;
+  border: 1px solid #0369a1;
 }
 
-.embed-wrapper {
-  width: 100%;
-  height: calc(100vh - 220px); /* Ocupa el alto disponible de la pantalla */
-  min-height: 550px;
-  border-radius: 4px;
-  overflow: hidden;
-  border: 1px solid #e5e7eb;
-  background-color: #ffffff;
-}
-
-.embed-wrapper iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
+.badge-ac {
+  background-color: #16a34a;
+  color: #ffffff;
+  border: 1px solid #15803d;
 }
