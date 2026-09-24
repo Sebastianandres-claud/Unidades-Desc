@@ -50,14 +50,12 @@ function exportarExcel(){
 }
 
 function mostrarPagina(pageId, btn) {
-  // Ocultar todas las páginas y desmarcar botones
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-item').forEach(b => b.classList.remove('active'));
 
-  // Activar la página y el botón seleccionados
   const targetPage = document.getElementById(pageId);
   if (targetPage) targetPage.classList.add('active');
-  btn.classList.add('active');
+  if (btn) btn.classList.add('active');
 }
 
 function toggleSortGeneral(){
@@ -186,13 +184,39 @@ function formatearHHMM(diffMs){
   return String(horas).padStart(2,'0') + ':' + String(minutos).padStart(2,'0');
 }
 
+// Extracción flexible de fecha desde el contenido del archivo
 function extraerFechaReporte(text){
+  if (!text) return null;
   const lines = text.replace(/\r/g,'').split('\n').map(l => l.trim()).filter(l => l.length > 0);
   if(lines.length === 0) return null;
-  const ultima = lines[lines.length-1];
-  const match = ultima.match(/^(\d{2})-(\d{2})-(\d{4})\t(\d{2}):(\d{2}):(\d{2})$/);
-  if(!match) return null;
-  return new Date(Number(match[3]), Number(match[2])-1, Number(match[1]), Number(match[4]), Number(match[5]), Number(match[6]));
+
+  // 1. Escanear desde el final hacia arriba
+  for (let i = lines.length - 1; i >= 0; i--) {
+    const line = lines[i];
+    
+    // Formato estándar Power BI: DD-MM-YYYY\tHH:MM:SS
+    const matchTSV = line.match(/^(\d{2})[\/\-](\d{2})[\/\-](\d{2,4})[\t\s]+(\d{2}):(\d{2}):(\d{2})$/);
+    if (matchTSV) {
+      let yr = Number(matchTSV[3]);
+      if (yr < 100) yr += 2000;
+      return new Date(yr, Number(matchTSV[2]) - 1, Number(matchTSV[1]), Number(matchTSV[4]), Number(matchTSV[5]), Number(matchTSV[6]));
+    }
+
+    // Formato con texto: DATOS AL ... u OPERACION ...
+    if (/DATOS\s+AL|OPERACI[OÓ]N/i.test(line)) {
+      const matchTexto = line.match(/\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}\s+\d{1,2}:\d{2}(:\d{2})?(\s*[ap]\.?\s*m\.?)?/i);
+      if (matchTexto) return "DATOS AL " + matchTexto[0].toUpperCase();
+    }
+  }
+
+  // 2. Escanear las primeras líneas por si la fecha está arriba
+  for (let i = 0; i < Math.min(lines.length, 10); i++) {
+    const line = lines[i];
+    const matchTexto = line.match(/\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}\s+\d{1,2}:\d{2}(:\d{2})?(\s*[ap]\.?\s*m\.?)?/i);
+    if (matchTexto) return "DATOS AL " + matchTexto[0].toUpperCase();
+  }
+
+  return null;
 }
 
 function parseTSV(text){
@@ -315,27 +339,27 @@ function esc(v){
 }
 
 function renderGeneral(rows){
-  const container = document.getElementById('tableGeneral');
+  const container = document.getElementById('tableGeneral') || document.getElementById('tbl-patio');
   if(!container) return;
 
   const data = rows.filter(r => !['EMBARCADO SIN CONEX','EMBARCADO SIN CONEXION (revisar)','EMBARQUE', 'EMBARQUE SOBRE CAMION'].includes(r.Instancia));
   
-  const elCount = document.getElementById('countGeneral');
+  const elCount = document.getElementById('countGeneral') || document.getElementById('count-patio');
   if(elCount) elCount.textContent = data.length;
 
   const calleRows = data.filter(r => r.Instancia === 'CALLE' || r.Instancia === 'CALLE REVISAR');
   const movimientoRows = data.filter(r => r.Instancia === 'MOVIMIENTO' || r.Instancia === 'MOVIMIENTO SOBRE CAMION');
 
-  const elCalleCount = document.getElementById('kpiCalleCount');
+  const elCalleCount = document.getElementById('kpiCalleCount') || document.getElementById('kpi-calle-cnt');
   if(elCalleCount) elCalleCount.textContent = calleRows.length;
 
-  const elCalleProm = document.getElementById('kpiCalleProm');
+  const elCalleProm = document.getElementById('kpiCalleProm') || document.getElementById('kpi-calle-avg');
   if(elCalleProm) elCalleProm.textContent = promedio(calleRows);
 
-  const elMovCount = document.getElementById('kpiMovimientoCount');
+  const elMovCount = document.getElementById('kpiMovimientoCount') || document.getElementById('kpi-mov-cnt');
   if(elMovCount) elMovCount.textContent = movimientoRows.length;
 
-  const elMovProm = document.getElementById('kpiMovimientoProm');
+  const elMovProm = document.getElementById('kpiMovimientoProm') || document.getElementById('kpi-mov-avg');
   if(elMovProm) elMovProm.textContent = promedio(movimientoRows);
 
   if(data.length === 0){ container.innerHTML = '<div class="empty-state">sin registros</div>'; return; }
@@ -362,18 +386,18 @@ function renderGeneral(rows){
 }
 
 function renderSinConexion(rows){
-  const container = document.getElementById('tableSinConexion');
+  const container = document.getElementById('tableSinConexion') || document.getElementById('tbl-bordo');
   if(!container) return;
 
   const data = rows.filter(r => ['EMBARCADO SIN CONEX','EMBARCADO SIN CONEXION (revisar)'].includes(r.Instancia));
   
-  const elCount = document.getElementById('countSinConexion');
+  const elCount = document.getElementById('countSinConexion') || document.getElementById('count-bordo');
   if(elCount) elCount.textContent = data.length;
 
-  const elKpiCount = document.getElementById('kpiSinConexionCount');
+  const elKpiCount = document.getElementById('kpiSinConexionCount') || document.getElementById('kpi-bordo-cnt');
   if(elKpiCount) elKpiCount.textContent = data.length;
 
-  const elKpiProm = document.getElementById('kpiSinConexionProm');
+  const elKpiProm = document.getElementById('kpiSinConexionProm') || document.getElementById('kpi-bordo-avg');
   if(elKpiProm) elKpiProm.textContent = promedio(data);
 
   if(data.length === 0){ container.innerHTML = '<div class="empty-state">sin unidades a bordo sin conexión</div>'; return; }
@@ -394,18 +418,18 @@ function renderSinConexion(rows){
 }
 
 function renderEmbarque(rows){
-  const container = document.getElementById('tableEmbarque');
+  const container = document.getElementById('tableEmbarque') || document.getElementById('tbl-embarque');
   if(!container) return;
 
   const data = rows.filter(r => r.Instancia === 'EMBARQUE' || r.Instancia === 'EMBARQUE SOBRE CAMION');
 
-  const elCount = document.getElementById('countEmbarque');
+  const elCount = document.getElementById('countEmbarque') || document.getElementById('count-embarque');
   if(elCount) elCount.textContent = data.length;
 
-  const elKpiCount = document.getElementById('kpiEmbarqueCount');
+  const elKpiCount = document.getElementById('kpiEmbarqueCount') || document.getElementById('kpi-emb-cnt');
   if(elKpiCount) elKpiCount.textContent = data.length;
 
-  const elKpiProm = document.getElementById('kpiEmbarqueProm');
+  const elKpiProm = document.getElementById('kpiEmbarqueProm') || document.getElementById('kpi-emb-avg');
   if(elKpiProm) elKpiProm.textContent = promedio(data);
 
   if(data.length === 0){ container.innerHTML = '<div class="empty-state">sin unidades desconectadas para embarque</div>'; return; }
@@ -432,17 +456,17 @@ function renderEmbarque(rows){
 }
 
 async function fetchData(){
-  const statusDot = document.getElementById('statusDot');
-  const statusText = document.getElementById('statusText');
-  const opClock = document.getElementById('opClock');
-
-  if(statusText) statusText.textContent = 'actualizando...';
-
   try{
     const url = `${RAW_URL}?t=${Date.now()}`;
-    const res = await fetch(url, { cache: 'no-store' });
+    const res = await fetch(url, { 
+      cache: 'no-store',
+      headers: { "Pragma": "no-cache", "Cache-Control": "no-cache" }
+    });
+    
     if(!res.ok) throw new Error('HTTP ' + res.status);
     let text = await res.text();
+
+    if (!text || text.includes("Esperando primera carga")) return;
 
     if (text.charCodeAt(0) === 0xFEFF) {
       text = text.slice(1);
@@ -451,46 +475,36 @@ async function fetchData(){
     const rows = procesar(text);
     ultimasFilas = rows;
 
-    const elTotal = document.getElementById('kpiTotalCount');
+    const elTotal = document.getElementById('kpiTotalCount') || document.getElementById('kpi-total-cnt');
     if(elTotal) elTotal.textContent = rows.length;
 
     renderGeneral(rows);
     renderSinConexion(rows);
     renderEmbarque(rows);
 
-    if(statusDot) statusDot.classList.remove('offline');
-    if(statusText) statusText.textContent = 'en vivo';
+    // Ocultar indicadores "en vivo" si existen
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    if(statusDot) statusDot.style.display = 'none';
+    if(statusText) statusText.textContent = '';
 
+    // Actualizar fecha del reporte limpiamente
     const fechaReporte = extraerFechaReporte(text);
+    const opClock = document.getElementById('opClock') || document.getElementById('last-update');
 
     if(opClock){
-      if(fechaReporte){
-        opClock.textContent = 'DATOS AL ' + fechaReporte.toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'2-digit'}) + ' ' + fechaReporte.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-
-        if(ultimaFechaReporte !== null && fechaReporte.getTime() !== ultimaFechaReporte.getTime()){
-          const strip = document.querySelector('.kpi-strip');
-          if(strip){
-            strip.classList.remove('data-updated');
-            void strip.offsetWidth;
-            strip.classList.add('data-updated');
-          }
-        }
-        ultimaFechaReporte = fechaReporte;
-      } else {
-        const lastModifiedHeader = res.headers.get('last-modified');
-        const fileDate = lastModifiedHeader ? new Date(lastModifiedHeader) : null;
-        if(fileDate){
-          opClock.textContent = 'ARCHIVO ACTUALIZADO ' + fileDate.toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'2-digit'}) + ' ' + fileDate.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-        } else {
-          const now = new Date();
-          opClock.textContent = 'VERIFICADO ' + now.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'}) + ' (sin fecha de archivo disponible)';
-        }
+      if(fechaReporte instanceof Date){
+        const dStr = fechaReporte.toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'2-digit'});
+        const tStr = fechaReporte.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+        opClock.textContent = 'DATOS AL ' + dStr + ' ' + tStr;
+      } else if(typeof fechaReporte === 'string'){
+        opClock.textContent = fechaReporte;
+      } else if(!opClock.textContent.includes('DATOS AL')) {
+        opClock.textContent = 'DATOS AL --/--/-- --:--';
       }
     }
 
   }catch(err){
-    if(statusDot) statusDot.classList.add('offline');
-    if(statusText) statusText.textContent = 'sin conexión';
     console.error("Error al actualizar datos:", err);
   }
 }
