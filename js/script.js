@@ -588,3 +588,17 @@ function generarFilaHTML(item) {
     </tr>
   `;
 }
+function mostrarPagina(pageId, btn) {
+  // Ocultar todas las páginas
+  document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+  
+  // Mostrar la seleccionada
+  const targetPage = document.getElementById(pageId);
+  if (targetPage) targetPage.style.display = 'block';
+
+  // Desactivar todos los botones de pestaña
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  
+  // Activar el botón presionado
+  if (btn) btn.classList.add('active');
+}
