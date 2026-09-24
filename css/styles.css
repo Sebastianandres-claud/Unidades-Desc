@@ -272,3 +272,25 @@ tr:nth-child(even) td {
   flex-direction: column;
   gap: 16px;
 }
+/* Estilos para la pestaña de Excel Embebido */
+.iframe-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.embed-wrapper {
+  width: 100%;
+  height: calc(100vh - 220px); /* Ocupa el alto disponible de la pantalla */
+  min-height: 550px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+}
+
+.embed-wrapper iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
