@@ -25,14 +25,42 @@
     </div>
   </header>
 
-  <!-- NAVEGACIÓN POR PESTAÑAS -->
-  <nav class="pbi-tabs">
-    <button class="tab-item active">Unidades Desc</button>
-    <button class="tab-item">Planificación Proyectada</button>
-  </nav>
+<!-- NAVEGACIÓN POR PESTAÑAS -->
+<nav class="pbi-tabs">
+  <button class="tab-item active" onclick="mostrarPagina('page-unidades', this)">Unidades Desc</button>
+  <button class="tab-item" onclick="mostrarPagina('page-planificacion', this)">Planificación Proyectada</button>
+</nav>
 
-  <!-- CONTENIDO PRINCIPAL DEL DASHBOARD -->
-  <main class="dashboard-container">
+<!-- CONTENIDO PRINCIPAL DEL DASHBOARD -->
+<main class="dashboard-container">
+
+  <!-- PÁGINA 1: UNIDADES DESCONECTADAS -->
+  <div id="page-unidades" class="page active">
+    <!-- GRILLA DE TARJETAS KPI SUPERIORES (5 TARJETAS) -->
+    <section class="kpi-grid">
+      <!-- (Tus tarjetas KPI aquí como las teníamos) -->
+    </section>
+
+    <!-- GRILLA DE TABLAS DE DETALLE (3 SECCIONES) -->
+    <section class="tables-grid">
+      <!-- (Tus 3 tablas aquí como las teníamos) -->
+    </section>
+  </div>
+
+  <!-- PÁGINA 2: PLANIFICACIÓN PROYECTADA -->
+  <div id="page-planificacion" class="page">
+    <div class="table-card">
+      <div class="table-card-header">
+        <div class="header-left-indicator">
+          <span class="blue-bar"></span>
+          <h3>Planificación Proyectada</h3>
+        </div>
+      </div>
+      <div class="empty-state">Módulo de planificación en construcción...</div>
+    </div>
+  </div>
+
+</main>
 
     <!-- GRILLA DE TARJETAS KPI SUPERIORES (5 TARJETAS) -->
     <section class="kpi-grid">
