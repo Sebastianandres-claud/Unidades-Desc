@@ -1,989 +1,165 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unidades Desconectadas - Control Operacional</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
-
-  :root{
-    --blue: #0f6cbd;
-    --blue-dark: #0b4f8c;
-    --bg: #f5f6f7;
-    --panel: #ffffff;
-    --border: #e3e4e6;
-    --grid: #e8e9eb;
-    --head-bg: #f7f8f9;
-    --text: #24292e;
-    --muted: #6b7280;
-    --red: #c4314b;
-    --red-bg: #fdecee;
-    --yellow: #986f0b;
-    --yellow-bg: #fdf3d9;
-    --green: #107c41;
-    --green-bg: #e6f4ea;
-  }
-
-  *{ box-sizing:border-box; }
-
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--text);
-    font-family:'Segoe UI', 'Inter', system-ui, sans-serif;
-    min-height:100vh;
-    font-size:13px;
-  }
-
-  header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:10px 20px;
-    background:var(--panel);
-    border-bottom:1px solid var(--border);
-    flex-wrap:wrap;
-    gap:10px;
-  }
-
-  header .brand{
-    display:flex;
-    align-items:center;
-    gap:10px;
-  }
-
-  header .brand-mark{
-    height:34px;
-    width:auto;
-  }
-
-  header .eyebrow{
-    font-size:9.5px;
-    font-weight:600;
-    letter-spacing:0.06em;
-    color:var(--muted);
-    text-transform:uppercase;
-    margin:0;
-  }
-
-  header h1{
-    margin:0;
-    font-size:15px;
-    font-weight:700;
-    color:var(--text);
-  }
-
-  header .clock{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:10.5px;
-    color:var(--muted);
-  }
-
-  .status{
-    display:flex;
-    align-items:center;
-    gap:6px;
-    font-family:'IBM Plex Mono', monospace;
-    font-size:10.5px;
-    font-weight:600;
-    color:var(--muted);
-  }
-
-  .dot{
-    width:6px;
-    height:6px;
-    border-radius:50%;
-    background:var(--green);
-    box-shadow:0 0 0 0 rgba(16,124,65,.5);
-    animation:pulse 2s infinite;
-  }
-  .dot.offline{ background:var(--red); animation:none; }
-
-  @keyframes pulse{
-    0%{ box-shadow:0 0 0 0 rgba(16,124,65,.4); }
-    70%{ box-shadow:0 0 0 5px rgba(16,124,65,0); }
-    100%{ box-shadow:0 0 0 0 rgba(16,124,65,0); }
-  }
-
-  main{
-    padding:12px;
-    display:grid;
-    grid-template-columns:1.6fr 1fr 1fr;
-    gap:12px;
-    align-items:start;
-    max-width:1400px;
-    margin:0 auto;
-  }
-
-  @media (max-width: 980px){
-    main{ grid-template-columns:1fr; }
-  }
-
-  .print-btn{
-    display:flex;
-    align-items:center;
-    gap:5px;
-    padding:5px 10px;
-    background:var(--panel);
-    border:1px solid var(--border);
-    border-radius:4px;
-    font-family:'Segoe UI', 'Inter', sans-serif;
-    font-size:11px;
-    font-weight:600;
-    color:var(--text);
-    cursor:pointer;
-  }
-  .print-btn:hover{ background:var(--head-bg); }
-
-  @media print{
-    .tabs, .print-btn, .toggle-btn{ display:none !important; }
-    .page{ display:block !important; }
-    body{ background:#fff; }
-  }
-
-  .panel{
-    background:var(--panel);
-    border:1px solid var(--border);
-    border-radius:4px;
-    overflow:hidden;
-    box-shadow:0 1px 2px rgba(16,24,40,0.04), 0 1px 6px rgba(16,24,40,0.04);
-  }
-
-  .panel-title{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:8px 12px;
-    background:var(--head-bg);
-    border-bottom:1px solid var(--border);
-    border-left:3px solid var(--blue);
-  }
-
-  .panel-title h2{
-    margin:0;
-    font-size:11px;
-    font-weight:600;
-    color:var(--text);
-  }
-
-  .panel-title .count{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:11px;
-    color:var(--blue);
-    font-weight:700;
-  }
-
-  table{
-    width:100%;
-    border-collapse:collapse;
-    font-size:11.5px;
-    table-layout:fixed;
-  }
-
-  thead th{
-    text-align:left;
-    padding:5px 8px;
-    background:var(--head-bg);
-    color:var(--muted);
-    font-weight:600;
-    font-size:10px;
-    border:1px solid var(--grid);
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-
-  tbody td{
-    padding:4px 8px;
-    border:1px solid var(--grid);
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    font-family:'IBM Plex Mono', monospace;
-    font-size:11px;
-  }
-
-  tbody tr:nth-child(even){ background:#fafbfc; }
-  tbody tr:hover{ background:#eef6fc; }
-
-  tbody tr.row-highlight{ background:var(--yellow-bg) !important; }
-  tbody tr.row-highlight:hover{ background:#f9e9b8 !important; }
-
-  .pill{
-    display:inline-block;
-    padding:1px 6px;
-    font-family:'IBM Plex Mono', monospace;
-    font-size:10.5px;
-    font-weight:700;
-    border-radius:3px;
-  }
-
-  .pill-red{ background:var(--red-bg); color:var(--red); }
-  .pill-yellow{ background:var(--yellow-bg); color:var(--yellow); }
-  .pill-green{ background:var(--green-bg); color:var(--green); }
-
-  .badge{
-    display:inline-flex;
-    align-items:center;
-    gap:4px;
-    font-size:10.5px;
-    font-weight:700;
-    color:var(--muted);
-    text-transform:uppercase;
-    letter-spacing:0.03em;
-  }
-  .badge::before{
-    content:'';
-    width:6px;
-    height:6px;
-    border-radius:50%;
-    background:currentColor;
-    flex-shrink:0;
-  }
-  .badge-descarga{ color:var(--green); }
-  .badge-calle{ color:var(--blue); }
-  .badge-embarque{ color:var(--green); }
-  .badge-movimiento{ color:var(--red); }
-  .badge-revisar{ color:var(--red); }
-
-  .flag{
-    display:inline-block;
-    margin-left:5px;
-    padding:0 5px;
-    font-size:9px;
-    font-weight:700;
-    color:#8a5b00;
-    background:#ffe9a8;
-    border-radius:2px;
-    vertical-align:middle;
-  }
-
-  .mov-si{ color:var(--green); font-weight:700; }
-  .mov-no{ color:var(--muted); }
-
-  .time-cell{
-    font-family:'IBM Plex Mono', monospace;
-    font-weight:700;
-    text-align:center;
-  }
-  .time-red{ background:#DC2626; color:#fff; }
-  .time-yellow{ background:#FFD700; color:#3d2c00; }
-  .time-green{ background:#16A34A; color:#fff; }
-  .time-neutral{ background:var(--head-bg); color:var(--muted); }
-
-  @keyframes flashUpdate{
-    0%{ background-color:#fff3b0; }
-    100%{ background-color:transparent; }
-  }
-  tr.flash-update{ animation:flashUpdate 1.6s ease-out; }
-
-  th.sortable{
-    cursor:pointer;
-    user-select:none;
-  }
-  th.sortable:hover{ background:#eef1f3; }
-  th.sortable .sort-arrow{
-    font-size:8px;
-    margin-left:3px;
-    color:var(--blue);
-  }
-
-  .toggle-btn{
-    display:block;
-    width:100%;
-    padding:6px;
-    background:var(--head-bg);
-    border:none;
-    border-top:1px solid var(--border);
-    color:var(--blue);
-    font-family:'Segoe UI', 'Inter', sans-serif;
-    font-size:11px;
-    font-weight:600;
-    cursor:pointer;
-  }
-  .toggle-btn:hover{ background:#eef6fc; }
-
-  .empty-state, .error-state{
-    padding:14px;
-    text-align:center;
-    color:var(--muted);
-    font-family:'IBM Plex Mono', monospace;
-    font-size:11px;
-  }
-  .error-state{ color:var(--red); }
-
-  @keyframes dataPulse{
-    0%{ box-shadow:0 0 0 0 rgba(15,108,189,0.45); }
-    100%{ box-shadow:0 0 0 16px rgba(15,108,189,0); }
-  }
-  .kpi-strip.data-updated .kpi-card{
-    animation:dataPulse 0.9s ease-out;
-  }
-
-  .kpi-strip{
-    display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(170px, 1fr));
-    gap:12px;
-    max-width:1400px;
-    margin:0 auto;
-    padding:12px 12px 0;
-  }
-
-  .kpi-card{
-    background:var(--panel);
-    border:2px solid var(--border);
-    border-radius:6px;
-    padding:10px 12px 12px;
-    text-align:center;
-    box-shadow:0 1px 2px rgba(16,24,40,0.04), 0 1px 6px rgba(16,24,40,0.04);
-  }
-
-  .kpi-card.c-blue{ border-color:var(--blue); }
-  .kpi-card.c-red{ border-color:var(--red); }
-  .kpi-card.c-amber{ border-color:var(--yellow); }
-  .kpi-card.c-green{ border-color:var(--green); }
-  .kpi-card.c-dark{ border-color:var(--text); }
-
-  .kpi-title{
-    font-size:12px;
-    font-weight:700;
-    color:var(--text);
-    margin:0 0 8px;
-  }
-
-  .kpi-metrics{
-    display:flex;
-    justify-content:space-around;
-    gap:6px;
-  }
-
-  .kpi-metric{ flex:1; }
-
-  .kpi-metric-label{
-    font-size:9.5px;
-    color:var(--muted);
-    font-weight:600;
-    text-transform:uppercase;
-    letter-spacing:0.02em;
-    margin-bottom:2px;
-  }
-
-  .kpi-metric-value{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:19px;
-    font-weight:700;
-    color:var(--text);
-  }
-
-  .tabs{
-    display:flex;
-    gap:2px;
-    padding:0 20px;
-    background:var(--panel);
-    border-bottom:1px solid var(--border);
-  }
-
-  .tab-btn{
-    padding:9px 16px;
-    border:none;
-    background:transparent;
-    font-family:'Segoe UI', 'Inter', sans-serif;
-    font-size:12px;
-    font-weight:600;
-    color:var(--muted);
-    cursor:pointer;
-    border-bottom:2px solid transparent;
-    margin-bottom:-1px;
-  }
-
-  .tab-btn:hover{ color:var(--text); }
-
-  .tab-btn.active{
-    color:var(--blue);
-    border-bottom:2px solid var(--blue);
-  }
-
-  .page{ display:none; }
-  .page.active{ display:block; }
-
-  .full-width{ grid-column:1 / -1; }
-
-  footer{
-    text-align:center;
-    padding:10px;
-    color:var(--muted);
-    font-family:'IBM Plex Mono', monospace;
-    font-size:9.5px;
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unidades Desconectadas - Control Operacional</title>
+  
+  <!-- Tipografía Segoe UI como principal -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  <!-- Hoja de estilos CSS externa -->
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<header>
-  <div class="brand">
-    <img class="brand-mark" src="data:image/png;base64,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" alt="SITRANS">
-    <div>
-      <p class="eyebrow">Control Operacional</p>
-      <h1>Unidades Desconectadas</h1>
-      <div class="clock" id="opClock">Cargando...</div>
-    </div>
-  </div>
-  <div class="status">
-    <button class="print-btn" onclick="exportarExcel()">Exportar Excel</button>
-    <span class="dot" id="statusDot"></span>
-    <span id="statusText">conectando</span>
-  </div>
-</header>
-
-<div class="tabs">
-  <button class="tab-btn active" data-page="page-unidades" onclick="mostrarPagina('page-unidades', this)">Unidades Desc</button>
-  <button class="tab-btn" data-page="page-planificacion" onclick="mostrarPagina('page-planificacion', this)">Planificación Proyectada</button>
-</div>
-
-<div id="page-unidades" class="page active">
-
-<div class="kpi-strip">
-  <div class="kpi-card c-blue" id="kpiCalleCard">
-    <p class="kpi-title">Calle</p>
-    <div class="kpi-metrics">
-      <div class="kpi-metric"><div class="kpi-metric-label">Contenedores</div><div class="kpi-metric-value" id="kpiCalleCount">0</div></div>
-      <div class="kpi-metric"><div class="kpi-metric-label">Promedio Mins</div><div class="kpi-metric-value" id="kpiCalleProm">0.0</div></div>
-    </div>
-  </div>
-  <div class="kpi-card c-red" id="kpiMovimientoCard">
-    <p class="kpi-title">Movimiento</p>
-    <div class="kpi-metrics">
-      <div class="kpi-metric"><div class="kpi-metric-label">Contenedores</div><div class="kpi-metric-value" id="kpiMovimientoCount">0</div></div>
-      <div class="kpi-metric"><div class="kpi-metric-label">Promedio Mins</div><div class="kpi-metric-value" id="kpiMovimientoProm">0.0</div></div>
-    </div>
-  </div>
-  <div class="kpi-card c-amber" id="kpiSinConexionCard">
-    <p class="kpi-title">A bordo sin conexión</p>
-    <div class="kpi-metrics">
-      <div class="kpi-metric"><div class="kpi-metric-label">Contenedores</div><div class="kpi-metric-value" id="kpiSinConexionCount">0</div></div>
-      <div class="kpi-metric"><div class="kpi-metric-label">Promedio Mins</div><div class="kpi-metric-value" id="kpiSinConexionProm">0.0</div></div>
-    </div>
-  </div>
-  <div class="kpi-card c-green" id="kpiEmbarqueCard">
-    <p class="kpi-title">Para embarque</p>
-    <div class="kpi-metrics">
-      <div class="kpi-metric"><div class="kpi-metric-label">Contenedores</div><div class="kpi-metric-value" id="kpiEmbarqueCount">0</div></div>
-      <div class="kpi-metric"><div class="kpi-metric-label">Promedio Mins</div><div class="kpi-metric-value" id="kpiEmbarqueProm">0.0</div></div>
-    </div>
-  </div>
-  <div class="kpi-card c-dark" id="kpiTotalCard">
-    <p class="kpi-title">Total General</p>
-    <div class="kpi-metrics">
-      <div class="kpi-metric"><div class="kpi-metric-label">Unidades</div><div class="kpi-metric-value" id="kpiTotalCount">0</div></div>
-    </div>
-  </div>
-</div>
-
-<main>
-  <div class="panel">
-    <div class="panel-title">
-      <h2>Unidades desconectadas en patio</h2>
-      <span class="count" id="countGeneral">0</span>
-    </div>
-    <div id="tableGeneral"><div class="empty-state">cargando…</div></div>
-  </div>
-
-  <div class="panel">
-    <div class="panel-title">
-      <h2>Unidades a bordo sin conexión</h2>
-      <span class="count" id="countSinConexion">0</span>
-    </div>
-    <div id="tableSinConexion"><div class="empty-state">cargando…</div></div>
-  </div>
-
-  <div class="panel">
-    <div class="panel-title">
-      <h2>Unidades desconectadas para embarque</h2>
-      <span class="count" id="countEmbarque">0</span>
-    </div>
-    <div id="tableEmbarque"><div class="empty-state">cargando…</div></div>
-  </div>
-</main>
-
-</div>
-
-<div id="page-planificacion" class="page">
-  <main style="grid-template-columns:1fr; max-width:100%; padding:12px;">
-    <div class="panel">
-      <div class="panel-title">
-        <h2>Planificación Proyectada</h2>
-      </div>
-      <div style="padding:10px; display:flex; justify-content:center;">
-        <iframe width="1600" height="850" frameborder="0" scrolling="no" src="https://tpsv.sharepoint.com/sites/TPSVPlanificacionNaviera/_layouts/15/Doc.aspx?sourcedoc={621b809b-e4fd-4531-9d66-5df414ca4610}&action=embedview&wdAllowInteractivity=False&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True&wdInConfigurator=True" style="width:100%; max-width:100%; height:80vh; border:1px solid var(--border);"></iframe>
+  <header>
+    <div class="brand">
+      <img class="brand-mark" src="data:image/png;base64..." alt="SITRANS">
+      <div>
+        <p class="eyebrow">Control Operacional</p>
+        <h1>Unidades Desconectadas</h1>
+        <div class="clock" id="opClock">Cargando...</div>
       </div>
     </div>
-  </main>
-</div>
-
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script>
-  const RAW_URL = "https://github-live-proxy.samiranda.workers.dev";
-  const REFRESH_MS = 10000;
-  const CODIGOS_EXCLUIDOS = ["TIP", "TQ", "OUT"];
-  const DIAS = { LU:0, MA:1, MI:2, JU:3, VI:4, SA:5, DO:6 };
-
-  function exportarExcel(){
-    if(!ultimasFilas || ultimasFilas.length === 0){
-      alert('Todavía no hay datos cargados para exportar.');
-      return;
-    }
-
-    const filasOrdenadas = [...ultimasFilas].sort((a,b) => (b.TiempoMin ?? -1) - (a.TiempoMin ?? -1));
-
-    const datos = filasOrdenadas.map(r => ({
-      'Contenedor': r.Contenedor,
-      'Instancia': r.Instancia,
-      'Posición': r.Posicion,
-      'Nave': r.Nave,
-      'Tiempo': r.Tiempo,
-      'Minutos': r.TiempoMin,
-      'Requiere Power': r.ReqsPower,
-      'Mov': r.Mov ? 'Sí' : 'No',
-      'Etiqueta': etiquetaDestacado(r.Remarks) ?? '',
-      'Remarks': r.Remarks
-    }));
-
-    const ws = XLSX.utils.json_to_sheet(datos);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Unidades Desconectadas');
-
-    const ahora = new Date();
-    const sello = ahora.toISOString().slice(0,19).replace(/[:T]/g,'-');
-    XLSX.writeFile(wb, `unidades_desconectadas_${sello}.xlsx`);
-  }
-
-  function mostrarPagina(pageId, btn){
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(pageId).classList.add('active');
-    btn.classList.add('active');
-  }
-
-  const statusDot = document.getElementById('statusDot');
-  const statusText = document.getElementById('statusText');
-  const opClock = document.getElementById('opClock');
-
-  let expandedGeneral = false;
-  let ultimasFilas = [];
-  const LIMIT_GENERAL = 8;
-
-  let prevGeneral = {};
-  let prevSinConexion = {};
-  let prevEmbarque = {};
-
-  let sortDescGeneral = true;
-  let sortDescSinConexion = true;
-  let sortDescEmbarque = true;
-
-  function toggleSortGeneral(){
-    sortDescGeneral = !sortDescGeneral;
-    document.getElementById('sortArrowGeneral').textContent = sortDescGeneral ? '▼' : '▲';
-    renderGeneral(ultimasFilas);
-  }
-  function toggleSortSinConexion(){
-    sortDescSinConexion = !sortDescSinConexion;
-    document.getElementById('sortArrowSinConexion').textContent = sortDescSinConexion ? '▼' : '▲';
-    renderSinConexion(ultimasFilas);
-  }
-  function toggleSortEmbarque(){
-    sortDescEmbarque = !sortDescEmbarque;
-    document.getElementById('sortArrowEmbarque').textContent = sortDescEmbarque ? '▼' : '▲';
-    renderEmbarque(ultimasFilas);
-  }
-
-  function formatPosicion(pos){
-    const txt = String(pos ?? '');
-    const idx = txt.lastIndexOf('*');
-    return idx === -1 ? txt : txt.substring(idx + 1);
-  }
-
-  function claseTiempo(minutos){
-    if(minutos === null || minutos === undefined) return 'time-neutral';
-    if(minutos >= 60) return 'time-red';
-    if(minutos < 10) return 'time-green';
-    return 'time-yellow';
-  }
-
-  function etiquetaDestacado(remarks){
-    const txt = String(remarks ?? '').toUpperCase();
-    const esUSDA = /\bUSDA\b/.test(txt);
-    const esAC = /\bAC\b/.test(txt) || /\d+\s*\/\s*\d+/.test(txt);
-
-    const partes = [];
-    if(esUSDA) partes.push('COT');
-    if(esAC) partes.push('AC');
-    return partes.length > 0 ? partes.join('/') : null;
-  }
-
-  function promedio(arr){
-    if(arr.length === 0) return '0.0';
-    const suma = arr.reduce((acc,r) => acc + (r.TiempoMin ?? 0), 0);
-    return (suma/arr.length).toFixed(1);
-  }
-
-  function toggleGeneral(){
-    expandedGeneral = !expandedGeneral;
-    renderGeneral(ultimasFilas);
-  }
-
-  // ---------- Utilidades de parseo (traducidas de la query M) ----------
-
-  function esVacio(v){ return v === null || v === undefined || String(v).trim() === ''; }
-
-  function esPosicionVigente(pos, anioActual){
-    const limpio = String(pos ?? '').trim();
-    const basura = CODIGOS_EXCLUIDOS.includes(limpio.toUpperCase());
-    const larga = limpio.length > 10;
-    let anioRot = null;
-    const prefijo = parseInt(limpio.substring(0,2), 10);
-    if(!isNaN(prefijo)) anioRot = 2000 + prefijo;
-
-    if(basura) return false;
-    if(!larga) return true;
-    return anioRot === anioActual || anioRot === anioActual - 1;
-  }
-
-  function mondayIndex(date){
-    // Lunes=0 ... Domingo=6
-    return (date.getDay() + 6) % 7;
-  }
-
-  function parseDiscon(valor){
-    const txt = String(valor ?? '').trim();
-    if(txt.length !== 10) return null;
-    const yy = parseInt(txt.substring(0,2),10);
-    const mm = parseInt(txt.substring(2,2+2),10);
-    const dd = parseInt(txt.substring(4,4+2),10);
-    const hh = parseInt(txt.substring(6,6+2),10);
-    const mi = parseInt(txt.substring(8,8+2),10);
-    if([yy,mm,dd,hh,mi].some(isNaN)) return null;
-    return new Date(2000+yy, mm-1, dd, hh, mi, 0);
-  }
-
-  function parseHoraSimple(valor, ahora){
-    const txt = String(valor ?? '').trim();
-    if(txt.length < 6) return null;
-    const codigoDia = txt.substring(0,2).toUpperCase();
-    const sufijo = txt.substring(txt.length-4);
-    const hh = parseInt(sufijo.substring(0,2),10);
-    const mi = parseInt(sufijo.substring(2,2+2),10);
-    const diaObjetivo = DIAS.hasOwnProperty(codigoDia) ? DIAS[codigoDia] : null;
-
-    const valido = diaObjetivo !== null && !isNaN(hh) && !isNaN(mi) && hh>=0 && hh<=23 && mi>=0 && mi<=59;
-    if(!valido) return null;
-
-    const hoy = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
-    let offsetMatch = 0;
-    for(let o=0; o<=6; o++){
-      const candidatoDia = new Date(hoy);
-      candidatoDia.setDate(hoy.getDate()-o);
-      if(mondayIndex(candidatoDia) === diaObjetivo){ offsetMatch = o; break; }
-    }
-    const fechaBase = new Date(hoy);
-    fechaBase.setDate(hoy.getDate()-offsetMatch);
-    let candidato = new Date(fechaBase.getFullYear(), fechaBase.getMonth(), fechaBase.getDate(), hh, mi, 0);
-    if(candidato > ahora){
-      candidato = new Date(candidato.getTime() - 7*24*60*60*1000);
-    }
-    return candidato;
-  }
-
-  function formatearHHMM(diffMs){
-    if(diffMs === null || diffMs === undefined) return null;
-    const totalMin = Math.round(diffMs/60000);
-    const horas = Math.floor(totalMin/60);
-    const minutos = totalMin % 60;
-    return String(horas).padStart(2,'0') + ':' + String(minutos).padStart(2,'0');
-  }
-
-  // ---------- TSV parsing ----------
-
-  function extraerFechaReporte(text){
-    // Al final del archivo viene una línea tipo: "12-09-2026\t12:58:40"
-    const lines = text.replace(/\r/g,'').split('\n').map(l => l.trim()).filter(l => l.length > 0);
-    if(lines.length === 0) return null;
-    const ultima = lines[lines.length-1];
-    const match = ultima.match(/^(\d{2})-(\d{2})-(\d{4})\t(\d{2}):(\d{2}):(\d{2})$/);
-    if(!match) return null;
-    return new Date(Number(match[3]), Number(match[2])-1, Number(match[1]), Number(match[4]), Number(match[5]), Number(match[6]));
-  }
-
-  function parseTSV(text){
-    const lines = text.replace(/\r/g,'').split('\n');
-    if(lines.length === 0) return [];
-    const headers = lines[0].split('\t').map(h => h.trim());
-    const rows = [];
-    for(let i=1;i<lines.length;i++){
-      const line = lines[i];
-      if(!line || !line.includes('\t')) continue;
-      const cells = line.split('\t');
-      const row = {};
-      headers.forEach((h,idx) => row[h] = (cells[idx] ?? '').trim());
-      rows.push(row);
-    }
-    return rows;
-  }
-
-  // ---------- Lógica principal (traducción de la query) ----------
-
-  function calcularFila(fila, ahora, anioActual){
-    const powerTxt = String(fila['Power'] ?? '');
-    const seMovio = powerTxt.includes('(') ? 'Sí' : 'No';
-    const powerNum = parseInt(powerTxt.replace(/[()]/g,'').trim(), 10) || 0;
-
-    const posActual = String(fila['Current Position'] ?? '').trim();
-    const discon = fila['Discon'];
-    const remarks = fila['Remarks'];
-    const yardPlan = fila['Yard Plan'];
-    const kind = String(fila['Kind'] ?? '').trim();
-    const moveStage = String(fila['Move Stage'] ?? '').trim();
-
-let instancia;
-
-    // 1. Evaluamos primero todo lo demás (longitud > 10 y caso general)
-    if(posActual.length > 10){
-      if(kind === 'DSCH') instancia = 'DESCARGA';
-      else if(kind === 'LOAD') instancia = 'EMBARCADO SIN CONEX';
-      else instancia = 'EMBARCADO SIN CONEXION (revisar)';
-    } else {
-      if(kind === 'DSCH'){
-        instancia = 'DESCARGA';
-      } else if(esVacio(discon)){
-        instancia = esVacio(remarks) ? 'CALLE' : 'CALLE REVISAR';
-      } else {
-        if(!esVacio(yardPlan)) instancia = 'MOVIMIENTO';
-        else if(moveStage === 'Completed') instancia = 'MOVIMIENTO';
-        else {
-          if(powerNum === 0 && kind === 'LOAD') instancia = 'EMBARQUE';
-          else if(powerNum === 0) instancia = 'DESPACHO';
-          else instancia = 'SIN CLASIFICAR';
-        }
-      }
-    }
-
-    // 2. Si está con posición sobre camión, filtramos si es embarque, movimiento u otro
-    if(posActual.startsWith('*TR')){
-      if(instancia === 'EMBARQUE'){
-        instancia = 'EMBARQUE SOBRE CAMION';
-      } else if(instancia === 'MOVIMIENTO'){
-        instancia = 'MOVIMIENTO SOBRE CAMION';
-      } else {
-        instancia = 'SOBRE CAMION'; // Valor por defecto si cae en otra categoría
-      }
-    }
-
-    const usaDiscon = ['MOVIMIENTO','EMBARQUE','DESPACHO','SOBRE CAMION','SIN CLASIFICAR','DESCARGA','MOVIMIENTO SOBRE CAMION','EMBARQUE SOBRE CAMION'].includes(instancia);
-    const usaYardIn = ['CALLE','CALLE REVISAR'].includes(instancia);
-    const usaComplete = ['EMBARCADO SIN CONEX','EMBARCADO SIN CONEXION (revisar)'].includes(instancia);
-
-    let fechaEvento = null;
-    if(usaDiscon) fechaEvento = parseDiscon(discon);
-    else if(usaYardIn) fechaEvento = parseHoraSimple(fila['Yard In'], ahora);
-    else if(usaComplete) fechaEvento = parseHoraSimple(fila['Complete'], ahora);
-
-    const tiempoTranscurrido = fechaEvento ? formatearHHMM(ahora - fechaEvento) : null;
-    const tiempoMin = fechaEvento ? Math.round((ahora - fechaEvento)/60000) : null;
-    const alerta = instancia === 'SIN CLASIFICAR' ? 'Revisar' : null;
-
-    const esMov = (moveStage === 'Completed') && !esVacio(discon) && (kind === 'YARD') && (powerTxt.trim() === '(0)');
-
-    return {
-      Contenedor: fila['Container No.'],
-      Nave: fila['Outbound Carrier Name'],
-      Posicion: posActual,
-      Instancia: instancia,
-      Tiempo: tiempoTranscurrido,
-      TiempoMin: tiempoMin,
-      ReqsPower: seMovio,
-      Mov: esMov,
-      Alerta: alerta,
-      Remarks: remarks
-    };
-  }
-
-  function procesar(text){
-    const ahora = new Date();
-    const anioActual = ahora.getFullYear();
-    const rows = parseTSV(text);
-
-    const filasValidas = rows.filter(r => !esVacio(r['Container No.']));
-    const sinBasura = filasValidas.filter(r => esPosicionVigente(r['Current Position'], anioActual));
-    const calculadas = sinBasura.map(r => calcularFila(r, ahora, anioActual));
-    const filtradas = calculadas.filter(r => !String(r.Remarks ?? '').toUpperCase().includes('NO CONECTAR'));
-
-    return filtradas;
-  }
-
-  // ---------- Render ----------
-
-    function badgeInstancia(inst){
-    const map = {
-      'DESCARGA':'badge-descarga', 'CALLE':'badge-calle', 'CALLE REVISAR':'badge-revisar',
-      'EMBARQUE':'badge-embarque', 'MOVIMIENTO':'badge-movimiento', 'DESPACHO':'badge-movimiento',
-      'SOBRE CAMION':'badge-calle', 'SIN CLASIFICAR':'badge-revisar',
-      // Agrega estas dos líneas:
-      'EMBARQUE SOBRE CAMION': 'badge-embarque',
-      'MOVIMIENTO SOBRE CAMION': 'badge-movimiento'
-    };
-    const cls = map[inst] || '';
-    return `<span class="badge ${cls}">${inst}</span>`;
-  }
-
-  function esc(v){
-    return String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  }
-
-    function renderGeneral(rows){
-    const container = document.getElementById('tableGeneral');
-    // Excluir también 'EMBARQUE SOBRE CAMION' de la tabla de patio
-    const data = rows.filter(r => !['EMBARCADO SIN CONEX','EMBARCADO SIN CONEXION (revisar)','EMBARQUE', 'EMBARQUE SOBRE CAMION'].includes(r.Instancia));
-    document.getElementById('countGeneral').textContent = data.length;
-
-    const calleRows = data.filter(r => r.Instancia === 'CALLE' || r.Instancia === 'CALLE REVISAR');
-    // Agregar MOVIMIENTO SOBRE CAMION a los KPIs de Movimiento
-    const movimientoRows = data.filter(r => r.Instancia === 'MOVIMIENTO' || r.Instancia === 'MOVIMIENTO SOBRE CAMION');
-    
-    document.getElementById('kpiCalleCount').textContent = calleRows.length;
-    document.getElementById('kpiCalleProm').textContent = promedio(calleRows);
-    document.getElementById('kpiMovimientoCount').textContent = movimientoRows.length;
-    document.getElementById('kpiMovimientoProm').textContent = promedio(movimientoRows);
-
-    if(data.length === 0){ container.innerHTML = '<div class="empty-state">sin registros</div>'; return; }
-
-    const sorted = data.sort((a,b)=> sortDescGeneral ? (b.TiempoMin??-1) - (a.TiempoMin??-1) : (a.TiempoMin??-1) - (b.TiempoMin??-1));
-    const toShow = expandedGeneral ? sorted : sorted.slice(0, LIMIT_GENERAL);
-
-    const nuevoPrev = {};
-    let html = `<table><thead><tr><th style="width:22%">Contenedor</th><th style="width:24%">Instancia</th><th style="width:13%">Posición</th><th style="width:16%">Nave</th><th style="width:16%" class="sortable" onclick="toggleSortGeneral()">Tiempo <span class="sort-arrow" id="sortArrowGeneral">${sortDescGeneral ? '▼' : '▲'}</span></th><th style="width:9%">Mov</th></tr></thead><tbody>`;
-    toShow.forEach(r => {
-      const etiqueta = etiquetaDestacado(r.Remarks);
-      const cambio = prevGeneral[r.Contenedor] !== undefined && prevGeneral[r.Contenedor] !== r.Instancia;
-      nuevoPrev[r.Contenedor] = r.Instancia;
-      html += `<tr class="${etiqueta ? 'row-highlight' : ''} ${cambio ? 'flash-update' : ''}"><td>${esc(r.Contenedor)}</td><td>${badgeInstancia(r.Instancia)}${etiqueta ? `<span class="flag">${etiqueta}</span>` : ''}</td><td>${esc(formatPosicion(r.Posicion))}</td><td>${esc(r.Nave)}</td><td class="time-cell ${claseTiempo(r.TiempoMin)}">${r.Tiempo ?? 'N/A'}</td><td class="${r.Mov ? 'mov-si' : 'mov-no'}">${r.Mov ? 'Sí' : 'No'}</td></tr>`;
-    });
-    html += '</tbody></table>';
-    prevGeneral = nuevoPrev;
-
-    if(sorted.length > LIMIT_GENERAL){
-      html += `<button class="toggle-btn" onclick="toggleGeneral()">${expandedGeneral ? 'Mostrar menos' : `Ver todas (${sorted.length})`}</button>`;
-    }
-
-    container.innerHTML = html;
-  }
-
-  function renderSinConexion(rows){
-    const container = document.getElementById('tableSinConexion');
-    const data = rows.filter(r => ['EMBARCADO SIN CONEX','EMBARCADO SIN CONEXION (revisar)'].includes(r.Instancia));
-    document.getElementById('countSinConexion').textContent = data.length;
-    document.getElementById('kpiSinConexionCount').textContent = data.length;
-    document.getElementById('kpiSinConexionProm').textContent = promedio(data);
-
-    if(data.length === 0){ container.innerHTML = '<div class="empty-state">sin unidades a bordo sin conexión</div>'; return; }
-
-    const sorted = data.sort((a,b)=> sortDescSinConexion ? (b.TiempoMin??-1) - (a.TiempoMin??-1) : (a.TiempoMin??-1) - (b.TiempoMin??-1));
-
-    const nuevoPrev = {};
-    let html = `<table><thead><tr><th style="width:28%">Contenedor</th><th style="width:32%">Nave</th><th style="width:20%" class="sortable" onclick="toggleSortSinConexion()">Tiempo <span class="sort-arrow" id="sortArrowSinConexion">${sortDescSinConexion ? '▼' : '▲'}</span></th><th style="width:20%">Posición</th></tr></thead><tbody>`;
-    sorted.forEach(r => {
-      const etiqueta = etiquetaDestacado(r.Remarks);
-      const cambio = prevSinConexion[r.Contenedor] === undefined;
-      nuevoPrev[r.Contenedor] = true;
-      html += `<tr class="${etiqueta ? 'row-highlight' : ''} ${cambio ? 'flash-update' : ''}"><td>${esc(r.Contenedor)}${etiqueta ? `<span class="flag">${etiqueta}</span>` : ''}</td><td>${esc(r.Nave)}</td><td class="time-cell ${claseTiempo(r.TiempoMin)}">${r.Tiempo ?? 'N/A'}</td><td>${esc(formatPosicion(r.Posicion))}</td></tr>`;
-    });
-    html += '</tbody></table>';
-    prevSinConexion = nuevoPrev;
-    container.innerHTML = html;
-  }
-
-    function renderEmbarque(rows){
-    const container = document.getElementById('tableEmbarque');
-    // Incluir EMBARQUE SOBRE CAMION
-    const data = rows.filter(r => r.Instancia === 'EMBARQUE' || r.Instancia === 'EMBARQUE SOBRE CAMION');
-    
-    document.getElementById('countEmbarque').textContent = data.length;
-    // ... resto de la función igual
-    document.getElementById('kpiEmbarqueCount').textContent = data.length;
-    document.getElementById('kpiEmbarqueProm').textContent = promedio(data);
-
-    if(data.length === 0){ container.innerHTML = '<div class="empty-state">sin unidades desconectadas para embarque</div>'; return; }
-
-    const sorted = data.sort((a,b)=> sortDescEmbarque ? (b.TiempoMin??-1) - (a.TiempoMin??-1) : (a.TiempoMin??-1) - (b.TiempoMin??-1));
-
-    const nuevoPrev = {};
-    let html = `<table><thead><tr><th style="width:32%">Contenedor</th><th style="width:28%">Nave</th><th style="width:20%" class="sortable" onclick="toggleSortEmbarque()">Tiempo <span class="sort-arrow" id="sortArrowEmbarque">${sortDescEmbarque ? '▼' : '▲'}</span></th><th style="width:20%">Posición</th></tr></thead><tbody>`;
-    sorted.forEach(r => {
-      const etiqueta = etiquetaDestacado(r.Remarks);
-      const cambio = prevEmbarque[r.Contenedor] === undefined;
-      nuevoPrev[r.Contenedor] = true;
-      html += `<tr class="${etiqueta ? 'row-highlight' : ''} ${cambio ? 'flash-update' : ''}"><td>${esc(r.Contenedor)}${etiqueta ? `<span class="flag">${etiqueta}</span>` : ''}</td><td>${esc(r.Nave)}</td><td class="time-cell ${claseTiempo(r.TiempoMin)}">${r.Tiempo ?? 'N/A'}</td><td>${esc(formatPosicion(r.Posicion))}</td></tr>`;
-    });
-    html += '</tbody></table>';
-    prevEmbarque = nuevoPrev;
-    container.innerHTML = html;
-  }
-
-  let ultimaFechaReporte = null;
-
-  async function fetchData(){
-    statusText.textContent = 'actualizando...';
-
-    try{
-      const url = `${RAW_URL}?t=${Date.now()}`;
-      const res = await fetch(url, { cache: 'no-store' });
-      if(!res.ok) throw new Error('HTTP ' + res.status);
-      const text = await res.text();
-
-      const rows = procesar(text);
-      ultimasFilas = rows;
-      document.getElementById('kpiTotalCount').textContent = rows.length;
-      renderGeneral(rows);
-      renderSinConexion(rows);
-      renderEmbarque(rows);
-
-      statusDot.classList.remove('offline');
-      statusText.textContent = 'en vivo';
-
-      const fechaReporte = extraerFechaReporte(text);
-
-      if(fechaReporte){
-        opClock.textContent = 'DATOS AL ' + fechaReporte.toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'2-digit'}) + ' ' + fechaReporte.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-
-        if(ultimaFechaReporte !== null && fechaReporte.getTime() !== ultimaFechaReporte.getTime()){
-          const strip = document.querySelector('.kpi-strip');
-          strip.classList.remove('data-updated');
-          void strip.offsetWidth;
-          strip.classList.add('data-updated');
-        }
-        ultimaFechaReporte = fechaReporte;
-      } else {
-        const lastModifiedHeader = res.headers.get('last-modified');
-        const fileDate = lastModifiedHeader ? new Date(lastModifiedHeader) : null;
-        if(fileDate){
-          opClock.textContent = 'ARCHIVO ACTUALIZADO ' + fileDate.toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'2-digit'}) + ' ' + fileDate.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-        } else {
-          const now = new Date();
-          opClock.textContent = 'VERIFICADO ' + now.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'}) + ' (sin fecha de archivo disponible)';
-        }
-      }
-
-    }catch(err){
-      statusDot.classList.add('offline');
-      statusText.textContent = 'sin conexión';
-      console.error(err);
-    }
-  }
-
-  fetchData();
-  setInterval(fetchData, REFRESH_MS);
-</script>
-
+    <div class="status">
+      <button class="print-btn" onclick="exportarExcel()">Exportar Excel</button>
+      <span class="dot" id="statusDot"></span>
+      <span id="statusText">conectando</span>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-page="page-unidades" onclick="mostrarPagina('page-unidades', this)">Unidades Desc</button>
+    <button class="tab-btn" data-page="page-planificacion" onclick="mostrarPagina('page-planificacion', this)">Planificación Proyectada</button>
+  </nav>
+
+  <div id="page-unidades" class="page active">
+
+    <section class="kpi-strip">
+      <div class="kpi-card c-blue" id="kpiCalleCard">
+        <p class="kpi-title">Calle</p>
+        <div class="kpi-metrics">
+          <div class="kpi-metric">
+            <div class="kpi-metric-label">Contenedores</div>
+            <div class="kpi-metric-value" id="kpiCalleCount">0</div>
+          </div>
+          <div class="kpi-metric">
+            <div class="kpi-metric-label">Promedio Mins</div>
+            <div class="kpi-metric-value" id="kpiCalleProm">0.0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-card c-red" id="kpiMovimientoCard">
+        <p class="kpi-title">Movimiento</p>
+        <div class="kpi-metrics">
+          <div class="kpi-metric">
+            <div class="kpi-metric-label">Contenedores</div>
+            <div class="kpi-metric-value" id="kpiMovimientoCount">0</div>
+          </div>
+          <div class="kpi-metric">
+            <div class="kpi-metric-label">Promedio Mins</div>
+            <div class="kpi-metric-value" id="kpiMovimientoProm">0.0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-card c-amber" id="kpiSinConexionCard">
+        <p class="kpi-title">A bordo sin conexión</p>
+        <div class="kpi-metrics">
+          <div class="kpi-metric">
+            <div class="kpi-metric-label">Contenedores</div>
+            <div class="kpi-metric-value" id="kpiSinConexionCount">0</div>
+          </div>
+          <div class="kpi-metric">
+            <div class="kpi-metric-label">Promedio Mins</div>
+            <div class="kpi-metric-value" id="kpiSinConexionProm">0.0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-card c-green" id="kpiEmbarqueCard">
+        <p class="kpi-title">Para embarque</p>
+        <div class="kpi-metrics">
+          <div class="kpi-metric">
+            <div class="kpi-metric-label">Contenedores</div>
+            <div class="kpi-metric-value" id="kpiEmbarqueCount">0</div>
+          </div>
+          <div class="kpi-metric">
+            <div class="kpi-metric-label">Promedio Mins</div>
+            <div class="kpi-metric-value" id="kpiEmbarqueProm">0.0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-card c-dark" id="kpiTotalCard">
+        <p class="kpi-title">Total General</p>
+        <div class="kpi-metrics">
+          <div class="kpi-metric">
+            <div class="kpi-metric-label">Unidades</div>
+            <div class="kpi-metric-value" id="kpiTotalCount">0</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <main>
+      <div class="panel">
+        <div class="panel-title">
+          <h2>Unidades desconectadas en patio</h2>
+          <span class="count" id="countGeneral">0</span>
+        </div>
+        <div id="tableGeneral">
+          <div class="empty-state">cargando…</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">
+          <h2>Unidades a bordo sin conexión</h2>
+          <span class="count" id="countSinConexion">0</span>
+        </div>
+        <div id="tableSinConexion">
+          <div class="empty-state">cargando…</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">
+          <h2>Unidades desconectadas para embarque</h2>
+          <span class="count" id="countEmbarque">0</span>
+        </div>
+        <div id="tableEmbarque">
+          <div class="empty-state">cargando…</div>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <div id="page-planificacion" class="page">
+    <main class="planificacion-wrapper">
+      <div class="panel">
+        <div class="panel-title">
+          <h2>Planificación Proyectada</h2>
+        </div>
+        <div class="iframe-container">
+          <iframe 
+            src="https://tpsv.sharepoint.com/sites/TPSVPlanificacionNaviera/_layouts/15/Doc.aspx?sourcedoc={621b809b-e4fd-4531-9d66-5df414ca4610}&action=embedview&wdAllowInteractivity=False&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True&wdInConfigurator=True" 
+            title="Planificación Proyectada"
+            frameborder="0" 
+            scrolling="no">
+          </iframe>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Librería externa para exportación Excel -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <!-- Lógica de JavaScript externa -->
+  <script src="script.js"></script>
 </body>
 </html>
