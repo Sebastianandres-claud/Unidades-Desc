@@ -486,8 +486,7 @@ async function fetchData(){
   try{
     const url = `${RAW_URL}?t=${Date.now()}`;
     const res = await fetch(url, { 
-      cache: 'no-store',
-      headers: { "Pragma": "no-cache", "Cache-Control": "no-cache" }
+      cache: 'no-store'
     });
     
     if(!res.ok) throw new Error('HTTP ' + res.status);
