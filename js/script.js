@@ -1,3 +1,7 @@
+/* ==========================================================================
+   SITRANS DASHBOARD - OPERATIONAL LOGIC & REALTIME ENGINE
+   ========================================================================== */
+
 const RAW_URL = "https://github-live-proxy.samiranda.workers.dev";
 const REFRESH_MS = 10000;
 const CODIGOS_EXCLUIDOS = ["TIP", "TQ", "OUT"];
@@ -6,18 +10,26 @@ const DIAS = { LU:0, MA:1, MI:2, JU:3, VI:4, SA:5, DO:6 };
 let expandedGeneral = false;
 let expandedEmbarque = false;
 let ultimasFilas = [];
-const LIMIT_GENERAL = 8;
-const LIMIT_EMBARQUE = 8;
-
-let prevGeneral = {};
-let prevSinConexion = {};
-let prevEmbarque = {};
+const LIMIT_GENERAL = 10;
+const LIMIT_EMBARQUE = 10;
 
 let sortDescGeneral = true;
 let sortDescSinConexion = true;
 let sortDescEmbarque = true;
 
-let ultimaFechaReporte = null;
+// ==========================================
+// NAVEGACIÓN Y EXPORTACIÓN
+// ==========================================
+
+function mostrarPagina(pageId, btn) {
+  document.querySelectorAll('.page-container').forEach(p => p.style.display = 'none');
+  
+  const targetPage = document.getElementById(pageId);
+  if (targetPage) targetPage.style.display = 'block';
+
+  document.querySelectorAll('.tab-link').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
 
 function exportarExcel(){
   if(!ultimasFilas || ultimasFilas.length === 0){
@@ -36,7 +48,7 @@ function exportarExcel(){
     'Minutos': r.TiempoMin,
     'Requiere Power': r.ReqsPower,
     'Mov': r.Mov ? 'Sí' : 'No',
-    'Etiqueta': etiquetaDestacado(r.Remarks) ?? '',
+    'Badges': obtenerBadgesTexto(r.Remarks),
     'Remarks': r.Remarks
   }));
 
@@ -49,38 +61,48 @@ function exportarExcel(){
   XLSX.writeFile(wb, `unidades_desconectadas_${sello}.xlsx`);
 }
 
-function mostrarPagina(pageId, btn) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-item').forEach(b => b.classList.remove('active'));
+// ==========================================
+// AYUDANTES Y DESTAQUES VISUALES
+// ==========================================
 
-  const targetPage = document.getElementById(pageId);
-  if (targetPage) targetPage.classList.add('active');
-  if (btn) btn.classList.add('active');
+function obtenerClaseFila(instancia) {
+  const inst = String(instancia || '').toUpperCase();
+  if (inst.includes('CALLE') || inst.includes('DESCARGA') || inst.includes('SOBRE CAMION')) return 'row-calle';
+  if (inst.includes('MOVIMIENTO') || inst.includes('DESPACHO')) return 'row-movimiento';
+  if (inst.includes('EMBARCADO') || inst.includes('ABORDO')) return 'row-a-bordo';
+  if (inst.includes('EMBARQUE')) return 'row-embarque';
+  return '';
 }
 
-function toggleSortGeneral(){
-  sortDescGeneral = !sortDescGeneral;
-  renderGeneral(ultimasFilas);
+function obtenerBadgesHTML(remarks) {
+  if (!remarks) return '';
+  const rem = String(remarks).trim();
+  let html = '';
+
+  // Regla COT (USDA)
+  if (/USDA/i.test(rem)) {
+    html += `<span class="badge-tag cot">COT</span>`;
+  }
+
+  // Regla AC (Fracción o AC, ignorando s/a)
+  const tieneFraccionNum = /\b\d+\/\d+\b/.test(rem);
+  const tieneAC = /\bAC\b/i.test(rem);
+  const esSinAtmosfera = /s\/a/i.test(rem);
+
+  if ((tieneFraccionNum || tieneAC) && !esSinAtmosfera) {
+    html += `<span class="badge-tag ac">AC</span>`;
+  }
+
+  return html;
 }
 
-function toggleSortSinConexion(){
-  sortDescSinConexion = !sortDescSinConexion;
-  renderSinConexion(ultimasFilas);
-}
-
-function toggleSortEmbarque(){
-  sortDescEmbarque = !sortDescEmbarque;
-  renderEmbarque(ultimasFilas);
-}
-
-function toggleGeneral(){
-  expandedGeneral = !expandedGeneral;
-  renderGeneral(ultimasFilas);
-}
-
-function toggleEmbarque(){
-  expandedEmbarque = !expandedEmbarque;
-  renderEmbarque(ultimasFilas);
+function obtenerBadgesTexto(remarks) {
+  if (!remarks) return '';
+  const rem = String(remarks).trim();
+  const partes = [];
+  if (/USDA/i.test(rem)) partes.push('COT');
+  if ((\b\d+\/\d+\b/.test(rem) || /\bAC\b/i.test(rem)) && !/s\/a/i.test(rem)) partes.push('AC');
+  return partes.join('/');
 }
 
 function formatPosicion(pos){
@@ -94,21 +116,10 @@ function formatPosicion(pos){
 }
 
 function claseTiempo(minutos){
-  if(minutos === null || minutos === undefined) return 'time-neutral';
-  if(minutos >= 26) return 'time-red';       // 26 minutos o más
-  if(minutos < 15) return 'time-green';      // Menos de 15 minutos
-  return 'time-yellow';                      // Entre 15 y 25 minutos
-}
-
-function etiquetaDestacado(remarks){
-  const txt = String(remarks ?? '').toUpperCase();
-  const esUSDA = /\bUSDA\b/.test(txt);
-  const esAC = /\bAC\b/.test(txt) || /\d+\s*\/\s*\d+/.test(txt);
-
-  const partes = [];
-  if(esUSDA) partes.push('COT');
-  if(esAC) partes.push('AC');
-  return partes.length > 0 ? partes.join('/') : null;
+  if(minutos === null || minutos === undefined) return '';
+  if(minutos >= 26) return 'style="color:#e11d48; font-weight:700;"'; // Alerta rojo
+  if(minutos < 15) return 'style="color:#059669; font-weight:600;"'; // Normal verde
+  return 'style="color:#d97706; font-weight:600;"'; // Precaución amarillo
 }
 
 function promedio(arr){
@@ -117,7 +128,15 @@ function promedio(arr){
   return (suma/arr.length).toFixed(1);
 }
 
+function esc(v){
+  return String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
 function esVacio(v){ return v === null || v === undefined || String(v).trim() === ''; }
+
+// ==========================================
+// PARSERS Y PROCESAMIENTO DE DATOS
+// ==========================================
 
 function esPosicionVigente(pos, anioActual){
   const limpio = String(pos ?? '').trim();
@@ -132,9 +151,7 @@ function esPosicionVigente(pos, anioActual){
   return anioRot === anioActual || anioRot === anioActual - 1;
 }
 
-function mondayIndex(date){
-  return (date.getDay() + 6) % 7;
-}
+function mondayIndex(date){ return (date.getDay() + 6) % 7; }
 
 function parseDiscon(valor){
   const txt = String(valor ?? '').trim();
@@ -184,38 +201,24 @@ function formatearHHMM(diffMs){
   return String(horas).padStart(2,'0') + ':' + String(minutos).padStart(2,'0');
 }
 
-// Extracción flexible de fecha desde el contenido del archivo
 function extraerFechaReporte(text){
   if (!text) return null;
   const lines = text.replace(/\r/g,'').split('\n').map(l => l.trim()).filter(l => l.length > 0);
   if(lines.length === 0) return null;
 
-  // 1. Escanear desde el final hacia arriba
   for (let i = lines.length - 1; i >= 0; i--) {
     const line = lines[i];
-    
-    // Formato estándar Power BI: DD-MM-YYYY\tHH:MM:SS
     const matchTSV = line.match(/^(\d{2})[\/\-](\d{2})[\/\-](\d{2,4})[\t\s]+(\d{2}):(\d{2}):(\d{2})$/);
     if (matchTSV) {
       let yr = Number(matchTSV[3]);
       if (yr < 100) yr += 2000;
       return new Date(yr, Number(matchTSV[2]) - 1, Number(matchTSV[1]), Number(matchTSV[4]), Number(matchTSV[5]), Number(matchTSV[6]));
     }
-
-    // Formato con texto: DATOS AL ... u OPERACION ...
     if (/DATOS\s+AL|OPERACI[OÓ]N/i.test(line)) {
       const matchTexto = line.match(/\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}\s+\d{1,2}:\d{2}(:\d{2})?(\s*[ap]\.?\s*m\.?)?/i);
       if (matchTexto) return "DATOS AL " + matchTexto[0].toUpperCase();
     }
   }
-
-  // 2. Escanear las primeras líneas por si la fecha está arriba
-  for (let i = 0; i < Math.min(lines.length, 10); i++) {
-    const line = lines[i];
-    const matchTexto = line.match(/\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}\s+\d{1,2}:\d{2}(:\d{2})?(\s*[ap]\.?\s*m\.?)?/i);
-    if (matchTexto) return "DATOS AL " + matchTexto[0].toUpperCase();
-  }
-
   return null;
 }
 
@@ -271,13 +274,9 @@ function calcularFila(fila, ahora, anioActual){
   }
 
   if(posActual.startsWith('*TR')){
-    if(instancia === 'EMBARQUE'){
-      instancia = 'EMBARQUE SOBRE CAMION';
-    } else if(instancia === 'MOVIMIENTO'){
-      instancia = 'MOVIMIENTO SOBRE CAMION';
-    } else {
-      instancia = 'SOBRE CAMION';
-    }
+    if(instancia === 'EMBARQUE') instancia = 'EMBARQUE SOBRE CAMION';
+    else if(instancia === 'MOVIMIENTO') instancia = 'MOVIMIENTO SOBRE CAMION';
+    else instancia = 'SOBRE CAMION';
   }
 
   const usaDiscon = ['MOVIMIENTO','EMBARQUE','DESPACHO','SOBRE CAMION','SIN CLASIFICAR','DESCARGA','MOVIMIENTO SOBRE CAMION','EMBARQUE SOBRE CAMION'].includes(instancia);
@@ -291,7 +290,6 @@ function calcularFila(fila, ahora, anioActual){
 
   const tiempoTranscurrido = fechaEvento ? formatearHHMM(ahora - fechaEvento) : null;
   const tiempoMin = fechaEvento ? Math.round((ahora - fechaEvento)/60000) : null;
-  const alerta = instancia === 'SIN CLASIFICAR' ? 'Revisar' : null;
 
   const esMov = (moveStage === 'Completed') && !esVacio(discon) && (kind === 'YARD') && (powerTxt.trim() === '(0)');
 
@@ -304,7 +302,6 @@ function calcularFila(fila, ahora, anioActual){
     TiempoMin: tiempoMin,
     ReqsPower: seMovio,
     Mov: esMov,
-    Alerta: alerta,
     Remarks: remarks
   };
 }
@@ -317,143 +314,148 @@ function procesar(text){
   const filasValidas = rows.filter(r => !esVacio(r['Container No.']));
   const sinBasura = filasValidas.filter(r => esPosicionVigente(r['Current Position'], anioActual));
   const calculadas = sinBasura.map(r => calcularFila(r, ahora, anioActual));
-  const filtradas = calculadas.filter(r => !String(r.Remarks ?? '').toUpperCase().includes('NO CONECTAR'));
-
-  return filtradas;
+  return calculadas.filter(r => !String(r.Remarks ?? '').toUpperCase().includes('NO CONECTAR'));
 }
 
-function badgeInstancia(inst){
-  const map = {
-    'DESCARGA':'badge-descarga', 'CALLE':'badge-calle', 'CALLE REVISAR':'badge-revisar',
-    'EMBARQUE':'badge-embarque', 'MOVIMIENTO':'badge-movimiento', 'DESPACHO':'badge-movimiento',
-    'SOBRE CAMION':'badge-calle', 'SIN CLASIFICAR':'badge-revisar',
-    'EMBARQUE SOBRE CAMION': 'badge-embarque',
-    'MOVIMIENTO SOBRE CAMION': 'badge-movimiento'
-  };
-  const cls = map[inst] || '';
-  return `<span class="badge ${cls}">${inst}</span>`;
-}
+// ==========================================
+// RENDERIZADO DE LAS 3 TABLAS PARALELAS
+// ==========================================
 
-function esc(v){
-  return String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
+function toggleSortGeneral(){ sortDescGeneral = !sortDescGeneral; renderGeneral(ultimasFilas); }
+function toggleSortSinConexion(){ sortDescSinConexion = !sortDescSinConexion; renderSinConexion(ultimasFilas); }
+function toggleSortEmbarque(){ sortDescEmbarque = !sortDescEmbarque; renderEmbarque(ultimasFilas); }
 
 function renderGeneral(rows){
-  const container = document.getElementById('tableGeneral') || document.getElementById('tbl-patio');
-  if(!container) return;
+  const tbody = document.getElementById('tbody-patio');
+  if(!tbody) return;
 
   const data = rows.filter(r => !['EMBARCADO SIN CONEX','EMBARCADO SIN CONEXION (revisar)','EMBARQUE', 'EMBARQUE SOBRE CAMION'].includes(r.Instancia));
   
-  const elCount = document.getElementById('countGeneral') || document.getElementById('count-patio');
+  const elCount = document.getElementById('count-patio');
   if(elCount) elCount.textContent = data.length;
 
   const calleRows = data.filter(r => r.Instancia === 'CALLE' || r.Instancia === 'CALLE REVISAR');
   const movimientoRows = data.filter(r => r.Instancia === 'MOVIMIENTO' || r.Instancia === 'MOVIMIENTO SOBRE CAMION');
 
-  const elCalleCount = document.getElementById('kpiCalleCount') || document.getElementById('kpi-calle-cnt');
+  const elCalleCount = document.getElementById('kpi-calle-cnt');
   if(elCalleCount) elCalleCount.textContent = calleRows.length;
-
-  const elCalleProm = document.getElementById('kpiCalleProm') || document.getElementById('kpi-calle-avg');
+  const elCalleProm = document.getElementById('kpi-calle-avg');
   if(elCalleProm) elCalleProm.textContent = promedio(calleRows);
 
-  const elMovCount = document.getElementById('kpiMovimientoCount') || document.getElementById('kpi-mov-cnt');
+  const elMovCount = document.getElementById('kpi-mov-cnt');
   if(elMovCount) elMovCount.textContent = movimientoRows.length;
-
-  const elMovProm = document.getElementById('kpiMovimientoProm') || document.getElementById('kpi-mov-avg');
+  const elMovProm = document.getElementById('kpi-mov-avg');
   if(elMovProm) elMovProm.textContent = promedio(movimientoRows);
 
-  if(data.length === 0){ container.innerHTML = '<div class="empty-state">sin registros</div>'; return; }
-
-  const sorted = data.sort((a,b)=> sortDescGeneral ? (b.TiempoMin??-1) - (a.TiempoMin??-1) : (a.TiempoMin??-1) - (b.TiempoMin??-1));
-  const toShow = expandedGeneral ? sorted : sorted.slice(0, LIMIT_GENERAL);
-
-  const nuevoPrev = {};
-  let html = `<table><thead><tr><th style="width:24%">Contenedor</th><th style="width:26%">Instancia</th><th style="width:14%">Posición</th><th style="width:18%">Nave</th><th style="width:11%" class="sortable" onclick="toggleSortGeneral()">Tiempo <span class="sort-arrow">${sortDescGeneral ? '▼' : '▲'}</span></th><th style="width:7%">Mov</th></tr></thead><tbody>`;
-  toShow.forEach(r => {
-    const etiqueta = etiquetaDestacado(r.Remarks);
-    const cambio = prevGeneral[r.Contenedor] !== undefined && prevGeneral[r.Contenedor] !== r.Instancia;
-    nuevoPrev[r.Contenedor] = r.Instancia;
-    html += `<tr class="${etiqueta ? 'row-highlight' : ''} ${cambio ? 'flash-update' : ''}"><td>${esc(r.Contenedor)}</td><td>${badgeInstancia(r.Instancia)}${etiqueta ? `<span class="flag">${etiqueta}</span>` : ''}</td><td>${esc(formatPosicion(r.Posicion))}</td><td>${esc(r.Nave)}</td><td class="time-cell ${claseTiempo(r.TiempoMin)}">${r.Tiempo ?? 'N/A'}</td><td class="${r.Mov ? 'mov-si' : 'mov-no'}">${r.Mov ? 'Sí' : 'No'}</td></tr>`;
-  });
-  html += '</tbody></table>';
-  prevGeneral = nuevoPrev;
-
-  if(sorted.length > LIMIT_GENERAL){
-    html += `<button class="toggle-btn" onclick="toggleGeneral()">${expandedGeneral ? 'Mostrar menos' : `Ver todas (${sorted.length})`}</button>`;
+  if(data.length === 0){ 
+    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">sin registros</td></tr>'; 
+    return; 
   }
 
-  container.innerHTML = html;
+  const sorted = data.sort((a,b)=> sortDescGeneral ? (b.TiempoMin??-1) - (a.TiempoMin??-1) : (a.TiempoMin??-1) - (b.TiempoMin??-1));
+
+  let html = '';
+  sorted.forEach(r => {
+    const claseFila = obtenerClaseFila(r.Instancia);
+    const badges = obtenerBadgesHTML(r.Remarks);
+    
+    html += `
+      <tr class="${claseFila}">
+        <td><span class="container-id">${esc(r.Contenedor)}</span>${badges}</td>
+        <td><span class="instancia-tag">${esc(r.Instancia)}</span></td>
+        <td><span class="pos-id">${esc(formatPosicion(r.Posicion))}</span></td>
+        <td>${esc(r.Nave)}</td>
+        <td ${claseTiempo(r.TiempoMin)}>${r.Tiempo ?? 'N/A'}</td>
+        <td>${r.Mov ? 'Sí' : 'No'}</td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = html;
 }
 
 function renderSinConexion(rows){
-  const container = document.getElementById('tableSinConexion') || document.getElementById('tbl-bordo');
-  if(!container) return;
+  const tbody = document.getElementById('tbody-bordo');
+  if(!tbody) return;
 
   const data = rows.filter(r => ['EMBARCADO SIN CONEX','EMBARCADO SIN CONEXION (revisar)'].includes(r.Instancia));
   
-  const elCount = document.getElementById('countSinConexion') || document.getElementById('count-bordo');
+  const elCount = document.getElementById('count-bordo');
   if(elCount) elCount.textContent = data.length;
 
-  const elKpiCount = document.getElementById('kpiSinConexionCount') || document.getElementById('kpi-bordo-cnt');
+  const elKpiCount = document.getElementById('kpi-bordo-cnt');
   if(elKpiCount) elKpiCount.textContent = data.length;
 
-  const elKpiProm = document.getElementById('kpiSinConexionProm') || document.getElementById('kpi-bordo-avg');
+  const elKpiProm = document.getElementById('kpi-bordo-avg');
   if(elKpiProm) elKpiProm.textContent = promedio(data);
 
-  if(data.length === 0){ container.innerHTML = '<div class="empty-state">sin unidades a bordo sin conexión</div>'; return; }
+  if(data.length === 0){ 
+    tbody.innerHTML = '<tr><td colspan="4" class="empty-state">sin unidades a bordo sin conexión</td></tr>'; 
+    return; 
+  }
 
   const sorted = data.sort((a,b)=> sortDescSinConexion ? (b.TiempoMin??-1) - (a.TiempoMin??-1) : (a.TiempoMin??-1) - (b.TiempoMin??-1));
 
-  const nuevoPrev = {};
-  let html = `<table><thead><tr><th style="width:36%">Contenedor</th><th style="width:27%">Nave</th><th style="width:18%" class="sortable" onclick="toggleSortSinConexion()">Tiempo <span class="sort-arrow">${sortDescSinConexion ? '▼' : '▲'}</span></th><th style="width:19%">Posición</th></tr></thead><tbody>`;
+  let html = '';
   sorted.forEach(r => {
-    const etiqueta = etiquetaDestacado(r.Remarks);
-    const cambio = prevSinConexion[r.Contenedor] === undefined;
-    nuevoPrev[r.Contenedor] = true;
-    html += `<tr class="${etiqueta ? 'row-highlight' : ''} ${cambio ? 'flash-update' : ''}"><td>${esc(r.Contenedor)}${etiqueta ? `<span class="flag">${etiqueta}</span>` : ''}</td><td>${esc(r.Nave)}</td><td class="time-cell ${claseTiempo(r.TiempoMin)}">${r.Tiempo ?? 'N/A'}</td><td>${esc(formatPosicion(r.Posicion))}</td></tr>`;
+    const claseFila = obtenerClaseFila(r.Instancia);
+    const badges = obtenerBadgesHTML(r.Remarks);
+
+    html += `
+      <tr class="${claseFila}">
+        <td><span class="container-id">${esc(r.Contenedor)}</span>${badges}</td>
+        <td>${esc(r.Nave)}</td>
+        <td ${claseTiempo(r.TiempoMin)}>${r.Tiempo ?? 'N/A'}</td>
+        <td><span class="pos-id">${esc(formatPosicion(r.Posicion))}</span></td>
+      </tr>
+    `;
   });
-  html += '</tbody></table>';
-  prevSinConexion = nuevoPrev;
-  container.innerHTML = html;
+
+  tbody.innerHTML = html;
 }
 
 function renderEmbarque(rows){
-  const container = document.getElementById('tableEmbarque') || document.getElementById('tbl-embarque');
-  if(!container) return;
+  const tbody = document.getElementById('tbody-embarque');
+  if(!tbody) return;
 
   const data = rows.filter(r => r.Instancia === 'EMBARQUE' || r.Instancia === 'EMBARQUE SOBRE CAMION');
 
-  const elCount = document.getElementById('countEmbarque') || document.getElementById('count-embarque');
+  const elCount = document.getElementById('count-embarque');
   if(elCount) elCount.textContent = data.length;
 
-  const elKpiCount = document.getElementById('kpiEmbarqueCount') || document.getElementById('kpi-emb-cnt');
+  const elKpiCount = document.getElementById('kpi-emb-cnt');
   if(elKpiCount) elKpiCount.textContent = data.length;
 
-  const elKpiProm = document.getElementById('kpiEmbarqueProm') || document.getElementById('kpi-emb-avg');
+  const elKpiProm = document.getElementById('kpi-emb-avg');
   if(elKpiProm) elKpiProm.textContent = promedio(data);
 
-  if(data.length === 0){ container.innerHTML = '<div class="empty-state">sin unidades desconectadas para embarque</div>'; return; }
-
-  const sorted = data.sort((a,b)=> sortDescEmbarque ? (b.TiempoMin??-1) - (a.TiempoMin??-1) : (a.TiempoMin??-1) - (b.TiempoMin??-1));
-  const toShow = expandedEmbarque ? sorted : sorted.slice(0, LIMIT_EMBARQUE);
-
-  const nuevoPrev = {};
-  let html = `<table><thead><tr><th style="width:36%">Contenedor</th><th style="width:27%">Nave</th><th style="width:18%" class="sortable" onclick="toggleSortEmbarque()">Tiempo <span class="sort-arrow">${sortDescEmbarque ? '▼' : '▲'}</span></th><th style="width:19%">Posición</th></tr></thead><tbody>`;
-  toShow.forEach(r => {
-    const etiqueta = etiquetaDestacado(r.Remarks);
-    const cambio = prevEmbarque[r.Contenedor] === undefined;
-    nuevoPrev[r.Contenedor] = true;
-    html += `<tr class="${etiqueta ? 'row-highlight' : ''} ${cambio ? 'flash-update' : ''}"><td>${esc(r.Contenedor)}${etiqueta ? `<span class="flag">${etiqueta}</span>` : ''}</td><td>${esc(r.Nave)}</td><td class="time-cell ${claseTiempo(r.TiempoMin)}">${r.Tiempo ?? 'N/A'}</td><td>${esc(formatPosicion(r.Posicion))}</td></tr>`;
-  });
-  html += '</tbody></table>';
-  prevEmbarque = nuevoPrev;
-
-  if(sorted.length > LIMIT_EMBARQUE){
-    html += `<button class="toggle-btn" onclick="toggleEmbarque()">${expandedEmbarque ? 'Mostrar menos' : `Ver todas (${sorted.length})`}</button>`;
+  if(data.length === 0){ 
+    tbody.innerHTML = '<tr><td colspan="3" class="empty-state">sin unidades desconectadas para embarque</td></tr>'; 
+    return; 
   }
 
-  container.innerHTML = html;
+  const sorted = data.sort((a,b)=> sortDescEmbarque ? (b.TiempoMin??-1) - (a.TiempoMin??-1) : (a.TiempoMin??-1) - (b.TiempoMin??-1));
+
+  let html = '';
+  sorted.forEach(r => {
+    const claseFila = obtenerClaseFila(r.Instancia);
+    const badges = obtenerBadgesHTML(r.Remarks);
+
+    html += `
+      <tr class="${claseFila}">
+        <td><span class="container-id">${esc(r.Contenedor)}</span>${badges}</td>
+        <td>${esc(r.Nave)}</td>
+        <td ${claseTiempo(r.TiempoMin)}>${r.Tiempo ?? 'N/A'}</td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = html;
 }
+
+// ==========================================
+// CICLO DE CONSULTA
+// ==========================================
 
 async function fetchData(){
   try{
@@ -475,22 +477,15 @@ async function fetchData(){
     const rows = procesar(text);
     ultimasFilas = rows;
 
-    const elTotal = document.getElementById('kpiTotalCount') || document.getElementById('kpi-total-cnt');
+    const elTotal = document.getElementById('kpi-total-cnt');
     if(elTotal) elTotal.textContent = rows.length;
 
     renderGeneral(rows);
     renderSinConexion(rows);
     renderEmbarque(rows);
 
-    // Ocultar indicadores "en vivo" si existen
-    const statusDot = document.getElementById('statusDot');
-    const statusText = document.getElementById('statusText');
-    if(statusDot) statusDot.style.display = 'none';
-    if(statusText) statusText.textContent = '';
-
-    // Actualizar fecha del reporte limpiamente
     const fechaReporte = extraerFechaReporte(text);
-    const opClock = document.getElementById('opClock') || document.getElementById('last-update');
+    const opClock = document.getElementById('last-update');
 
     if(opClock){
       if(fechaReporte instanceof Date){
@@ -513,92 +508,3 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchData();
   setInterval(fetchData, REFRESH_MS);
 });
-
-// ==========================================
-// REGULARES DE DETECCIÓN (COT / AC)
-// ==========================================
-
-function obtenerBadges(remarks) {
-  if (!remarks) return '';
-  const rem = remarks.toString().trim();
-  let html = '';
-
-  // 1. Regla COT: Si contiene "USDA"
-  if (/USDA/i.test(rem)) {
-    html += `<span class="badge badge-cot">COT</span>`;
-  }
-
-  // 2. Regla AC: Si tiene patrón numérico tipo 6/4, 5/5 o "AC", ignorando "s/a"
-  const tieneFraccionNum = /\b\d+\/\d+\b/.test(rem);
-  const tieneAC = /\bAC\b/i.test(rem);
-  const esSinAtmosfera = /s\/a/i.test(rem);
-
-  if ((tieneFraccionNum || tieneAC) && !esSinAtmosfera) {
-    html += `<span class="badge badge-ac">AC</span>`;
-  }
-
-  return html;
-}
-
-// ==========================================
-// ASIGNACIÓN DE COLOR SEGÚN TARJETA
-// ==========================================
-
-function obtenerClaseFila(item) {
-  // Ajusta según cómo identifiques cada tipo en tu objeto item
-  const nave = (item.nave || '').toUpperCase();
-  const pos = (item.posicion || item.PlannedPosition || '').toUpperCase();
-  const inst = (item.instancia || item.Kind || '').toUpperCase();
-
-  if (nave.includes('TRUCK') || pos.startsWith('20-') || pos.startsWith('22-')) {
-    return 'row-calle'; // Fondo Azul tenue
-  }
-  if (inst.includes('MOV') || item.mov === 'Sí' || item.mov === 'Yes') {
-    return 'row-movimiento'; // Fondo Rojo tenue
-  }
-  if (nave.includes('VESSEL') || inst.includes('ABORDO')) {
-    return 'row-a-bordo'; // Fondo Amarillo/Naranja tenue
-  }
-  if (inst.includes('LOAD') || inst.includes('EMBARQUE')) {
-    return 'row-embarque'; // Fondo Verde tenue
-  }
-  
-  return '';
-}
-
-// ==========================================
-// RENDERIZADO DE FILA INDIVIDUAL
-// ==========================================
-
-function generarFilaHTML(item) {
-  const claseFila = obtenerClaseFila(item);
-  const badges = obtenerBadges(item.remarks || item.Remarks);
-
-  return `
-    <tr class="${claseFila}">
-      <td>
-        <span class="container-code">${item.contenedor || item['Container No.']}</span>
-        ${badges}
-      </td>
-      <td>${item.instancia || item.Kind || '-'}</td>
-      <td class="pos-code">${item.posicion || item['Current Position'] || item['Planned Position'] || '-'}</td>
-      <td>${item.nave || item['Outbound Carrier Name'] || '-'}</td>
-      <td>${item.tiempo || '00:00'}</td>
-      <td>${item.mov || 'No'}</td>
-    </tr>
-  `;
-}
-function mostrarPagina(pageId, btn) {
-  // Ocultar todas las páginas
-  document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-  
-  // Mostrar la seleccionada
-  const targetPage = document.getElementById(pageId);
-  if (targetPage) targetPage.style.display = 'block';
-
-  // Desactivar todos los botones de pestaña
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  
-  // Activar el botón presionado
-  if (btn) btn.classList.add('active');
-}
