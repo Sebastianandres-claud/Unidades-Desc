@@ -513,3 +513,78 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchData();
   setInterval(fetchData, REFRESH_MS);
 });
+
+// ==========================================
+// REGULARES DE DETECCIÓN (COT / AC)
+// ==========================================
+
+function obtenerBadges(remarks) {
+  if (!remarks) return '';
+  const rem = remarks.toString().trim();
+  let html = '';
+
+  // 1. Regla COT: Si contiene "USDA"
+  if (/USDA/i.test(rem)) {
+    html += `<span class="badge badge-cot">COT</span>`;
+  }
+
+  // 2. Regla AC: Si tiene patrón numérico tipo 6/4, 5/5 o "AC", ignorando "s/a"
+  const tieneFraccionNum = /\b\d+\/\d+\b/.test(rem);
+  const tieneAC = /\bAC\b/i.test(rem);
+  const esSinAtmosfera = /s\/a/i.test(rem);
+
+  if ((tieneFraccionNum || tieneAC) && !esSinAtmosfera) {
+    html += `<span class="badge badge-ac">AC</span>`;
+  }
+
+  return html;
+}
+
+// ==========================================
+// ASIGNACIÓN DE COLOR SEGÚN TARJETA
+// ==========================================
+
+function obtenerClaseFila(item) {
+  // Ajusta según cómo identifiques cada tipo en tu objeto item
+  const nave = (item.nave || '').toUpperCase();
+  const pos = (item.posicion || item.PlannedPosition || '').toUpperCase();
+  const inst = (item.instancia || item.Kind || '').toUpperCase();
+
+  if (nave.includes('TRUCK') || pos.startsWith('20-') || pos.startsWith('22-')) {
+    return 'row-calle'; // Fondo Azul tenue
+  }
+  if (inst.includes('MOV') || item.mov === 'Sí' || item.mov === 'Yes') {
+    return 'row-movimiento'; // Fondo Rojo tenue
+  }
+  if (nave.includes('VESSEL') || inst.includes('ABORDO')) {
+    return 'row-a-bordo'; // Fondo Amarillo/Naranja tenue
+  }
+  if (inst.includes('LOAD') || inst.includes('EMBARQUE')) {
+    return 'row-embarque'; // Fondo Verde tenue
+  }
+  
+  return '';
+}
+
+// ==========================================
+// RENDERIZADO DE FILA INDIVIDUAL
+// ==========================================
+
+function generarFilaHTML(item) {
+  const claseFila = obtenerClaseFila(item);
+  const badges = obtenerBadges(item.remarks || item.Remarks);
+
+  return `
+    <tr class="${claseFila}">
+      <td>
+        <span class="container-code">${item.contenedor || item['Container No.']}</span>
+        ${badges}
+      </td>
+      <td>${item.instancia || item.Kind || '-'}</td>
+      <td class="pos-code">${item.posicion || item['Current Position'] || item['Planned Position'] || '-'}</td>
+      <td>${item.nave || item['Outbound Carrier Name'] || '-'}</td>
+      <td>${item.tiempo || '00:00'}</td>
+      <td>${item.mov || 'No'}</td>
+    </tr>
+  `;
+}
