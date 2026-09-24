@@ -3,6 +3,17 @@
    ========================================================================== */
 
 const RAW_URL = "https://github-live-proxy.samiranda.workers.dev";
+
+async function fetchData(){
+  try{
+    // Agrega timestamp para forzar lectura fresca
+    const url = `${RAW_URL}?t=${Date.now()}`;
+    const res = await fetch(url, { 
+      cache: 'no-store',
+      headers: { "Pragma": "no-cache", "Cache-Control": "no-cache" }
+    });
+    
+    // ... resto del código ...
 const REFRESH_MS = 10000;
 const CODIGOS_EXCLUIDOS = ["TIP", "TQ", "OUT"];
 const DIAS = { LU:0, MA:1, MI:2, JU:3, VI:4, SA:5, DO:6 };
