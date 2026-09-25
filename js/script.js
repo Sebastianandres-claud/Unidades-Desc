@@ -74,7 +74,6 @@ function exportarExcel() {
 // LÓGICA DE BADGES Y REMARKS (AC / COT / INSTANCIAS)
 // ==========================================
 
-// Generador de cápsula según la Instancia de la unidad
 function obtenerBadgeInstancia(instancia) {
   if (!instancia) return `<span class="badge badge-calle">-</span>`;
   const inst = String(instancia).toUpperCase();
@@ -108,20 +107,13 @@ function obtenerBadgesHTML(remarks) {
   const rem = String(remarks).trim();
   let html = '';
 
-// EVALUACIÓN DE AC Y USDA/COT
-function obtenerBadgesHTML(remarks) {
-  if (!remarks) return '';
-  const rem = String(remarks).trim();
-  let html = '';
-
   // 1. REGLA USDA -> Genera cuadrito "COT"
   if (/\bUSDA\b/i.test(rem)) {
     html += `<span class="badge-cot">COT</span>`;
   }
 
-  // 2. REGLA AC -> Se activa OBLIGATORIAMENTE si existe una fracción numérica (ej. 6/4, 5/2, 10-2)
-  // Ignora si solo dice "AC" sin números.
-  const tieneFraccionNum = /\b\d+[\/\.-]\d+\b/.test(rem);
+  // 2. REGLA AC -> Fracción numérica de setpoint (ej. 6/4, 5/2, 10-2)
+  const tieneFraccionNum = /\b\d+[\/.-]\d+\b/.test(rem);
 
   if (tieneFraccionNum) {
     html += `<span class="badge-ac">AC</span>`;
@@ -552,7 +544,6 @@ async function fetchData() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Cambio de pestañas
   const tabButtons = document.querySelectorAll('.tab-link');
   const pageContainers = document.querySelectorAll('.page-container');
 
@@ -573,7 +564,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Listener para exportar a Excel
   const btnExport = document.getElementById('btn-export-excel') || document.getElementById('btn-export');
   if (btnExport) {
     btnExport.addEventListener('click', exportarExcel);
