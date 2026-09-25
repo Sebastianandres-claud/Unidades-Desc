@@ -595,3 +595,37 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchData();
   setInterval(fetchData, REFRESH_MS);
 });
+/**
+ * Evalúa el texto de Remark y retorna las etiquetas HTML estructuradas
+ * @param {string} remarkText - Texto proveniente de la columna Remark
+ * @returns {string} HTML con las etiquetas o el texto original
+ */
+function procesarRemark(remarkText) {
+  if (!remarkText || typeof remarkText !== 'string') return '';
+
+  const textUpper = remarkText.trim().toUpperCase();
+  const badges = [];
+
+  // 1. REGLA USDA -> Genera badge "COT"
+  if (/\bUSDA\b/.test(textUpper)) {
+    badges.push('<span class="badge-cot">COT</span>');
+  }
+
+  // 2. REGLA AC -> Genera badge "AC"
+  // Excluye explícitamente "S/A", "S/AC" o "SIN AC"
+  const esNegado = /\b(S\/A|S\/AC|SIN\s+AC)\b/.test(textUpper);
+
+  // Detecta "AC" como palabra individual o combinaciones como "AC 6/4", "AC 5/2", "AC 10-12"
+  const tieneAC = /\bAC(\s*\d+[\/\.-]\d+)?\b/.test(textUpper);
+
+  if (tieneAC && !esNegado) {
+    badges.push('<span class="badge-ac">AC</span>');
+  }
+
+  // Si no se detectó ni AC ni USDA, devuelve el texto original
+  if (badges.length === 0) {
+    return remarkText;
+  }
+
+  return badges.join(' ');
+}
