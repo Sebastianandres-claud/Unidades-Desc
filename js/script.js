@@ -7,63 +7,126 @@ const REFRESH_MS = 10000;
 const CODIGOS_EXCLUIDOS = ["TIP", "TQ", "OUT"];
 const DIAS = { LU:0, MA:1, MI:2, JU:3, VI:4, SA:5, DO:6 };
 
-let expandedGeneral = false;
-let expandedEmbarque = false;
 let ultimasFilas = [];
-const LIMIT_GENERAL = 10;
-const LIMIT_EMBARQUE = 10;
 
 let sortDescGeneral = true;
 let sortDescSinConexion = true;
 let sortDescEmbarque = true;
 
 // ==========================================
-// NAVEGACIÓN Y EXPORTACIÓN
+// EXPORTACIÓN A EXCEL NATIVA
 // ==========================================
 
-function mostrarPagina(pageId, btn) {
-  document.querySelectorAll('.page-container').forEach(p => p.style.display = 'none');
-  
-  const targetPage = document.getElementById(pageId);
-  if (targetPage) targetPage.style.display = 'block';
-
-  document.querySelectorAll('.tab-link').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-}
-
-function exportarExcel(){
-  if(!ultimasFilas || ultimasFilas.length === 0){
+function exportarExcel() {
+  if (!ultimasFilas || ultimasFilas.length === 0) {
     alert('Todavía no hay datos cargados para exportar.');
     return;
   }
 
-  const filasOrdenadas = [...ultimasFilas].sort((a,b) => (b.TiempoMin ?? -1) - (a.TiempoMin ?? -1));
+  const panels = document.querySelectorAll('.panel');
+  if (!panels || panels.length === 0) return;
 
-  const datos = filasOrdenadas.map(r => ({
-    'Contenedor': r.Contenedor,
-    'Instancia': r.Instancia,
-    'Posición': r.Posicion,
-    'Nave': r.Nave,
-    'Tiempo': r.Tiempo,
-    'Minutos': r.TiempoMin,
-    'Requiere Power': r.ReqsPower,
-    'Mov': r.Mov ? 'Sí' : 'No',
-    'Badges': obtenerBadgesTexto(r.Remarks),
-    'Remarks': r.Remarks
-  }));
+  let excelHTML = `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office" 
+          xmlns:x="urn:schemas-microsoft-com:office:excel" 
+          xmlns="http://www.w3.org/TR/REC-html40">
+    <head>
+      <meta charset="UTF-8">
+      <style>
+        table { border-collapse: collapse; margin-bottom: 20px; font-family: sans-serif; }
+        th { background-color: #FAFAFA; color: #5B6670; font-weight: bold; border: 1px solid #DFE3E0; padding: 6px; }
+        td { border: 1px solid #EEF0EE; padding: 6px; }
+        h3 { font-family: sans-serif; color: #10161C; margin-top: 15px; }
+      </style>
+    </head>
+    <body>
+  `;
 
-  const ws = XLSX.utils.json_to_sheet(datos);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Unidades Desconectadas');
+  panels.forEach((panel) => {
+    const title = panel.querySelector('.panel-head h2')?.innerText.trim() || 'Tabla';
+    const table = panel.querySelector('table');
+    if (table) {
+      excelHTML += `<h3>${title}</h3>`;
+      excelHTML += table.outerHTML;
+      excelHTML += `<br>`;
+    }
+  });
 
-  const ahora = new Date();
-  const sello = ahora.toISOString().slice(0,19).replace(/[:T]/g,'-');
-  XLSX.writeFile(wb, `unidades_desconectadas_${sello}.xlsx`);
+  excelHTML += `</body></html>`;
+
+  const blob = new Blob(['\ufeff' + excelHTML], {
+    type: 'application/vnd.ms-excel;charset=utf-8'
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const fecha = new Date().toISOString().slice(0, 10);
+  
+  a.href = url;
+  a.download = `Reporte_SITRANS_${fecha}.xls`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 // ==========================================
-// AYUDANTES Y DESTAQUES VISUALES
+// LÓGICA DE BADGES Y REMARKS (AC / COT / INSTANCIAS)
 // ==========================================
+
+// Generador de cápsula según la Instancia de la unidad
+function obtenerBadgeInstancia(instancia) {
+  if (!instancia) return `<span class="badge badge-calle">-</span>`;
+  const inst = String(instancia).toUpperCase();
+  let clase = 'badge-calle';
+
+  if (inst.includes('DESPACHO')) {
+    clase = 'badge-despacho';
+  } else if (inst.includes('MOVIMIENTO')) {
+    clase = 'badge-movimiento';
+  } else if (inst.includes('BORDO') || inst.includes('EMBARCADO')) {
+    clase = 'badge-bordo';
+  } else if (inst.includes('EMBARQUE')) {
+    clase = 'badge-embarque';
+  } else if (inst.includes('DESCARGA')) {
+    clase = 'badge-descarga';
+  } else if (inst.includes('CALLE')) {
+    clase = 'badge-calle';
+  }
+
+  return `<span class="badge ${clase}">${esc(instancia)}</span>`;
+}
+
+function obtenerBadgeMov(esMov) {
+  if (esMov) return `<span class="badge badge-mov-si">SÍ</span>`;
+  return `<span class="badge badge-mov-no">NO</span>`;
+}
+
+// EVALUACIÓN DE AC Y USDA/COT
+function obtenerBadgesHTML(remarks) {
+  if (!remarks) return '';
+  const rem = String(remarks).trim();
+  let html = '';
+
+  // 1. REGLA USDA -> Genera cuadrito "COT"
+  if (/USDA/i.test(rem)) {
+    html += `<span class="badge-cot">COT</span>`;
+  }
+
+  // 2. REGLA AC ->
+  // Evalúa "AC", patrones de fracción de 2 números (ej. 6/4, 5/2, 10-2)
+  const tieneAC = /\bAC\b/i.test(rem);
+  const tieneFraccionNum = /\b\d+[\/\.-]\d+\b/.test(rem);
+  
+  // Excluye expresamente "s/a", "s/ac", "sin ac"
+  const esSinAtmosfera = /\b(s\/a|s\/ac|sin\s*ac)\b/i.test(rem);
+
+  if ((tieneAC || tieneFraccionNum) && !esSinAtmosfera) {
+    html += `<span class="badge-ac">AC</span>`;
+  }
+
+  return html;
+}
 
 function obtenerClaseFila(instancia) {
   const inst = String(instancia || '').toUpperCase();
@@ -74,185 +137,114 @@ function obtenerClaseFila(instancia) {
   return '';
 }
 
-// Generador de cápsula según la Instancia de la unidad
-function obtenerBadgeInstancia(instancia) {
-  if (!instancia) return `<span class="badge badge-calle">-</span>`;
-  const inst = String(instancia).toUpperCase();
-  let clase = 'badge-calle';
-
-  if (inst.includes('DESPACHO')) {
-    clase = 'badge-despacho'; // Azul Eléctrico
-  } else if (inst.includes('MOVIMIENTO')) {
-    clase = 'badge-movimiento'; // Naranja Terracota
-  } else if (inst.includes('BORDO') || inst.includes('EMBARCADO')) {
-    clase = 'badge-bordo'; // Azul Steel
-  } else if (inst.includes('EMBARQUE')) {
-    clase = 'badge-embarque'; // Verde Teal
-  } else if (inst.includes('DESCARGA')) {
-    clase = 'badge-descarga'; // Ámbar
-  } else if (inst.includes('CALLE')) {
-    clase = 'badge-calle'; // Azul Grisáceo
-  }
-
-  return `<span class="badge ${clase}">${esc(instancia)}</span>`;
-}
-
-// Generador de cápsula para la columna Mov (Morado para SÍ)
-function obtenerBadgeMov(esMov) {
-  if (esMov) {
-    return `<span class="badge badge-mov-si">SÍ</span>`;
-  }
-  return `<span class="badge badge-mov-no">NO</span>`;
-}
-
-function obtenerBadgesHTML(remarks) {
-  if (!remarks) return '';
-  const rem = String(remarks).trim();
-  let html = '';
-
-  if (/USDA/i.test(rem)) {
-    html += `<span class="badge-tag cot">COT</span>`;
-  }
-
-  const tieneFraccionNum = /\b\d+\/\d+\b/.test(rem);
-  const tieneAC = /\bAC\b/i.test(rem);
-  const esSinAtmosfera = /s\/a/i.test(rem);
-
-  if ((tieneFraccionNum || tieneAC) && !esSinAtmosfera) {
-    html += `<span class="badge-tag ac">AC</span>`;
-  }
-
-  return html;
-}
-
-function obtenerBadgesTexto(remarks) {
-  if (!remarks) return '';
-  const rem = String(remarks).trim();
-  const partes = [];
-
-  if (/USDA/i.test(rem)) partes.push('COT');
-
-  const tieneFraccionNum = /\b\d+\/\d+\b/.test(rem);
-  const tieneAC = /\bAC\b/i.test(rem);
-  const esSinAtmosfera = /s\/a/i.test(rem);
-
-  if ((tieneFraccionNum || tieneAC) && !esSinAtmosfera) {
-    partes.push('AC');
-  }
-
-  return partes.join('/');
-}
-
-function formatPosicion(pos){
-  if(pos === null || pos === undefined) return '-';
+function formatPosicion(pos) {
+  if (pos === null || pos === undefined) return '-';
   const txt = String(pos).trim();
-  if(!txt) return '-';
-
+  if (!txt) return '-';
   const partes = txt.split('*').map(p => p.trim()).filter(p => p.length > 0);
-  if(partes.length === 0) return txt;
+  if (partes.length === 0) return txt;
   return partes[partes.length - 1];
 }
 
-function claseTiempo(minutos){
-  if(minutos === null || minutos === undefined) return '';
-  if(minutos >= 26) return 'style="color:#e11d48; font-weight:700;"';
-  if(minutos < 15) return 'style="color:#059669; font-weight:600;"';
+function claseTiempo(minutos) {
+  if (minutos === null || minutos === undefined) return '';
+  if (minutos >= 26) return 'style="color:#e11d48; font-weight:700;"';
+  if (minutos < 15) return 'style="color:#059669; font-weight:600;"';
   return 'style="color:#d97706; font-weight:600;"';
 }
 
-function promedio(arr){
-  if(arr.length === 0) return '0.0';
-  const suma = arr.reduce((acc,r) => acc + (r.TiempoMin ?? 0), 0);
-  return (suma/arr.length).toFixed(1);
+function promedio(arr) {
+  if (arr.length === 0) return '0.0';
+  const suma = arr.reduce((acc, r) => acc + (r.TiempoMin ?? 0), 0);
+  return (suma / arr.length).toFixed(1);
 }
 
-function esc(v){
-  return String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function esc(v) {
+  return String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
-function esVacio(v){ return v === null || v === undefined || String(v).trim() === ''; }
+function esVacio(v) { return v === null || v === undefined || String(v).trim() === ''; }
 
 // ==========================================
-// PARSERS Y PROCESAMIENTO DE DATOS
+// PARSERS Y CÁLCULOS
 // ==========================================
 
-function esPosicionVigente(pos, anioActual){
+function esPosicionVigente(pos, anioActual) {
   const limpio = String(pos ?? '').trim();
   const basura = CODIGOS_EXCLUIDOS.includes(limpio.toUpperCase());
   const larga = limpio.length > 10;
   let anioRot = null;
-  const prefijo = parseInt(limpio.substring(0,2), 10);
-  if(!isNaN(prefijo)) anioRot = 2000 + prefijo;
+  const prefijo = parseInt(limpio.substring(0, 2), 10);
+  if (!isNaN(prefijo)) anioRot = 2000 + prefijo;
 
-  if(basura) return false;
-  if(!larga) return true;
+  if (basura) return false;
+  if (!larga) return true;
   return anioRot === anioActual || anioRot === anioActual - 1;
 }
 
-function mondayIndex(date){ return (date.getDay() + 6) % 7; }
+function mondayIndex(date) { return (date.getDay() + 6) % 7; }
 
-function parseDiscon(valor){
+function parseDiscon(valor) {
   if (!valor) return null;
   const txt = String(valor).trim();
   if (!txt) return null;
 
   if (/^\d{10}$/.test(txt)) {
-    const yy = parseInt(txt.substring(0,2),10);
-    const mm = parseInt(txt.substring(2,4),10);
-    const dd = parseInt(txt.substring(4,6),10);
-    const hh = parseInt(txt.substring(6,8),10);
-    const mi = parseInt(txt.substring(8,10),10);
-    if (![yy,mm,dd,hh,mi].some(isNaN)) {
-      return new Date(2000+yy, mm-1, dd, hh, mi, 0);
+    const yy = parseInt(txt.substring(0, 2), 10);
+    const mm = parseInt(txt.substring(2, 4), 10);
+    const dd = parseInt(txt.substring(4, 6), 10);
+    const hh = parseInt(txt.substring(6, 8), 10);
+    const mi = parseInt(txt.substring(8, 10), 10);
+    if (![yy, mm, dd, hh, mi].some(isNaN)) {
+      return new Date(2000 + yy, mm - 1, dd, hh, mi, 0);
     }
   }
 
   const parsed = Date.parse(txt);
   if (!isNaN(parsed)) return new Date(parsed);
-
   return null;
 }
 
-function parseHoraSimple(valor, ahora){
+function parseHoraSimple(valor, ahora) {
   const txt = String(valor ?? '').trim();
-  if(txt.length < 6) return null;
-  const codigoDia = txt.substring(0,2).toUpperCase();
-  const sufijo = txt.substring(txt.length-4);
-  const hh = parseInt(sufijo.substring(0,2),10);
-  const mi = parseInt(sufijo.substring(2,4),10);
+  if (txt.length < 6) return null;
+  const codigoDia = txt.substring(0, 2).toUpperCase();
+  const sufijo = txt.substring(txt.length - 4);
+  const hh = parseInt(sufijo.substring(0, 2), 10);
+  const mi = parseInt(sufijo.substring(2, 4), 10);
   const diaObjetivo = DIAS.hasOwnProperty(codigoDia) ? DIAS[codigoDia] : null;
 
-  const valido = diaObjetivo !== null && !isNaN(hh) && !isNaN(mi) && hh>=0 && hh<=23 && mi>=0 && mi<=59;
-  if(!valido) return null;
+  const valido = diaObjetivo !== null && !isNaN(hh) && !isNaN(mi) && hh >= 0 && hh <= 23 && mi >= 0 && mi <= 59;
+  if (!valido) return null;
 
   const hoy = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
   let offsetMatch = 0;
-  for(let o=0; o<=6; o++){
+  for (let o = 0; o <= 6; o++) {
     const candidatoDia = new Date(hoy);
-    candidatoDia.setDate(hoy.getDate()-o);
-    if(mondayIndex(candidatoDia) === diaObjetivo){ offsetMatch = o; break; }
+    candidatoDia.setDate(hoy.getDate() - o);
+    if (mondayIndex(candidatoDia) === diaObjetivo) { offsetMatch = o; break; }
   }
   const fechaBase = new Date(hoy);
-  fechaBase.setDate(hoy.getDate()-offsetMatch);
+  fechaBase.setDate(hoy.getDate() - offsetMatch);
   let candidato = new Date(fechaBase.getFullYear(), fechaBase.getMonth(), fechaBase.getDate(), hh, mi, 0);
-  if(candidato > ahora){
-    candidato = new Date(candidato.getTime() - 7*24*60*60*1000);
+  if (candidato > ahora) {
+    candidato = new Date(candidato.getTime() - 7 * 24 * 60 * 60 * 1000);
   }
   return candidato;
 }
 
-function formatearHHMM(diffMs){
-  if(diffMs === null || diffMs === undefined) return null;
-  const totalMin = Math.round(diffMs/60000);
-  const horas = Math.floor(totalMin/60);
+function formatearHHMM(diffMs) {
+  if (diffMs === null || diffMs === undefined) return null;
+  const totalMin = Math.round(diffMs / 60000);
+  const horas = Math.floor(totalMin / 60);
   const minutos = totalMin % 60;
-  return String(horas).padStart(2,'0') + ':' + String(minutos).padStart(2,'0');
+  return String(horas).padStart(2, '0') + ':' + String(minutos).padStart(2, '0');
 }
 
-function extraerFechaReporte(text){
+function extraerFechaReporte(text) {
   if (!text) return null;
-  const lines = text.replace(/\r/g,'').split('\n').map(l => l.trim()).filter(l => l.length > 0);
-  if(lines.length === 0) return null;
+  const lines = text.replace(/\r/g, '').split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  if (lines.length === 0) return null;
 
   for (let i = lines.length - 1; i >= 0; i--) {
     const line = lines[i];
@@ -265,39 +257,39 @@ function extraerFechaReporte(text){
     }
     if (/DATOS\s+AL|OPERACI[OÓ]N/i.test(line)) {
       const matchTexto = line.match(/\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}\s+\d{1,2}:\d{2}(:\d{2})?(\s*[ap]\.?\s*m\.?)?/i);
-      if (matchTexto) return "Datos en vivo " + matchTexto[0].toUpperCase();
+      if (matchTexto) return "Datos al " + matchTexto[0].toUpperCase();
     }
   }
   return null;
 }
 
-function parseTSV(text){
+function parseTSV(text) {
   const cleanText = text.replace(/^\ufeff/, '');
-  const lines = cleanText.replace(/\r/g,'').split('\n');
-  if(lines.length === 0) return [];
+  const lines = cleanText.replace(/\r/g, '').split('\n');
+  if (lines.length === 0) return [];
 
   let headerIndex = lines.findIndex(l => l.includes('Container No.') || l.includes('Container'));
   if (headerIndex === -1) headerIndex = 0;
 
   const headers = lines[headerIndex].split('\t').map(h => h.trim());
   const rows = [];
-  for(let i = headerIndex + 1; i < lines.length; i++){
+  for (let i = headerIndex + 1; i < lines.length; i++) {
     const line = lines[i];
-    if(!line || !line.includes('\t')) continue;
+    if (!line || !line.includes('\t')) continue;
     const cells = line.split('\t');
     const row = {};
-    headers.forEach((h,idx) => row[h] = (cells[idx] ?? '').trim());
+    headers.forEach((h, idx) => row[h] = (cells[idx] ?? '').trim());
     rows.push(row);
   }
   return rows;
 }
 
-function calcularFila(fila, ahora, anioActual){
+function calcularFila(fila, ahora, anioActual) {
   if (!fila) return null;
 
   const powerTxt = String(fila['Power'] ?? '');
   const seMovio = powerTxt.includes('(') ? 'Sí' : 'No';
-  const powerNum = parseInt(powerTxt.replace(/[()]/g,'').trim(), 10) || 0;
+  const powerNum = parseInt(powerTxt.replace(/[()]/g, '').trim(), 10) || 0;
 
   const posActual = String(fila['Current Position'] ?? '').trim();
   const discon = fila['Discon'];
@@ -308,43 +300,43 @@ function calcularFila(fila, ahora, anioActual){
 
   let instancia;
 
-  if(posActual.length > 10){
-    if(kind === 'DSCH') instancia = 'DESCARGA';
-    else if(kind === 'LOAD') instancia = 'EMBARCADO SIN CONEX';
+  if (posActual.length > 10) {
+    if (kind === 'DSCH') instancia = 'DESCARGA';
+    else if (kind === 'LOAD') instancia = 'EMBARCADO SIN CONEX';
     else instancia = 'EMBARCADO SIN CONEXION (revisar)';
   } else {
-    if(kind === 'DSCH'){
+    if (kind === 'DSCH') {
       instancia = 'DESCARGA';
-    } else if(esVacio(discon)){
+    } else if (esVacio(discon)) {
       instancia = esVacio(remarks) ? 'CALLE' : 'CALLE REVISAR';
     } else {
-      if(!esVacio(yardPlan)) instancia = 'MOVIMIENTO';
-      else if(moveStage === 'Completed') instancia = 'MOVIMIENTO';
+      if (!esVacio(yardPlan)) instancia = 'MOVIMIENTO';
+      else if (moveStage === 'Completed') instancia = 'MOVIMIENTO';
       else {
-        if(powerNum === 0 && kind === 'LOAD') instancia = 'EMBARQUE';
-        else if(powerNum === 0) instancia = 'DESPACHO';
+        if (powerNum === 0 && kind === 'LOAD') instancia = 'EMBARQUE';
+        else if (powerNum === 0) instancia = 'DESPACHO';
         else instancia = 'SIN CLASIFICAR';
       }
     }
   }
 
-  if(posActual.startsWith('*TR')){
-    if(instancia === 'EMBARQUE') instancia = 'EMBARQUE SOBRE CAMION';
-    else if(instancia === 'MOVIMIENTO') instancia = 'MOVIMIENTO SOBRE CAMION';
+  if (posActual.startsWith('*TR')) {
+    if (instancia === 'EMBARQUE') instancia = 'EMBARQUE SOBRE CAMION';
+    else if (instancia === 'MOVIMIENTO') instancia = 'MOVIMIENTO SOBRE CAMION';
     else instancia = 'SOBRE CAMION';
   }
 
-  const usaDiscon = ['MOVIMIENTO','EMBARQUE','DESPACHO','SOBRE CAMION','SIN CLASIFICAR','DESCARGA','MOVIMIENTO SOBRE CAMION','EMBARQUE SOBRE CAMION'].includes(instancia);
-  const usaYardIn = ['CALLE','CALLE REVISAR'].includes(instancia);
-  const usaComplete = ['EMBARCADO SIN CONEX','EMBARCADO SIN CONEXION (revisar)'].includes(instancia);
+  const usaDiscon = ['MOVIMIENTO', 'EMBARQUE', 'DESPACHO', 'SOBRE CAMION', 'SIN CLASIFICAR', 'DESCARGA', 'MOVIMIENTO SOBRE CAMION', 'EMBARQUE SOBRE CAMION'].includes(instancia);
+  const usaYardIn = ['CALLE', 'CALLE REVISAR'].includes(instancia);
+  const usaComplete = ['EMBARCADO SIN CONEX', 'EMBARCADO SIN CONEXION (revisar)'].includes(instancia);
 
   let fechaEvento = null;
-  if(usaDiscon) fechaEvento = parseDiscon(discon);
-  else if(usaYardIn) fechaEvento = parseHoraSimple(fila['Yard In'], ahora);
-  else if(usaComplete) fechaEvento = parseHoraSimple(fila['Complete'], ahora);
+  if (usaDiscon) fechaEvento = parseDiscon(discon);
+  else if (usaYardIn) fechaEvento = parseHoraSimple(fila['Yard In'], ahora);
+  else if (usaComplete) fechaEvento = parseHoraSimple(fila['Complete'], ahora);
 
   const tiempoTranscurrido = fechaEvento ? formatearHHMM(ahora - fechaEvento) : null;
-  const tiempoMin = fechaEvento ? Math.round((ahora - fechaEvento)/60000) : null;
+  const tiempoMin = fechaEvento ? Math.round((ahora - fechaEvento) / 60000) : null;
 
   const esMov = (moveStage === 'Completed') && !esVacio(discon) && (kind === 'YARD') && (powerTxt.trim() === '(0)');
 
@@ -361,7 +353,7 @@ function calcularFila(fila, ahora, anioActual){
   };
 }
 
-function procesar(text){
+function procesar(text) {
   const ahora = new Date();
   const anioActual = ahora.getFullYear();
   const rows = parseTSV(text);
@@ -373,41 +365,37 @@ function procesar(text){
 }
 
 // ==========================================
-// RENDERIZADO DE LAS 3 TABLAS PARALELAS
+// RENDERIZADO DE TABLAS
 // ==========================================
 
-function toggleSortGeneral(){ sortDescGeneral = !sortDescGeneral; renderGeneral(ultimasFilas); }
-function toggleSortSinConexion(){ sortDescSinConexion = !sortDescSinConexion; renderSinConexion(ultimasFilas); }
-function toggleSortEmbarque(){ sortDescEmbarque = !sortDescEmbarque; renderEmbarque(ultimasFilas); }
-
-function renderGeneral(rows){
+function renderGeneral(rows) {
   const tbody = document.getElementById('tbody-patio');
-  if(!tbody) return;
+  if (!tbody) return;
 
-  const data = rows.filter(r => !['EMBARCADO SIN CONEX','EMBARCADO SIN CONEXION (revisar)','EMBARQUE', 'EMBARQUE SOBRE CAMION'].includes(r.Instancia));
-  
+  const data = rows.filter(r => !['EMBARCADO SIN CONEX', 'EMBARCADO SIN CONEXION (revisar)', 'EMBARQUE', 'EMBARQUE SOBRE CAMION'].includes(r.Instancia));
+
   const elCount = document.getElementById('count-patio');
-  if(elCount) elCount.textContent = data.length;
+  if (elCount) elCount.textContent = data.length;
 
   const calleRows = data.filter(r => r.Instancia === 'CALLE' || r.Instancia === 'CALLE REVISAR');
   const movimientoRows = data.filter(r => r.Instancia === 'MOVIMIENTO' || r.Instancia === 'MOVIMIENTO SOBRE CAMION');
 
   const elCalleCount = document.getElementById('kpi-calle-cnt');
-  if(elCalleCount) elCalleCount.textContent = calleRows.length;
+  if (elCalleCount) elCalleCount.textContent = calleRows.length;
   const elCalleProm = document.getElementById('kpi-calle-avg');
-  if(elCalleProm) elCalleProm.textContent = promedio(calleRows);
+  if (elCalleProm) elCalleProm.textContent = promedio(calleRows);
 
   const elMovCount = document.getElementById('kpi-mov-cnt');
-  if(elMovCount) elMovCount.textContent = movimientoRows.length;
+  if (elMovCount) elMovCount.textContent = movimientoRows.length;
   const elMovProm = document.getElementById('kpi-mov-avg');
-  if(elMovProm) elMovProm.textContent = promedio(movimientoRows);
+  if (elMovProm) elMovProm.textContent = promedio(movimientoRows);
 
-  if(data.length === 0){ 
-    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">sin registros</td></tr>'; 
-    return; 
+  if (data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">sin registros</td></tr>';
+    return;
   }
 
-  const sorted = data.sort((a,b)=> sortDescGeneral ? (b.TiempoMin??-1) - (a.TiempoMin??-1) : (a.TiempoMin??-1) - (b.TiempoMin??-1));
+  const sorted = data.sort((a, b) => sortDescGeneral ? (b.TiempoMin ?? -1) - (a.TiempoMin ?? -1) : (a.TiempoMin ?? -1) - (b.TiempoMin ?? -1));
 
   let html = '';
   sorted.forEach(r => {
@@ -431,27 +419,27 @@ function renderGeneral(rows){
   tbody.innerHTML = html;
 }
 
-function renderSinConexion(rows){
+function renderSinConexion(rows) {
   const tbody = document.getElementById('tbody-bordo');
-  if(!tbody) return;
+  if (!tbody) return;
 
-  const data = rows.filter(r => ['EMBARCADO SIN CONEX','EMBARCADO SIN CONEXION (revisar)'].includes(r.Instancia));
-  
+  const data = rows.filter(r => ['EMBARCADO SIN CONEX', 'EMBARCADO SIN CONEXION (revisar)'].includes(r.Instancia));
+
   const elCount = document.getElementById('count-bordo');
-  if(elCount) elCount.textContent = data.length;
+  if (elCount) elCount.textContent = data.length;
 
   const elKpiCount = document.getElementById('kpi-bordo-cnt');
-  if(elKpiCount) elKpiCount.textContent = data.length;
+  if (elKpiCount) elKpiCount.textContent = data.length;
 
   const elKpiProm = document.getElementById('kpi-bordo-avg');
-  if(elKpiProm) elKpiProm.textContent = promedio(data);
+  if (elKpiProm) elKpiProm.textContent = promedio(data);
 
-  if(data.length === 0){ 
-    tbody.innerHTML = '<tr><td colspan="4" class="empty-state">sin unidades a bordo sin conexión</td></tr>'; 
-    return; 
+  if (data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" class="empty-state">sin unidades a bordo sin conexión</td></tr>';
+    return;
   }
 
-  const sorted = data.sort((a,b)=> sortDescSinConexion ? (b.TiempoMin??-1) - (a.TiempoMin??-1) : (a.TiempoMin??-1) - (b.TiempoMin??-1));
+  const sorted = data.sort((a, b) => sortDescSinConexion ? (b.TiempoMin ?? -1) - (a.TiempoMin ?? -1) : (a.TiempoMin ?? -1) - (b.TiempoMin ?? -1));
 
   let html = '';
   sorted.forEach(r => {
@@ -471,27 +459,27 @@ function renderSinConexion(rows){
   tbody.innerHTML = html;
 }
 
-function renderEmbarque(rows){
+function renderEmbarque(rows) {
   const tbody = document.getElementById('tbody-embarque');
-  if(!tbody) return;
+  if (!tbody) return;
 
   const data = rows.filter(r => r.Instancia === 'EMBARQUE' || r.Instancia === 'EMBARQUE SOBRE CAMION');
 
   const elCount = document.getElementById('count-embarque');
-  if(elCount) elCount.textContent = data.length;
+  if (elCount) elCount.textContent = data.length;
 
   const elKpiCount = document.getElementById('kpi-emb-cnt');
-  if(elKpiCount) elKpiCount.textContent = data.length;
+  if (elKpiCount) elKpiCount.textContent = data.length;
 
   const elKpiProm = document.getElementById('kpi-emb-avg');
-  if(elKpiProm) elKpiProm.textContent = promedio(data);
+  if (elKpiProm) elKpiProm.textContent = promedio(data);
 
-  if(data.length === 0){ 
-    tbody.innerHTML = '<tr><td colspan="3" class="empty-state">sin unidades desconectadas para embarque</td></tr>'; 
-    return; 
+  if (data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="3" class="empty-state">sin unidades desconectadas para embarque</td></tr>';
+    return;
   }
 
-  const sorted = data.sort((a,b)=> sortDescEmbarque ? (b.TiempoMin??-1) - (a.TiempoMin??-1) : (a.TiempoMin??-1) - (b.TiempoMin??-1));
+  const sorted = data.sort((a, b) => sortDescEmbarque ? (b.TiempoMin ?? -1) - (a.TiempoMin ?? -1) : (a.TiempoMin ?? -1) - (b.TiempoMin ?? -1));
 
   let html = '';
   sorted.forEach(r => {
@@ -511,17 +499,15 @@ function renderEmbarque(rows){
 }
 
 // ==========================================
-// CICLO DE CONSULTA Y INICIALIZACIÓN
+// CONSULTA PERIÓDICA DE DATOS Y EVENTOS
 // ==========================================
 
-async function fetchData(){
-  try{
+async function fetchData() {
+  try {
     const url = `${RAW_URL}?t=${Date.now()}`;
-    const res = await fetch(url, { 
-      cache: 'no-store'
-    });
-    
-    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const res = await fetch(url, { cache: 'no-store' });
+
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     let text = await res.text();
 
     if (!text || text.includes("Esperando primera carga")) return;
@@ -534,7 +520,7 @@ async function fetchData(){
     ultimasFilas = rows;
 
     const elTotal = document.getElementById('kpi-total-cnt');
-    if(elTotal) elTotal.textContent = rows.length;
+    if (elTotal) elTotal.textContent = rows.length;
 
     renderGeneral(rows);
     renderSinConexion(rows);
@@ -543,28 +529,28 @@ async function fetchData(){
     const fechaReporte = extraerFechaReporte(text);
     const opClock = document.getElementById('last-update');
 
-    if(opClock){
-      if(fechaReporte instanceof Date){
-        const dStr = fechaReporte.toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'2-digit'});
-        const tStr = fechaReporte.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-        opClock.textContent = 'Datos en vivo ' + dStr + ' ' + tStr;
-      } else if(typeof fechaReporte === 'string' && fechaReporte.trim() !== ''){
+    if (opClock) {
+      if (fechaReporte instanceof Date) {
+        const dStr = fechaReporte.toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: '2-digit' });
+        const tStr = fechaReporte.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        opClock.textContent = 'Datos al ' + dStr + ' ' + tStr;
+      } else if (typeof fechaReporte === 'string' && fechaReporte.trim() !== '') {
         opClock.textContent = fechaReporte;
       } else {
         const ahora = new Date();
-        const dStr = ahora.toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'2-digit'});
-        const tStr = ahora.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+        const dStr = ahora.toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: '2-digit' });
+        const tStr = ahora.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         opClock.textContent = 'ACTUALIZADO ' + dStr + ' ' + tStr;
       }
     }
 
-  }catch(err){
+  } catch (err) {
     console.error("Error al actualizar datos:", err);
   }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Manejo de pestañas
+  // Cambio de pestañas
   const tabButtons = document.querySelectorAll('.tab-link');
   const pageContainers = document.querySelectorAll('.page-container');
 
@@ -585,47 +571,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Exportar a Excel
-  const btnExport = document.getElementById('btn-export-excel');
+  // Listener para exportar a Excel
+  const btnExport = document.getElementById('btn-export-excel') || document.getElementById('btn-export');
   if (btnExport) {
     btnExport.addEventListener('click', exportarExcel);
   }
 
-  // Carga inicial y timer de refresco
   fetchData();
   setInterval(fetchData, REFRESH_MS);
 });
-/**
- * Evalúa el texto de Remark y retorna las etiquetas HTML estructuradas
- * @param {string} remarkText - Texto proveniente de la columna Remark
- * @returns {string} HTML con las etiquetas o el texto original
- */
-function procesarRemark(remarkText) {
-  if (!remarkText || typeof remarkText !== 'string') return '';
-
-  const textUpper = remarkText.trim().toUpperCase();
-  const badges = [];
-
-  // 1. REGLA USDA -> Genera badge "COT"
-  if (/\bUSDA\b/.test(textUpper)) {
-    badges.push('<span class="badge-cot">COT</span>');
-  }
-
-  // 2. REGLA AC -> Genera badge "AC"
-  // Excluye explícitamente "S/A", "S/AC" o "SIN AC"
-  const esNegado = /\b(S\/A|S\/AC|SIN\s+AC)\b/.test(textUpper);
-
-  // Detecta "AC" como palabra individual o combinaciones como "AC 6/4", "AC 5/2", "AC 10-12"
-  const tieneAC = /\bAC(\s*\d+[\/\.-]\d+)?\b/.test(textUpper);
-
-  if (tieneAC && !esNegado) {
-    badges.push('<span class="badge-ac">AC</span>');
-  }
-
-  // Si no se detectó ni AC ni USDA, devuelve el texto original
-  if (badges.length === 0) {
-    return remarkText;
-  }
-
-  return badges.join(' ');
-}
