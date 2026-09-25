@@ -109,19 +109,26 @@ function obtenerBadgesHTML(remarks) {
   let html = '';
 
   // 1. REGLA USDA -> Genera cuadrito "COT"
-  if (/USDA/i.test(rem)) {
+  if (/\bUSDA\b/i.test(rem)) {
     html += `<span class="badge-cot">COT</span>`;
   }
 
   // 2. REGLA AC ->
-  // Evalúa "AC", patrones de fracción de 2 números (ej. 6/4, 5/2, 10-2)
-  const tieneAC = /\bAC\b/i.test(rem);
+  // Detecta si hay un setpoint o fracción de números (ej. 6/4, 5/2, 10-2)
   const tieneFraccionNum = /\b\d+[\/\.-]\d+\b/.test(rem);
   
-  // Excluye expresamente "s/a", "s/ac", "sin ac"
-  const esSinAtmosfera = /\b(s\/a|s\/ac|sin\s*ac)\b/i.test(rem);
+  // Detecta "AC" como palabra independiente o con parámetros (ej. "AC", "AC 6/4")
+  const tieneAC = /\bAC(\s*\d+[\/\.-]\d+)?\b/i.test(rem);
+  
+  // Detecta si explícitamente dice S/A, S/AC o SIN AC
+  const esNegado = /\b(s\/a|s\/ac|sin\s*ac)\b/i.test(rem);
 
-  if ((tieneAC || tieneFraccionNum) && !esSinAtmosfera) {
+  // PRIORIDAD: Si tiene parámetros numéricos de setpoint (como "6/4") o "AC 6/4",
+  // la presencia del parámetro TIENE PRIORIDAD y activa el badge de AC
+  // aunque también contenga el texto "S/A".
+  const tieneParametroExplicito = tieneAC && tieneFraccionNum;
+
+  if (tieneParametroExplicito || (tieneAC && !esNegado)) {
     html += `<span class="badge-ac">AC</span>`;
   }
 
