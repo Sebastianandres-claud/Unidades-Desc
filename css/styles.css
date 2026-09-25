@@ -65,7 +65,7 @@ header.top {
 .mark {
   background: var(--ink);
   color: #fff;
-  font-family: var(--mono);
+  font-family: var(--sans);
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.04em;
@@ -222,7 +222,7 @@ nav.tabs button.active::after {
 .metric .sub b { 
   color: var(--ink-soft); 
   font-weight: 600; 
-  font-family: var(--mono); 
+  font-family: var(--sans); 
 }
 
 /* ==========================================================================
@@ -296,22 +296,22 @@ table {
   border-collapse: collapse;
 }
 
-table thead th, 
-th.code-h {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  font-style: normal !important; /* Fuerza texto recto en todas las columnas */
-  font-family: var(--sans);
-  font-size: 11.5px;
-  font-weight: 600;
+/* ==========================================================================
+   UNIFICACIÓN DE GROSOR Y FUENTE EN ENCABEZADOS
+   ========================================================================== */
+
+/* 1. Igualar el peso (grosor) de todas las cabeceras */
+table thead th {
+  font-weight: 500 !important; /* Peso uniforme semi-normal para todos */
+  font-style: normal !important;
   color: var(--ink-soft);
-  text-align: left;
-  vertical-align: middle;
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--line);
-  background-color: #FAFAFA;
-  white-space: nowrap;
+}
+
+/* 2. Normalizar la columna Contenedor para que no sobresalga en negrita */
+th.code-h {
+  font-weight: 500 !important;
+  font-family: var(--mono); /* Mantiene tipo código pero sin simular negrita */
+  letter-spacing: -0.01em;  /* Suaviza la lectura */
 }
 
 tbody td {
