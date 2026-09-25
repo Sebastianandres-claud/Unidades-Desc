@@ -265,7 +265,7 @@ function extraerFechaReporte(text){
     }
     if (/DATOS\s+AL|OPERACI[OÓ]N/i.test(line)) {
       const matchTexto = line.match(/\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}\s+\d{1,2}:\d{2}(:\d{2})?(\s*[ap]\.?\s*m\.?)?/i);
-      if (matchTexto) return "Datos en vivo" + matchTexto[0].toUpperCase();
+      if (matchTexto) return "Datos en vivo " + matchTexto[0].toUpperCase();
     }
   }
   return null;
@@ -547,7 +547,7 @@ async function fetchData(){
       if(fechaReporte instanceof Date){
         const dStr = fechaReporte.toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'2-digit'});
         const tStr = fechaReporte.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-        opClock.textContent = 'Datos en vivo' + dStr + ' ' + tStr;
+        opClock.textContent = 'Datos en vivo ' + dStr + ' ' + tStr;
       } else if(typeof fechaReporte === 'string' && fechaReporte.trim() !== ''){
         opClock.textContent = fechaReporte;
       } else {
