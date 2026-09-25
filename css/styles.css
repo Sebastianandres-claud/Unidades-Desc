@@ -59,7 +59,7 @@ header.top {
 
 /* Logo con presencia ejecutiva */
 .logo-img {
-  height: 80px; /* Incrementado para destacar en pantalla */
+  height: 100px; /* Incrementado para destacar en pantalla */
   max-height: 80px;
   width: auto;
   object-fit: contain;
