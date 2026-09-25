@@ -477,7 +477,44 @@ function renderEmbarque(rows){
 
   tbody.innerHTML = html;
 }
+document.addEventListener('DOMContentLoaded', () => {
+  // Manejo de cambio de pestañas
+  const tabButtons = document.querySelectorAll('.tab-link');
+  const pageContainers = document.querySelectorAll('.page-container');
 
+  tabButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      const targetId = e.currentTarget.getAttribute('data-target');
+
+      // Actualizar estado activo en los botones
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      e.currentTarget.classList.add('active');
+
+      // Alternar visibilidad de las páginas
+      pageContainers.forEach(container => {
+        if (container.id === targetId) {
+          container.classList.add('active');
+        } else {
+          container.classList.remove('active');
+        }
+      });
+    });
+  });
+
+  // Botón Exportar a Excel
+  const btnExport = document.getElementById('btn-export-excel');
+  if (btnExport) {
+    btnExport.addEventListener('click', () => {
+      if (typeof exportToExcel === 'function') {
+        exportToExcel();
+      } else {
+        console.warn('La función exportToExcel() aún no está cargada.');
+      }
+    });
+  }
+});
+
+// Agrega aquí tu lógica de fetching o procesamiento de datos de las tablas/KPIs
 // ==========================================
 // CICLO DE CONSULTA Y ACTUALIZACIÓN
 // ==========================================
