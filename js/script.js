@@ -74,6 +74,37 @@ function obtenerClaseFila(instancia) {
   return '';
 }
 
+// Generador de cápsula según la Instancia de la unidad
+function obtenerBadgeInstancia(instancia) {
+  if (!instancia) return `<span class="badge badge-calle">-</span>`;
+  const inst = String(instancia).toUpperCase();
+  let clase = 'badge-calle';
+
+  if (inst.includes('DESPACHO')) {
+    clase = 'badge-despacho'; // Azul Eléctrico
+  } else if (inst.includes('MOVIMIENTO')) {
+    clase = 'badge-movimiento'; // Naranja Terracota
+  } else if (inst.includes('BORDO') || inst.includes('EMBARCADO')) {
+    clase = 'badge-bordo'; // Azul Steel
+  } else if (inst.includes('EMBARQUE')) {
+    clase = 'badge-embarque'; // Verde Teal
+  } else if (inst.includes('DESCARGA')) {
+    clase = 'badge-descarga'; // Ámbar
+  } else if (inst.includes('CALLE')) {
+    clase = 'badge-calle'; // Azul Grisáceo
+  }
+
+  return `<span class="badge ${clase}">${esc(instancia)}</span>`;
+}
+
+// Generador de cápsula para la columna Mov (Morado para SÍ)
+function obtenerBadgeMov(esMov) {
+  if (esMov) {
+    return `<span class="badge badge-mov-si">SÍ</span>`;
+  }
+  return `<span class="badge badge-mov-no">NO</span>`;
+}
+
 function obtenerBadgesHTML(remarks) {
   if (!remarks) return '';
   const rem = String(remarks).trim();
@@ -245,7 +276,6 @@ function parseTSV(text){
   const lines = cleanText.replace(/\r/g,'').split('\n');
   if(lines.length === 0) return [];
 
-  // Busca dinámicamente la fila que contiene las cabeceras
   let headerIndex = lines.findIndex(l => l.includes('Container No.') || l.includes('Container'));
   if (headerIndex === -1) headerIndex = 0;
 
@@ -383,15 +413,17 @@ function renderGeneral(rows){
   sorted.forEach(r => {
     const claseFila = obtenerClaseFila(r.Instancia);
     const badges = obtenerBadgesHTML(r.Remarks);
-    
+    const badgeInstancia = obtenerBadgeInstancia(r.Instancia);
+    const badgeMov = obtenerBadgeMov(r.Mov);
+
     html += `
       <tr class="${claseFila}">
         <td><span class="container-id">${esc(r.Contenedor)}</span>${badges}</td>
-        <td><span class="instancia-tag">${esc(r.Instancia)}</span></td>
+        <td>${badgeInstancia}</td>
         <td><span class="pos-id">${esc(formatPosicion(r.Posicion))}</span></td>
         <td>${esc(r.Nave)}</td>
         <td ${claseTiempo(r.TiempoMin)}>${r.Tiempo ?? 'N/A'}</td>
-        <td>${r.Mov ? 'Sí' : 'No'}</td>
+        <td>${badgeMov}</td>
       </tr>
     `;
   });
@@ -477,46 +509,9 @@ function renderEmbarque(rows){
 
   tbody.innerHTML = html;
 }
-document.addEventListener('DOMContentLoaded', () => {
-  // Manejo de cambio de pestañas
-  const tabButtons = document.querySelectorAll('.tab-link');
-  const pageContainers = document.querySelectorAll('.page-container');
 
-  tabButtons.forEach(button => {
-    button.addEventListener('click', (e) => {
-      const targetId = e.currentTarget.getAttribute('data-target');
-
-      // Actualizar estado activo en los botones
-      tabButtons.forEach(btn => btn.classList.remove('active'));
-      e.currentTarget.classList.add('active');
-
-      // Alternar visibilidad de las páginas
-      pageContainers.forEach(container => {
-        if (container.id === targetId) {
-          container.classList.add('active');
-        } else {
-          container.classList.remove('active');
-        }
-      });
-    });
-  });
-
-  // Botón Exportar a Excel
-  const btnExport = document.getElementById('btn-export-excel');
-  if (btnExport) {
-    btnExport.addEventListener('click', () => {
-      if (typeof exportToExcel === 'function') {
-        exportToExcel();
-      } else {
-        console.warn('La función exportToExcel() aún no está cargada.');
-      }
-    });
-  }
-});
-
-// Agrega aquí tu lógica de fetching o procesamiento de datos de las tablas/KPIs
 // ==========================================
-// CICLO DE CONSULTA Y ACTUALIZACIÓN
+// CICLO DE CONSULTA Y INICIALIZACIÓN
 // ==========================================
 
 async function fetchData(){
@@ -569,6 +564,34 @@ async function fetchData(){
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Manejo de pestañas
+  const tabButtons = document.querySelectorAll('.tab-link');
+  const pageContainers = document.querySelectorAll('.page-container');
+
+  tabButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      const targetId = e.currentTarget.getAttribute('data-target');
+
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      e.currentTarget.classList.add('active');
+
+      pageContainers.forEach(container => {
+        if (container.id === targetId) {
+          container.classList.add('active');
+        } else {
+          container.classList.remove('active');
+        }
+      });
+    });
+  });
+
+  // Exportar a Excel
+  const btnExport = document.getElementById('btn-export-excel');
+  if (btnExport) {
+    btnExport.addEventListener('click', exportarExcel);
+  }
+
+  // Carga inicial y timer de refresco
   fetchData();
   setInterval(fetchData, REFRESH_MS);
 });
