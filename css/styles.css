@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SITRANS - EXECUTIVE CONTROL UI (TEMÁTICA "ACTUAL")
+   SITRANS - EXECUTIVE CONTROL UI
    ========================================================================== */
 
 :root {
@@ -65,7 +65,7 @@ header.top {
 .mark {
   background: var(--ink);
   color: #fff;
-  font-family: var(--sans);
+  font-family: var(--mono);
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.04em;
@@ -106,25 +106,40 @@ header.top {
   100% { box-shadow: 0 0 0 0 rgba(31,111,84,0); }
 }
 
+/* --- BOTÓN DE EXPORTAR A EXCEL --- */
 .export-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   background: var(--surface);
   border: 1px solid var(--line);
   color: var(--ink);
   font-family: var(--sans);
-  font-weight: 500;
+  font-weight: 600;
   font-size: 13px;
   padding: 8px 14px;
-  border-radius: 3px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  transition: all 0.15s ease-in-out;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .export-btn:hover {
-  border-color: var(--ink-faint);
-  background: var(--bg);
+  border-color: var(--ink-soft);
+  background: #EEF0EE;
+  color: var(--ink);
+}
+
+.export-btn:active {
+  transform: translateY(1px);
+  background: var(--line);
+}
+
+.export-btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 }
 
 /* --- PESTAÑAS --- */
@@ -222,16 +237,16 @@ nav.tabs button.active::after {
 .metric .sub b { 
   color: var(--ink-soft); 
   font-weight: 600; 
-  font-family: var(--sans); 
+  font-family: var(--mono); 
 }
 
 /* ==========================================================================
-   DISPOSICIÓN PARALELA DE TABLAS (3 COLUMNAS)
+   DISPOSICIÓN DE TABLAS PARALELAS (3 COLUMNAS)
    ========================================================================== */
 
 .panels {
   display: grid;
-  grid-template-columns: 1.25fr 1fr 1fr; /* La 1ª tabla tiene 6 columnas por eso un poco más ancha */
+  grid-template-columns: 1.25fr 1fr 1fr;
   gap: 16px;
   align-items: start;
 }
@@ -245,10 +260,7 @@ nav.tabs button.active::after {
   flex-direction: column;
 }
 
-/* ==========================================================================
-   ENCABEZADOS DE PANELES Y TABLAS (RECTOS Y ALINEADOS)
-   ========================================================================== */
-
+/* --- TITULARES DE PANELES --- */
 .panel-head {
   display: flex;
   align-items: center;
@@ -284,7 +296,10 @@ nav.tabs button.active::after {
   align-items: center;
 }
 
-/* --- ESTRUCTURA DE TABLAS --- */
+/* ==========================================================================
+   ENCABEZADOS Y TABLAS (UNIFICACIÓN VISUAL Y TEXTO RECTO)
+   ========================================================================== */
+
 .table-wrapper {
   max-height: 540px;
   overflow-y: auto;
@@ -296,22 +311,26 @@ table {
   border-collapse: collapse;
 }
 
-/* ==========================================================================
-   UNIFICACIÓN DE GROSOR Y FUENTE EN ENCABEZADOS
-   ========================================================================== */
-
-/* 1. Igualar el peso (grosor) de todas las cabeceras */
-table thead th {
-  font-weight: 500 !important; /* Peso uniforme semi-normal para todos */
+/* Forzar la misma tipografía, tamaño, color y peso recto en TODOS los encabezados */
+table thead th,
+th.code-h,
+thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  font-family: var(--sans) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
   font-style: normal !important;
-  color: var(--ink-soft);
-}
-
-/* 2. Normalizar la columna Contenedor para que no sobresalga en negrita */
-th.code-h {
-  font-weight: 500 !important;
-  font-family: var(--mono); /* Mantiene tipo código pero sin simular negrita */
-  letter-spacing: -0.01em;  /* Suaviza la lectura */
+  color: #5B6670 !important;
+  text-align: left;
+  vertical-align: middle;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  background-color: #FAFAFA;
+  white-space: nowrap;
+  letter-spacing: normal !important;
+  text-transform: none !important;
 }
 
 tbody td {
@@ -326,13 +345,15 @@ tbody tr:last-child td {
   border-bottom: none; 
 }
 
-td.code, th.code-h { 
+/* Fuente Monoespaciada SOLO para los valores de los contenedores en el cuerpo */
+td.code,
+tbody td .container-id { 
   font-family: var(--mono); 
   font-size: 12px;
 }
 
 /* ==========================================================================
-   DESTAQUES DE INSTANCIAS (BADGES Y ETIQUETAS)
+   DESTAQUES DE INSTANCIAS (BADGES)
    ========================================================================== */
 
 .badge, .review {
@@ -349,56 +370,48 @@ td.code, th.code-h {
   line-height: 1.2;
 }
 
-/* 1. CALLE / REVISAR */
 .badge-calle, .review {
   background: #EBF3FA;
   color: #1D6191;
   border: 1px solid #D6E4F0;
 }
 
-/* 2. DESPACHO (Azul Eléctrico) */
 .badge-despacho {
   background: #E8F1FF;
   color: #0052FF;
   border: 1px solid #CCE0FF;
 }
 
-/* 3. MOVIMIENTO (Óxido / Naranja) */
 .badge-movimiento {
   background: #FFF1EC;
   color: #C1440E;
   border: 1px solid #FFDCD1;
 }
 
-/* 4. A BORDO SIN CONEXIÓN */
 .badge-bordo {
   background: #F0F4F8;
   color: #1B4B66;
   border: 1px solid #D3DFE8;
 }
 
-/* 5. PARA EMBARQUE */
 .badge-embarque {
   background: #EAF7F2;
   color: #1F6F54;
   border: 1px solid #C6EAD9;
 }
 
-/* 6. DESCARGA */
 .badge-descarga {
   background: #FDF8EC;
   color: #B8860B;
   border: 1px solid #F7EAC4;
 }
 
-/* 7. COLUMNA MOV = SÍ (Morado) */
 .badge-mov-si, .badge-purple {
   background: #F3E8FF;
   color: #7E22CE;
   border: 1px solid #E9D5FF;
 }
 
-/* 8. COLUMNA MOV = NO */
 .badge-mov-no {
   background: #F4F4F5;
   color: #71717A;
@@ -480,7 +493,7 @@ td.time {
 /* --- RESPONSIVIDAD --- */
 @media (max-width: 1280px) {
   .panels { 
-    grid-template-columns: 1fr; /* Pasa a 1 columna en pantallas reducidas */
+    grid-template-columns: 1fr; 
   }
   .strip { 
     grid-template-columns: repeat(2, 1fr); 
