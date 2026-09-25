@@ -30,7 +30,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Ampliado para dar más espacio horizontal a las 3 columnas */
+/* Contenedor amplio para soporte de 3 columnas simultáneas */
 .page {
   max-width: 1680px;
   margin: 0 auto;
@@ -218,10 +218,10 @@ nav.tabs button.active::after {
   font-family: var(--mono); 
 }
 
-/* --- GRILLA DE 3 COLUMNAS EN PARALELO --- */
+/* --- GRILLA DE 3 COLUMNAS PARALELAS --- */
 .panels {
   display: grid;
-  grid-template-columns: 1.35fr 1fr 1fr; /* Más peso a la tabla 1 que tiene 6 columnas */
+  grid-template-columns: 1.35fr 1fr 1fr;
   gap: 16px;
 }
 
@@ -230,7 +230,7 @@ nav.tabs button.active::after {
   border: 1px solid var(--line);
   border-radius: 4px;
   overflow: hidden;
-  min-width: 0; /* Previene que el contenido desborde la celda de la grilla */
+  min-width: 0;
 }
 
 .panel-head {
@@ -257,7 +257,7 @@ nav.tabs button.active::after {
   border-radius: 10px;
 }
 
-/* --- TABLAS Y CELDAS OPTIMIZADAS PARA 3 COLUMNAS --- */
+/* --- TABLAS OPERATIVAS --- */
 .table-wrapper {
   max-height: 520px;
   overflow-y: auto;
@@ -277,7 +277,7 @@ thead th {
   font-size: 11px;
   font-weight: 500;
   color: var(--ink-faint);
-  padding: 8px 10px; /* Padding compacto para dar espacio a los textos */
+  padding: 8px 10px;
   border-bottom: 1px solid var(--line);
   white-space: nowrap;
   font-style: italic;
@@ -285,8 +285,8 @@ thead th {
 }
 
 tbody td {
-  padding: 9px 10px; /* Padding compacto vertical y horizontal */
-  font-size: 12.5px;  /* Tamaño legible ajustado a paneles paralelos */
+  padding: 9px 10px;
+  font-size: 12.5px;
   border-bottom: 1px solid #EEF0EE;
   white-space: nowrap;
 }
@@ -300,27 +300,107 @@ td.code, th.code-h {
   font-size: 12px;
 }
 
+/* ==========================================================================
+   DESTAQUES DE INSTANCIAS (BADGES Y ETIQUETAS)
+   ========================================================================== */
+
+.badge, .review {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 3px;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+/* Instancia Azul Steel (Predeterminada "Calle revisar") */
+.badge-steel, .review { 
+  background: #EAF1F5; 
+  color: var(--steel); 
+  border: 1px solid rgba(27, 75, 102, 0.15); 
+}
+
+/* Instancia Roja (Crítico / Alerta) */
+.badge-rust, .badge-red { 
+  background: #FDF2F0; 
+  color: var(--rust); 
+  border: 1px solid rgba(193, 68, 14, 0.2); 
+}
+
+/* Instancia Ámbar (Precaución / Pendiente) */
+.badge-amber, .badge-yellow { 
+  background: #FDF8EC; 
+  color: var(--amber); 
+  border: 1px solid rgba(184, 134, 11, 0.25); 
+}
+
+/* Instancia Verde Teal (Conectado / Ok) */
+.badge-teal, .badge-green { 
+  background: #EAF7F2; 
+  color: var(--teal); 
+  border: 1px solid rgba(31, 111, 84, 0.2); 
+}
+
+/* Instancia Gris (Sin datos / Neutro) */
+.badge-gray { 
+  background: #EEF0EE; 
+  color: var(--ink-soft); 
+  border: 1px solid var(--line); 
+}
+
+/* ==========================================================================
+   DESTAQUES DE TIEMPO / MINUTOS
+   ========================================================================== */
+
 td.time { 
   font-family: var(--mono); 
   font-size: 12px;
 }
 
-.flag-red { 
+/* Opción 1: Color de texto directo */
+.flag-red { color: var(--rust); font-weight: 600; }
+.flag-amber { color: var(--amber); font-weight: 600; }
+.flag-teal { color: var(--teal); font-weight: 600; }
+
+/* Opción 2: Pastillas destacadas para el tiempo/minutos */
+.time-pill {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 3px;
+  letter-spacing: 0.02em;
+}
+
+.time-pill.red, .time-pill.rust { 
+  background: #FDF2F0; 
   color: var(--rust); 
-  font-weight: 600; 
+  border: 1px solid rgba(193, 68, 14, 0.25); 
 }
 
-.review {
-  display: inline-block;
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--steel);
-  background: #EAF1F5;
-  padding: 2px 6px;
-  border-radius: 2px;
-  letter-spacing: 0.01em;
+.time-pill.amber, .time-pill.yellow { 
+  background: #FDF8EC; 
+  color: var(--amber); 
+  border: 1px solid rgba(184, 134, 11, 0.3); 
 }
 
+.time-pill.teal, .time-pill.green { 
+  background: #EAF7F2; 
+  color: var(--teal); 
+  border: 1px solid rgba(31, 111, 84, 0.25); 
+}
+
+.time-pill.gray { 
+  background: #F0F2F1; 
+  color: var(--ink-soft); 
+  border: 1px solid var(--line); 
+}
+
+/* --- ESTADOS VACÍOS --- */
 .empty-state {
   padding: 30px 14px;
   text-align: center;
@@ -344,7 +424,7 @@ td.time {
   border: none;
 }
 
-/* --- RESPONSIVIDAD (SOLO PANTALLAS PEQUEÑAS / PADS) --- */
+/* --- RESPONSIVIDAD --- */
 @media (max-width: 1100px) {
   .panels { 
     grid-template-columns: 1fr; 
