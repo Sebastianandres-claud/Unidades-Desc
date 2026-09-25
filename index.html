@@ -2,205 +2,196 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Control Operacional Sitrans</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>SITRANS — Unidades Desconectadas</title>
+
+  <!-- Fuentes Tipográficas -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Estilos del Proyecto -->
   <link rel="stylesheet" href="css/styles.css?v=6.0">
 </head>
 <body>
 
+<div class="page">
+
   <!-- CABECERA INSTITUCIONAL -->
-  <header class="exec-header">
-    <div class="brand-wrapper">
-      <div class="brand-badge">SITRANS</div>
-      <div class="header-info">
+  <header class="top">
+    <div class="id-block">
+      <div class="mark">SITRANS</div>
+      <div class="titles">
         <h1>Unidades Desconectadas</h1>
-        <div class="timestamp" id="last-update">DATOS AL --/--/-- --:--</div>
+        <div class="meta">
+          <span class="pulse"></span> 
+          <span id="last-update">DATOS AL --/--/-- --:--</span>
+        </div>
       </div>
     </div>
-    <button class="btn-excel" onclick="exportToExcel()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Exportar Excel
+    <button class="export-btn" id="btn-export-excel">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      Exportar a Excel
     </button>
   </header>
 
   <!-- PESTAÑAS -->
-  <nav class="exec-tabs">
-    <button class="tab-link active" onclick="mostrarPagina('page-unidades', this)">Unidades Desconectadas</button>
-    <button class="tab-link" onclick="mostrarPagina('page-planificacion', this)">Planificación Proyectada</button>
+  <nav class="tabs" role="tablist">
+    <button class="tab-link active" data-target="page-unidades">Unidades Desconectadas</button>
+    <button class="tab-link" data-target="page-planificacion">Planificación Proyectada</button>
   </nav>
 
   <main>
     <!-- PÁGINA 1: UNIDADES DESCONECTADAS -->
-    <div id="page-unidades" class="page-container">
+    <div id="page-unidades" class="page-container active">
       
-      <!-- GRILLA DE KPIS (5 CARDS EN FILA) -->
-      <section class="kpi-row">
-        
-        <div class="kpi-card calle">
-          <div class="kpi-header-title">Calle</div>
-          <div class="kpi-body">
-            <div class="kpi-stat">
-              <span class="lbl">Contenedores</span>
-              <span class="num" id="kpi-calle-cnt">0</span>
-            </div>
-            <div class="kpi-stat">
-              <span class="lbl">Prom Mins</span>
-              <span class="num" id="kpi-calle-avg">0.0</span>
-            </div>
+      <!-- BANDA DE KPIS (5 METRICAS) -->
+      <section class="strip">
+        <div class="metric" style="--stripe:var(--steel)">
+          <div class="label">Calle</div>
+          <div class="row">
+            <span class="num" id="kpi-calle-cnt">0</span>
+            <span class="sub">contenedores</span>
           </div>
+          <div class="sub" style="margin-top:6px">prom. <b id="kpi-calle-avg">0.0</b> min</div>
         </div>
 
-        <div class="kpi-card movimiento">
-          <div class="kpi-header-title">Movimiento</div>
-          <div class="kpi-body">
-            <div class="kpi-stat">
-              <span class="lbl">Contenedores</span>
-              <span class="num" id="kpi-mov-cnt">0</span>
-            </div>
-            <div class="kpi-stat">
-              <span class="lbl">Prom Mins</span>
-              <span class="num" id="kpi-mov-avg">0.0</span>
-            </div>
+        <div class="metric" style="--stripe:var(--rust)">
+          <div class="label">Movimiento</div>
+          <div class="row">
+            <span class="num" id="kpi-mov-cnt">0</span>
+            <span class="sub">contenedores</span>
           </div>
+          <div class="sub" style="margin-top:6px">prom. <b id="kpi-mov-avg">0.0</b> min</div>
         </div>
 
-        <div class="kpi-card bordo">
-          <div class="kpi-header-title">A bordo sin conexión</div>
-          <div class="kpi-body">
-            <div class="kpi-stat">
-              <span class="lbl">Contenedores</span>
-              <span class="num" id="kpi-bordo-cnt">0</span>
-            </div>
-            <div class="kpi-stat">
-              <span class="lbl">Prom Mins</span>
-              <span class="num" id="kpi-bordo-avg">0.0</span>
-            </div>
+        <div class="metric" style="--stripe:var(--amber)">
+          <div class="label">A bordo sin conexión</div>
+          <div class="row">
+            <span class="num" id="kpi-bordo-cnt">0</span>
+            <span class="sub">contenedores</span>
           </div>
+          <div class="sub" style="margin-top:6px">prom. <b id="kpi-bordo-avg">0.0</b> min</div>
         </div>
 
-        <div class="kpi-card embarque">
-          <div class="kpi-header-title">Embarque</div>
-          <div class="kpi-body">
-            <div class="kpi-stat">
-              <span class="lbl">Contenedores</span>
-              <span class="num" id="kpi-emb-cnt">0</span>
-            </div>
-            <div class="kpi-stat">
-              <span class="lbl">Prom Mins</span>
-              <span class="num" id="kpi-emb-avg">0.0</span>
-            </div>
+        <div class="metric" style="--stripe:var(--teal)">
+          <div class="label">Para embarque</div>
+          <div class="row">
+            <span class="num" id="kpi-emb-cnt">0</span>
+            <span class="sub">contenedores</span>
           </div>
+          <div class="sub" style="margin-top:6px">prom. <b id="kpi-emb-avg">0.0</b> min</div>
         </div>
 
-        <div class="kpi-card total">
-          <div class="kpi-header-title">Total General</div>
-          <div class="kpi-body">
-            <div class="kpi-stat">
-              <span class="lbl">Total Unidades</span>
-              <span class="num" id="kpi-total-cnt">0</span>
-            </div>
+        <div class="metric" style="--stripe:var(--ink)">
+          <div class="label">Total General</div>
+          <div class="row">
+            <span class="num" id="kpi-total-cnt">0</span>
+            <span class="sub">unidades</span>
           </div>
         </div>
-
       </section>
 
-      <!-- GRILLA DE 3 TABLAS EN PARALELO (VISIBLES SIEMPRE AL MISMO TIEMPO) -->
-      <section class="tables-parallel-grid">
+      <!-- GRILLA DE 3 TABLAS EN PARALELO -->
+      <section class="panels">
         
         <!-- Tabla 1: Patio -->
-        <div class="card-panel">
-          <div class="panel-header">
+        <div class="panel">
+          <div class="panel-head">
             <h2>Unidades desconectadas en patio</h2>
-            <span class="badge-count" id="count-patio">0</span>
+            <span class="count" id="count-patio">0</span>
           </div>
           <div class="table-wrapper">
-            <table class="exec-table" id="tbl-patio">
+            <table id="tbl-patio">
               <thead>
                 <tr>
-                  <th>Contenedor</th>
+                  <th class="code-h">Contenedor</th>
                   <th>Instancia</th>
-                  <th>Posición</th>
+                  <th class="code-h">Posición</th>
                   <th>Nave</th>
                   <th>Tiempo</th>
-                  <th>Mov</th>
+                  <th>Mov.</th>
                 </tr>
               </thead>
               <tbody id="tbody-patio">
-                <tr><td colspan="6" class="empty-state">sin registros</td></tr>
+                <tr><td colspan="6" class="empty-state">Sin registros en este estado</td></tr>
               </tbody>
             </table>
           </div>
         </div>
 
         <!-- Tabla 2: A Bordo -->
-        <div class="card-panel">
-          <div class="panel-header">
+        <div class="panel">
+          <div class="panel-head">
             <h2>A bordo sin conexión</h2>
-            <span class="badge-count" id="count-bordo">0</span>
+            <span class="count" id="count-bordo">0</span>
           </div>
           <div class="table-wrapper">
-            <table class="exec-table" id="tbl-bordo">
+            <table id="tbl-bordo">
               <thead>
                 <tr>
-                  <th>Contenedor</th>
+                  <th class="code-h">Contenedor</th>
                   <th>Nave</th>
                   <th>Tiempo</th>
-                  <th>Posición</th>
+                  <th class="code-h">Posición</th>
                 </tr>
               </thead>
               <tbody id="tbody-bordo">
-                <tr><td colspan="4" class="empty-state">sin unidades a bordo sin conexión</td></tr>
+                <tr><td colspan="4" class="empty-state">Sin unidades a bordo sin conexión</td></tr>
               </tbody>
             </table>
           </div>
         </div>
 
         <!-- Tabla 3: Para Embarque -->
-        <div class="card-panel">
-          <div class="panel-header">
+        <div class="panel">
+          <div class="panel-head">
             <h2>Desconectadas para embarque</h2>
-            <span class="badge-count" id="count-embarque">0</span>
+            <span class="count" id="count-embarque">0</span>
           </div>
           <div class="table-wrapper">
-            <table class="exec-table" id="tbl-embarque">
+            <table id="tbl-embarque">
               <thead>
                 <tr>
-                  <th>Contenedor</th>
+                  <th class="code-h">Contenedor</th>
                   <th>Nave</th>
                   <th>Tiempo</th>
                 </tr>
               </thead>
               <tbody id="tbody-embarque">
-                <tr><td colspan="3" class="empty-state">sin unidades desconectadas para embarque</td></tr>
+                <tr><td colspan="3" class="empty-state">Sin unidades desconectadas para embarque</td></tr>
               </tbody>
             </table>
           </div>
         </div>
 
       </section>
-
     </div>
 
     <!-- PÁGINA 2: PLANIFICACIÓN PROYECTADA -->
-    <div id="page-planificacion" class="page-container" style="display: none;">
-      <div class="card-panel">
-        <div class="panel-header">
+    <div id="page-planificacion" class="page-container">
+      <div class="panel">
+        <div class="panel-head">
           <h2>Planificación Proyectada Naviera</h2>
         </div>
-        <div style="width: 100%; height: 620px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border-color);">
+        <div class="iframe-panel">
           <iframe 
             src="https://tpsv.sharepoint.com/sites/TPSVPlanificacionNaviera/_layouts/15/Doc.aspx?sourcedoc={621b809b-e4fd-4531-9d66-5df414ca4610}&action=embedview&wdAllowInteractivity=False&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True" 
-            width="100%" 
-            height="100%" 
-            frameborder="0" 
+            title="Planificación Proyectada Naviera"
             scrolling="no">
           </iframe>
         </div>
       </div>
     </div>
-
   </main>
 
-  <script src="js/script.js?v=1.7"></script>
+</div>
+
+<!-- SCRIPT PRINCIPAL DE LÓGICA -->
+<script src="js/script.js?v=1.7"></script>
+
 </body>
 </html>
