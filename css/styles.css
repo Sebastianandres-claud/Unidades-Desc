@@ -436,3 +436,15 @@ td.time {
     border-right: none; 
   }
 }
+.id-block {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo-img {
+  height: 38px; /* Altura ideal para la barra superior */
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
