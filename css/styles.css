@@ -304,50 +304,78 @@ td.code, th.code-h {
    DESTAQUES DE INSTANCIAS (BADGES Y ETIQUETAS)
    ========================================================================== */
 
+/* ==========================================================================
+   SITRANS - SISTEMA DE ETIQUETAS E INSTANCIAS (BADGES)
+   ========================================================================== */
+
 .badge, .review {
   display: inline-flex;
   align-items: center;
-  font-size: 10.5px;
+  justify-content: center;
+  font-family: var(--sans);
+  font-size: 11.5px;
   font-weight: 600;
-  padding: 2px 7px;
-  border-radius: 3px;
-  letter-spacing: 0.01em;
+  padding: 3px 9px;
+  border-radius: 4px; /* Bordes redondeados sutiles */
   white-space: nowrap;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
 }
 
-/* Instancia Azul Steel (Predeterminada "Calle revisar") */
-.badge-steel, .review { 
-  background: #EAF1F5; 
-  color: var(--steel); 
-  border: 1px solid rgba(27, 75, 102, 0.15); 
+/* 1. CALLE / REVISAR (Azul Grisáceo - Estilo original) */
+.badge-calle, .review {
+  background: #EBF3FA;
+  color: #1D6191;
+  border: 1px solid #D6E4F0;
 }
 
-/* Instancia Roja (Crítico / Alerta) */
-.badge-rust, .badge-red { 
-  background: #FDF2F0; 
-  color: var(--rust); 
-  border: 1px solid rgba(193, 68, 14, 0.2); 
+/* 2. DESPACHO (Azul Eléctrico destacado) */
+.badge-despacho {
+  background: #E8F1FF;
+  color: #0052FF;
+  border: 1px solid #CCE0FF;
 }
 
-/* Instancia Ámbar (Precaución / Pendiente) */
-.badge-amber, .badge-yellow { 
-  background: #FDF8EC; 
-  color: var(--amber); 
-  border: 1px solid rgba(184, 134, 11, 0.25); 
+/* 3. MOVIMIENTO (Óxido / Naranja Terracota) */
+.badge-movimiento {
+  background: #FFF1EC;
+  color: #C1440E;
+  border: 1px solid #FFDCD1;
 }
 
-/* Instancia Verde Teal (Conectado / Ok) */
-.badge-teal, .badge-green { 
-  background: #EAF7F2; 
-  color: var(--teal); 
-  border: 1px solid rgba(31, 111, 84, 0.2); 
+/* 4. A BORDO SIN CONEXIÓN (Azul Acero Oscuro / Steel) */
+.badge-bordo {
+  background: #F0F4F8;
+  color: #1B4B66;
+  border: 1px solid #D3DFE8;
 }
 
-/* Instancia Gris (Sin datos / Neutro) */
-.badge-gray { 
-  background: #EEF0EE; 
-  color: var(--ink-soft); 
-  border: 1px solid var(--line); 
+/* 5. PARA EMBARQUE (Verde Teal / Esmeralda) */
+.badge-embarque {
+  background: #EAF7F2;
+  color: #1F6F54;
+  border: 1px solid #C6EAD9;
+}
+
+/* 6. DESCARGA (Ámbar / Dorado Cálido) */
+.badge-descarga {
+  background: #FDF8EC;
+  color: #B8860B;
+  border: 1px solid #F7EAC4;
+}
+
+/* 7. COLUMNA MOV = SÍ (Morado / Púrpura) */
+.badge-mov-si, .badge-purple {
+  background: #F3E8FF;
+  color: #7E22CE;
+  border: 1px solid #E9D5FF;
+}
+
+/* 8. COLUMNA MOV = NO (Gris Neutro) */
+.badge-mov-no {
+  background: #F4F4F5;
+  color: #71717A;
+  border: 1px solid #E4E4E7;
 }
 
 /* ==========================================================================
