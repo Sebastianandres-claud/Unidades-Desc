@@ -30,7 +30,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Contenedor amplio para soporte de 3 columnas simultáneas */
 .page {
   max-width: 1680px;
   margin: 0 auto;
@@ -106,7 +105,7 @@ header.top {
   100% { box-shadow: 0 0 0 0 rgba(31,111,84,0); }
 }
 
-/* --- BOTÓN DE EXPORTAR A EXCEL --- */
+/* --- BOTÓN DE EXPORTACIÓN --- */
 .export-btn {
   display: inline-flex;
   align-items: center;
@@ -142,7 +141,7 @@ header.top {
   flex-shrink: 0;
 }
 
-/* --- PESTAÑAS --- */
+/* --- PESTAÑAS Y NAVEGACIÓN --- */
 nav.tabs {
   display: flex;
   gap: 28px;
@@ -177,7 +176,6 @@ nav.tabs button.active::after {
   background: var(--ink);
 }
 
-/* --- MANEJO DE PÁGINAS --- */
 .page-container {
   display: none;
 }
@@ -260,7 +258,6 @@ nav.tabs button.active::after {
   flex-direction: column;
 }
 
-/* --- TITULARES DE PANELES --- */
 .panel-head {
   display: flex;
   align-items: center;
@@ -297,7 +294,7 @@ nav.tabs button.active::after {
 }
 
 /* ==========================================================================
-   ENCABEZADOS Y TABLAS (UNIFICACIÓN VISUAL Y TEXTO RECTO)
+   TABLAS Y UNIFICACIÓN TOTAL DE ENCABEZADOS
    ========================================================================== */
 
 .table-wrapper {
@@ -311,7 +308,6 @@ table {
   border-collapse: collapse;
 }
 
-/* Forzar la misma tipografía, tamaño, color y peso recto en TODOS los encabezados */
 table thead th,
 th.code-h,
 thead th {
@@ -345,7 +341,6 @@ tbody tr:last-child td {
   border-bottom: none; 
 }
 
-/* Fuente Monoespaciada SOLO para los valores de los contenedores en el cuerpo */
 td.code,
 tbody td .container-id { 
   font-family: var(--mono); 
@@ -353,7 +348,7 @@ tbody td .container-id {
 }
 
 /* ==========================================================================
-   DESTAQUES DE INSTANCIAS (BADGES)
+   CÁPSULAS DE INSTANCIA Y MOV
    ========================================================================== */
 
 .badge, .review {
@@ -419,54 +414,42 @@ tbody td .container-id {
 }
 
 /* ==========================================================================
-   DESTAQUES DE TIEMPO / MINUTOS
+   ETIQUETAS DESTACADAS (REMARKS: AC Y COT/USDA)
    ========================================================================== */
 
-td.time { 
-  font-family: var(--mono); 
-  font-size: 12px;
-}
-
-.flag-red { color: var(--rust); font-weight: 600; }
-.flag-amber { color: var(--amber); font-weight: 600; }
-.flag-teal { color: var(--teal); font-weight: 600; }
-
-.time-pill {
-  display: inline-flex;
-  align-items: center;
-  font-family: var(--mono);
-  font-size: 11.5px;
-  font-weight: 600;
-  padding: 2px 7px;
+/* Cuadrito Destacado AMARILLO para AC */
+.badge-ac {
+  background-color: #FEF08A !important;
+  color: #854D0E !important;
+  border: 1px solid #FDE047 !important;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
   border-radius: 3px;
+  display: inline-block;
+  margin-left: 6px;
   letter-spacing: 0.02em;
+  line-height: 1.2;
 }
 
-.time-pill.red, .time-pill.rust { 
-  background: #FDF2F0; 
-  color: var(--rust); 
-  border: 1px solid rgba(193, 68, 14, 0.25); 
+/* Cuadrito Destacado AZUL para USDA -> COT */
+.badge-cot {
+  background-color: #E0F2FE !important;
+  color: #0369A1 !important;
+  border: 1px solid #BAE6FD !important;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+  display: inline-block;
+  margin-left: 6px;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
 }
 
-.time-pill.amber, .time-pill.yellow { 
-  background: #FDF8EC; 
-  color: var(--amber); 
-  border: 1px solid rgba(184, 134, 11, 0.3); 
-}
-
-.time-pill.teal, .time-pill.green { 
-  background: #EAF7F2; 
-  color: var(--teal); 
-  border: 1px solid rgba(31, 111, 84, 0.25); 
-}
-
-.time-pill.gray { 
-  background: #F0F2F1; 
-  color: var(--ink-soft); 
-  border: 1px solid var(--line); 
-}
-
-/* --- ESTADOS VACÍOS --- */
+/* --- ESTADOS VACÍOS E IFRAME --- */
 .empty-state {
   padding: 30px 14px;
   text-align: center;
@@ -474,7 +457,6 @@ td.time {
   font-size: 12.5px;
 }
 
-/* --- CONTENEDOR IFRAME PLANIFICACIÓN --- */
 .iframe-panel {
   width: 100%;
   height: 640px;
@@ -490,15 +472,11 @@ td.time {
   border: none;
 }
 
-/* --- RESPONSIVIDAD --- */
 @media (max-width: 1280px) {
   .panels { 
     grid-template-columns: 1fr; 
   }
   .strip { 
     grid-template-columns: repeat(2, 1fr); 
-  }
-  .metric:nth-child(2) { 
-    border-right: none; 
   }
 }
