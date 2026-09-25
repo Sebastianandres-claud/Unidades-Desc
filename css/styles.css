@@ -52,7 +52,14 @@ header.top {
 .id-block {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
+}
+
+.logo-img {
+  height: 38px;
+  width: auto;
+  object-fit: contain;
+  display: block;
 }
 
 .mark {
@@ -219,16 +226,37 @@ nav.tabs button.active::after {
 }
 
 /* ==========================================================================
-   CORRECCIÓN DE ENCABEZADOS DE TABLAS Y PANELES
+   DISPOSICIÓN PARALELA DE TABLAS (3 COLUMNAS)
    ========================================================================== */
 
-/* 1. Titulares de Paneles (Panel Headings) */
+.panels {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr 1fr; /* La 1ª tabla tiene 6 columnas por eso un poco más ancha */
+  gap: 16px;
+  align-items: start;
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   ENCABEZADOS DE PANELES Y TABLAS (RECTOS Y ALINEADOS)
+   ========================================================================== */
+
 .panel-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  min-height: 44px; /* Asegura altura uniforme en los 3 paneles */
+  min-height: 48px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
 }
 
 .panel-head h2 {
@@ -236,48 +264,29 @@ nav.tabs button.active::after {
   font-family: var(--sans);
   font-size: 13.5px;
   font-weight: 700;
-  font-style: normal; /* Asegura texto recto */
+  font-style: normal !important;
   line-height: 1;
   color: var(--ink);
-  white-space: nowrap; /* Evita que el título se quiebre en dos líneas */
+  white-space: nowrap;
 }
 
-/* 2. Cabeceras de Tabla (Eliminar cursiva / alineación recta) */
-table thead th, 
-th.code-h {
-  font-style: normal !important; /* Quita la inclinación / cursiva */
-  font-family: var(--sans);
-  font-size: 12px;
-  font-weight: 600;
-  color: #64748B; /* Color gris limpio */
-  text-align: left;
-  vertical-align: middle;
-  padding: 10px 12px;
-  border-bottom: 1px solid #E2E8F0;
-  background-color: #FAFAFA; /* Fondo sutil para el encabezado */
-}
-
-/* Alineación para badges contadores en las cabeceras */
-.panel-head .count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-  font-style: normal;
-}
 .count {
   font-family: var(--mono);
   font-size: 11.5px;
+  font-weight: 600;
   color: var(--ink-soft);
   background: var(--bg);
   border: 1px solid var(--line);
-  padding: 1px 7px;
+  padding: 2px 8px;
   border-radius: 10px;
+  font-style: normal;
+  display: inline-flex;
+  align-items: center;
 }
 
-/* --- TABLAS OPERATIVAS --- */
+/* --- ESTRUCTURA DE TABLAS --- */
 .table-wrapper {
-  max-height: 520px;
+  max-height: 540px;
   overflow-y: auto;
   overflow-x: auto;
 }
@@ -287,26 +296,30 @@ table {
   border-collapse: collapse;
 }
 
-thead th {
+table thead th, 
+th.code-h {
   position: sticky;
   top: 0;
-  background: var(--surface);
-  text-align: left;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--ink-faint);
-  padding: 8px 10px;
-  border-bottom: 1px solid var(--line);
-  white-space: nowrap;
-  font-style: italic;
   z-index: 2;
+  font-style: normal !important; /* Fuerza texto recto en todas las columnas */
+  font-family: var(--sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-align: left;
+  vertical-align: middle;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  background-color: #FAFAFA;
+  white-space: nowrap;
 }
 
 tbody td {
-  padding: 9px 10px;
+  padding: 9px 12px;
   font-size: 12.5px;
   border-bottom: 1px solid #EEF0EE;
   white-space: nowrap;
+  vertical-align: middle;
 }
 
 tbody tr:last-child td { 
@@ -322,10 +335,6 @@ td.code, th.code-h {
    DESTAQUES DE INSTANCIAS (BADGES Y ETIQUETAS)
    ========================================================================== */
 
-/* ==========================================================================
-   SITRANS - SISTEMA DE ETIQUETAS E INSTANCIAS (BADGES)
-   ========================================================================== */
-
 .badge, .review {
   display: inline-flex;
   align-items: center;
@@ -334,62 +343,62 @@ td.code, th.code-h {
   font-size: 11.5px;
   font-weight: 600;
   padding: 3px 9px;
-  border-radius: 4px; /* Bordes redondeados sutiles */
+  border-radius: 4px;
   white-space: nowrap;
   letter-spacing: 0.01em;
   line-height: 1.2;
 }
 
-/* 1. CALLE / REVISAR (Azul Grisáceo - Estilo original) */
+/* 1. CALLE / REVISAR */
 .badge-calle, .review {
   background: #EBF3FA;
   color: #1D6191;
   border: 1px solid #D6E4F0;
 }
 
-/* 2. DESPACHO (Azul Eléctrico destacado) */
+/* 2. DESPACHO (Azul Eléctrico) */
 .badge-despacho {
   background: #E8F1FF;
   color: #0052FF;
   border: 1px solid #CCE0FF;
 }
 
-/* 3. MOVIMIENTO (Óxido / Naranja Terracota) */
+/* 3. MOVIMIENTO (Óxido / Naranja) */
 .badge-movimiento {
   background: #FFF1EC;
   color: #C1440E;
   border: 1px solid #FFDCD1;
 }
 
-/* 4. A BORDO SIN CONEXIÓN (Azul Acero Oscuro / Steel) */
+/* 4. A BORDO SIN CONEXIÓN */
 .badge-bordo {
   background: #F0F4F8;
   color: #1B4B66;
   border: 1px solid #D3DFE8;
 }
 
-/* 5. PARA EMBARQUE (Verde Teal / Esmeralda) */
+/* 5. PARA EMBARQUE */
 .badge-embarque {
   background: #EAF7F2;
   color: #1F6F54;
   border: 1px solid #C6EAD9;
 }
 
-/* 6. DESCARGA (Ámbar / Dorado Cálido) */
+/* 6. DESCARGA */
 .badge-descarga {
   background: #FDF8EC;
   color: #B8860B;
   border: 1px solid #F7EAC4;
 }
 
-/* 7. COLUMNA MOV = SÍ (Morado / Púrpura) */
+/* 7. COLUMNA MOV = SÍ (Morado) */
 .badge-mov-si, .badge-purple {
   background: #F3E8FF;
   color: #7E22CE;
   border: 1px solid #E9D5FF;
 }
 
-/* 8. COLUMNA MOV = NO (Gris Neutro) */
+/* 8. COLUMNA MOV = NO */
 .badge-mov-no {
   background: #F4F4F5;
   color: #71717A;
@@ -405,12 +414,10 @@ td.time {
   font-size: 12px;
 }
 
-/* Opción 1: Color de texto directo */
 .flag-red { color: var(--rust); font-weight: 600; }
 .flag-amber { color: var(--amber); font-weight: 600; }
 .flag-teal { color: var(--teal); font-weight: 600; }
 
-/* Opción 2: Pastillas destacadas para el tiempo/minutos */
 .time-pill {
   display: inline-flex;
   align-items: center;
@@ -471,9 +478,9 @@ td.time {
 }
 
 /* --- RESPONSIVIDAD --- */
-@media (max-width: 1100px) {
+@media (max-width: 1280px) {
   .panels { 
-    grid-template-columns: 1fr; 
+    grid-template-columns: 1fr; /* Pasa a 1 columna en pantallas reducidas */
   }
   .strip { 
     grid-template-columns: repeat(2, 1fr); 
@@ -481,16 +488,4 @@ td.time {
   .metric:nth-child(2) { 
     border-right: none; 
   }
-}
-.id-block {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.logo-img {
-  height: 38px; /* Altura ideal para la barra superior */
-  width: auto;
-  object-fit: contain;
-  display: block;
 }
