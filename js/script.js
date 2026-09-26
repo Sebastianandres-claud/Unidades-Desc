@@ -2,7 +2,7 @@
    SITRANS DASHBOARD - OPERATIONAL LOGIC & REALTIME ENGINE
    ========================================================================== */
 
-const RAW_URL = "https://github-live-proxy.samiranda.workers.dev";
+const RAW_URL = "https://sitrans-worker.samiranda.workers.dev";
 const REFRESH_MS = 10000;
 const CODIGOS_EXCLUIDOS = ["TIP", "TQ", "OUT"];
 const DIAS = { LU:0, MA:1, MI:2, JU:3, VI:4, SA:5, DO:6 };
